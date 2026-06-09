@@ -36,6 +36,10 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
+import {
+  formatDonationAmount,
+  getDonationAmount,
+} from "@/lib/donation-amount";
 
 const heroImg = "/assets/hero-youth.jpg";
 const g1 = "/assets/gallery-1.jpg";
@@ -455,10 +459,11 @@ export default function Home() {
   const [selected, setSelected] = useState<number | "custom">(100);
   const [form, setForm] = useState({ name: "", email: "", whatsapp: "", consent: true, newsletter: true });
   const [openImpact, setOpenImpact] = useState<Impact | null>(null);
+  const [isDonating, setIsDonating] = useState(false);
 
-  const activeAmount = selected === "custom" ? Number(customAmount) || 0 : selected;
+  const activeAmount = getDonationAmount(selected, customAmount);
 
-  const handleDonate = (method: "pix" | "card") => {
+  const handleDonate = async () => {
     if (!form.name || !form.email) {
       toast.error("Preencha nome e e-mail para continuar.");
       return;
@@ -471,11 +476,31 @@ export default function Home() {
       toast.error("Escolha um valor válido para doar.");
       return;
     }
-    toast.success(
-      `Obrigado, ${form.name.split(" ")[0]}! Doação de R$ ${activeAmount} via ${method === "pix" ? "Pix" : "Cartão"} iniciada.`,
-      { description: "Você será redirecionado para concluir o pagamento em instantes." }
-    );
-    
+
+    setIsDonating(true);
+
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: activeAmount,
+          name: form.name,
+          email: form.email,
+        }),
+      });
+
+      const data = (await res.json()) as { url?: string; error?: string };
+
+      if (!res.ok || !data.url) {
+        throw new Error(data.error ?? "Erro ao iniciar pagamento");
+      }
+
+      window.location.href = data.url;
+    } catch {
+      toast.error("Não foi possível abrir o checkout. Tente novamente.");
+      setIsDonating(false);
+    }
   };
 
   return (
@@ -827,7 +852,10 @@ export default function Home() {
                   <button
                     key={d.amount}
                     type="button"
-                    onClick={() => setSelected(d.amount)}
+                    onClick={() => {
+                      setSelected(d.amount);
+                      setCustomAmount("");
+                    }}
                     className={`relative text-left rounded-3xl border p-6 transition-all ${
                       active
                         ? "border-primary bg-primary/5 shadow-glow -translate-y-1"
@@ -849,7 +877,16 @@ export default function Home() {
               })}
 
               <div
-                className={`sm:col-span-2 rounded-3xl border p-6 transition-all ${
+                role="button"
+                tabIndex={0}
+                onClick={() => setSelected("custom")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setSelected("custom");
+                  }
+                }}
+                className={`sm:col-span-2 rounded-3xl border p-6 transition-all cursor-text ${
                   selected === "custom" ? "border-primary bg-primary/5 shadow-glow" : "border-border bg-card shadow-card"
                 }`}
               >
@@ -858,11 +895,11 @@ export default function Home() {
                   <span className="font-display text-2xl text-muted-foreground">R$</span>
                   <Input
                     id="custom"
-                    type="number"
-                    inputMode="numeric"
-                    min={1}
+                    type="text"
+                    inputMode="decimal"
                     placeholder="0,00"
                     value={customAmount}
+                    onFocus={() => setSelected("custom")}
                     onChange={(e) => {
                       setCustomAmount(e.target.value);
                       setSelected("custom");
@@ -904,22 +941,28 @@ export default function Home() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                   <Button
                     type="button"
-                    onClick={() => handleDonate("pix")}
+                    onClick={handleDonate}
+                    disabled={isDonating}
                     className="h-12 rounded-full bg-coral text-coral-foreground hover:bg-coral/90 text-base font-semibold"
                   >
-                    <QrCode className="h-5 w-5" /> Doar Pix
+                    <QrCode className="h-5 w-5" /> {isDonating ? "Abrindo..." : "Doar Pix"}
                   </Button>
                   <Button
                     type="button"
-                    onClick={() => handleDonate("card")}
+                    onClick={handleDonate}
+                    disabled={isDonating}
                     className="h-12 rounded-full bg-white text-primary-deep hover:bg-white/90 text-base font-semibold"
                   >
-                    <CreditCard className="h-5 w-5" /> Cartão
+                    <CreditCard className="h-5 w-5" /> {isDonating ? "Abrindo..." : "Cartão"}
                   </Button>
                 </div>
 
                 <p className="text-center text-xs text-white/70 pt-1">
-                  Doando <strong className="text-white">R$ {activeAmount || 0}</strong> agora
+                  Doando{" "}
+                  <strong className="text-white">
+                    R$ {activeAmount > 0 ? formatDonationAmount(activeAmount) : "0,00"}
+                  </strong>{" "}
+                  agora
                 </p>
               </div>
             </div>
