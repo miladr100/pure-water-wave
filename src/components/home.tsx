@@ -42,10 +42,10 @@ import {
 } from "@/lib/donation-amount";
 
 const heroImg = "/assets/hero-youth.jpg";
-const g1 = "/assets/gallery-1.jpg";
-const g2 = "/assets/gallery-2.jpg";
-const g3 = "/assets/gallery-3.jpg";
-const g4 = "/assets/gallery-4.jpg";
+const g1 = "/assets/gallery-1.jpeg";
+const g2 = "/assets/gallery-2.jpeg";
+const g3 = "/assets/gallery-3.jpeg";
+const g4 = "/assets/gallery-4.jpeg";
 const a1 = "/assets/avatar-1.jpg";
 const a2 = "/assets/avatar-2.jpg";
 const a3 = "/assets/avatar-3.jpg";
@@ -464,8 +464,8 @@ export default function Home() {
   const activeAmount = getDonationAmount(selected, customAmount);
 
   const handleDonate = async () => {
-    if (!form.name || !form.email) {
-      toast.error("Preencha nome e e-mail para continuar.");
+    if (!form.name || !form.email || !form.whatsapp) {
+      toast.error("Preencha nome, e-mail e WhatsApp para continuar.");
       return;
     }
     if (!form.consent) {
@@ -487,6 +487,7 @@ export default function Home() {
           amount: activeAmount,
           name: form.name,
           email: form.email,
+          phone: form.whatsapp,
         }),
       });
 
@@ -925,7 +926,7 @@ export default function Home() {
                   <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="voce@email.com" className="mt-1 bg-white/95 text-foreground border-0" />
                 </div>
                 <div>
-                  <Label htmlFor="whats" className="text-white/90">WhatsApp <span className="text-white/60">(opcional)</span></Label>
+                  <Label htmlFor="whats" className="text-white/90">WhatsApp</Label>
                   <Input id="whats" value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} placeholder="(00) 00000-0000" className="mt-1 bg-white/95 text-foreground border-0" />
                 </div>
 

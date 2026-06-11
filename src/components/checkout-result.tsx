@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { Droplets } from "lucide-react";
 
+import { CheckoutRetryButton } from "@/components/checkout-retry-button";
 import { Button } from "@/components/ui/button";
 
 type CheckoutResultProps = {
   title: string;
   description: string;
   variant?: "success" | "pending" | "failure";
+  retryPayment?: boolean;
   retryHref?: string;
 };
 
@@ -14,6 +16,7 @@ export function CheckoutResult({
   title,
   description,
   variant = "success",
+  retryPayment = false,
   retryHref,
 }: CheckoutResultProps) {
   const accent =
@@ -39,7 +42,8 @@ export function CheckoutResult({
           <Button asChild className="h-11 rounded-full px-8">
             <Link href="/">Voltar ao site</Link>
           </Button>
-          {retryHref && (
+          {retryPayment && <CheckoutRetryButton />}
+          {!retryPayment && retryHref && (
             <Button asChild variant="outline" className="h-11 rounded-full px-8">
               <Link href={retryHref}>Tentar novamente</Link>
             </Button>
