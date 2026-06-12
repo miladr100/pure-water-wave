@@ -3,7 +3,6 @@
 import { useState } from "react";
 import {
   Heart,
-  Droplets,
   Waves,
   Sparkles,
   Globe2,
@@ -512,10 +511,11 @@ export default function Home() {
       <header className="absolute top-0 inset-x-0 z-30">
         <div className="mx-auto max-w-7xl px-6 py-6 flex items-center justify-between">
           <a href="#top" className="flex items-center gap-2 text-primary-foreground">
-            <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/15 backdrop-blur">
-              <Droplets className="h-5 w-5" />
-              <span className="absolute inset-0 rounded-full border border-white/30 animate-ripple" />
-            </span>
+            <img
+              src="/assets/pwlogo.png"
+              alt="Água Pura"
+              className="h-10 w-10 rounded-full object-cover"
+            />
             <span className="font-display text-xl">Água Pura</span>
           </a>
           <nav className="hidden md:flex items-center gap-8 text-sm text-primary-foreground/90">
@@ -735,14 +735,14 @@ export default function Home() {
       {/* SOCIAL PROOF */}
       <section className="py-24 sm:py-32 bg-gradient-wave overflow-hidden">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="text-center max-w-2xl mx-auto">
+          {/*<div className="text-center max-w-2xl mx-auto">
             <span className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">Prova social</span>
             <h2 className="mt-3 font-display text-4xl sm:text-5xl text-balance">
               Uma onda que já atravessa fronteiras.
             </h2>
-          </div>
+          </div>*/}
 
-          <div className="mt-14 grid sm:grid-cols-3 gap-6">
+          {/*<div className="mt-14 grid sm:grid-cols-3 gap-6">
             <div className="rounded-3xl bg-card border border-border p-8 text-center shadow-card">
               <p className="font-display text-5xl text-primary">+1.200</p>
               <p className="mt-2 text-sm uppercase tracking-wider text-muted-foreground">Jovens impactados</p>
@@ -755,10 +755,10 @@ export default function Home() {
               <p className="font-display text-5xl text-primary">+150</p>
               <p className="mt-2 text-sm uppercase tracking-wider text-muted-foreground">Ações realizadas</p>
             </div>
-          </div>
+          </div>*/}
 
           {/* International presence with flags */}
-          <div className="mt-10 rounded-3xl bg-card border border-border p-8 shadow-card">
+          {/*<div className="mt-10 rounded-3xl bg-card border border-border p-8 shadow-card">
             <div className="flex items-center gap-3 text-primary">
               <Globe2 className="h-5 w-5" />
               <p className="text-sm uppercase tracking-wider font-semibold">Presença internacional</p>
@@ -774,10 +774,10 @@ export default function Home() {
                 </span>
               ))}
             </div>
-          </div>
+          </div>*/}
 
           {/* Testimonials carousel — auto-scrolling marquee */}
-          <div className="mt-14">
+          {/*<div className="mt-14">
             <div className="flex items-end justify-between gap-6 mb-8">
               <h3 className="font-display text-3xl sm:text-4xl text-balance">
                 Histórias que movem a onda.
@@ -824,7 +824,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-          </div>
+          </div>*/}
         </div>
       </section>
 
@@ -1033,7 +1033,11 @@ export default function Home() {
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-[28rem] w-[28rem] rounded-full bg-white/10 blur-3xl" />
 
         <div className="relative mx-auto max-w-4xl px-6 text-center">
-          <Droplets className="mx-auto h-12 w-12 text-white/80" />
+          <img
+            src="/assets/pwlogo.png"
+            alt="Água Pura"
+            className="mx-auto h-12 w-12 rounded-full object-cover"
+          />
           <h2 className="mt-6 font-display text-5xl sm:text-6xl leading-tight text-balance">
             Faça parte dessa onda<br />de transformação.
           </h2>
@@ -1067,9 +1071,11 @@ export default function Home() {
       <footer className="bg-background border-t border-border">
         <div className="mx-auto max-w-7xl px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Droplets className="h-5 w-5" />
-            </span>
+            <img
+              src="/assets/pwlogo.png"
+              alt="Água Pura"
+              className="h-10 w-10 rounded-full object-cover"
+            />
             <span className="font-display text-lg">Água Pura</span>
           </div>
           <p className="text-sm text-muted-foreground text-center">
