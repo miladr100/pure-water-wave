@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { CheckoutRetryButton } from "@/components/checkout-retry-button";
+import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
 
 type CheckoutResultProps = {
@@ -20,11 +21,7 @@ export function CheckoutResult({
   return (
     <main className="min-h-screen flex items-center justify-center p-6 bg-gradient-wave">
       <div className="w-full max-w-lg rounded-3xl bg-card border border-border p-10 shadow-card text-center">
-        <img
-          src="/assets/pwlogo.png"
-          alt="Água Pura"
-          className="mx-auto h-14 w-14 rounded-full object-cover"
-        />
+        <BrandLogo className="mx-auto h-14 w-14" />
         <h1 className="mt-6 font-display text-3xl sm:text-4xl text-balance">
           {title}
         </h1>
