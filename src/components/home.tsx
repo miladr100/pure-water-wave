@@ -83,14 +83,6 @@ const IMPACTS: Impact[] = [
       "Promovemos trilhas formativas com encontros semanais, workshops temáticos e mentorias com lideranças de diferentes áreas. Cada jovem recebe acompanhamento individual e participa de dinâmicas de grupo que desenvolvem autoconhecimento, comunicação, propósito e liderança consciente.",
   },
   {
-    icon: HandHeart,
-    title: "Ações sociais e culturais",
-    desc: "Iniciativas que transformam comunidades inteiras.",
-    gallery: [g3, g1, g4],
-    long:
-      "Levamos ações culturais, educativas e de cuidado a comunidades em situação de vulnerabilidade. Mutirões, oficinas de arte, atividades com crianças e idosos, distribuição de alimentos e campanhas de saúde — sempre com protagonismo dos jovens locais.",
-  },
-  {
     icon: Users,
     title: "Educação em valores",
     desc: "Programas de liderança, ética e responsabilidade.",
@@ -105,22 +97,6 @@ const IMPACTS: Impact[] = [
     gallery: [g2, g3, g4],
     long:
       "Conectamos jovens de Brasil, Argentina, Bolívia, Peru, Portugal e São Tomé e Príncipe em encontros presenciais e virtuais. O intercâmbio amplia visão de mundo, fortalece amizades transcontinentais e inspira novos projetos colaborativos entre culturas.",
-  },
-  {
-    icon: Sparkles,
-    title: "Consciência e pureza",
-    desc: "Jovens com clareza de propósito e coração aberto.",
-    gallery: [g1, g2, g3],
-    long:
-      "Cultivamos práticas de silêncio, leitura, autorreflexão e serviço ao próximo. Um caminho de pureza interior que reflete em escolhas mais coerentes, relações mais verdadeiras e um senso de propósito que move o jovem para fora de si.",
-  },
-  {
-    icon: Waves,
-    title: "Cuidado com o planeta",
-    desc: "Cuidado ativo com o meio ambiente e a sociedade.",
-    gallery: [g3, g4, g2],
-    long:
-      "Organizamos limpezas de praias e rios, plantios coletivos, hortas comunitárias e campanhas de consumo consciente. A ecologia integral nos lembra que cuidar da casa comum é também cuidar das pessoas que vivem nela.",
   },
 ];
 
