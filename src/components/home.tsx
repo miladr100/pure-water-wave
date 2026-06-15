@@ -516,13 +516,12 @@ export default function Home() {
               <Waves className="h-3.5 w-3.5" /> Movimento Pure Water Wave
             </span>
             <h1 className="mt-6 font-display text-5xl sm:text-6xl lg:text-7xl leading-[1.02] text-balance">
-              Uma onda de jovens<br />
-              transformando o mundo<br />
-              <span className="italic font-normal text-white/85">com pureza e propósito.</span>
+              O futuro da sociedade<br />
+              começa dentro<br />
+              <span className="italic font-normal text-white/85">da família.</span>
             </h1>
             <p className="mt-6 max-w-2xl text-lg sm:text-xl text-white/85 text-balance">
-              Sua doação ajuda jovens a viverem com propósito, pureza e responsabilidade social —
-              em comunidades de 6 países.
+              Sua contribuição ajuda a formar jovens líderes, fortalecer famílias e construir uma geração guiada por propósito, valores e esperança.
             </p>
 
             <div className="mt-9 flex flex-wrap gap-3">
