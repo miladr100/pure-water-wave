@@ -4,9 +4,10 @@ import { useState } from "react";
 import {
   Heart,
   Waves,
+  Rocket,
   Sparkles,
   Globe2,
-  Users,
+  HouseHeart,
   GraduationCap,
   HandHeart,
   ShieldCheck,
@@ -75,17 +76,17 @@ type Impact = {
 
 const IMPACTS: Impact[] = [
   {
-    icon: GraduationCap,
-    title: "Formações e workshops",
-    desc: "Trilhas de desenvolvimento para jovens líderes.",
+    icon: Rocket,
+    title: "Jovens preparados para liderar",
+    desc: "Sua doação permite que jovens participem de treinamentos, workshops e programas que desenvolvem liderança, responsabilidade e propósito de vida.",
     gallery: [g1, g4, g2],
     long:
       "Promovemos trilhas formativas com encontros semanais, workshops temáticos e mentorias com lideranças de diferentes áreas. Cada jovem recebe acompanhamento individual e participa de dinâmicas de grupo que desenvolvem autoconhecimento, comunicação, propósito e liderança consciente.",
   },
   {
-    icon: Users,
-    title: "Educação em valores",
-    desc: "Programas de liderança, ética e responsabilidade.",
+    icon: HouseHeart,
+    title: "Famílias mais fortes",
+    desc: "Investimos na formação de valores que fortalecem relacionamentos, promovem o respeito e ajudam a construir famílias saudáveis e duradouras.",
     gallery: [g4, g2, g1],
     long:
       "Trabalhamos valores como integridade, respeito, gratidão e responsabilidade através de programas estruturados de educação humana. Conteúdos vivenciais que ajudam o jovem a construir uma base sólida para tomar boas decisões na vida pessoal, profissional e cívica.",
@@ -583,11 +584,10 @@ export default function Home() {
           <div className="max-w-3xl">
             <span className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">Promessa de impacto</span>
             <h2 className="mt-3 font-display text-4xl sm:text-5xl text-balance">
-              O que sua doação torna possível.
+              O futuro de uma geração começa com a sua doação.
             </h2>
             <p className="mt-5 text-lg text-muted-foreground">
-              Cada real apoia jovens em formação, ações reais e encontros que mudam a forma como
-              olhamos para nós mesmos e para o mundo.{" "}
+              Muitos jovens crescem sem direção, sem oportunidades e sem referências positivas. Sua contribuição ajuda a formar líderes, fortalecer famílias e transformar vidas através da educação, dos valores e do serviço à sociedade. Cada doação é um investimento em uma geração que pode mudar o mundo..{" "}
               <span className="text-foreground/80">Clique em cada pilar para ver imagens e a história por trás.</span>
             </p>
           </div>
