@@ -638,12 +638,12 @@ export default function Home() {
           <div className="lg:col-span-6">
             <span className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">Nossa história</span>
             <h2 className="mt-3 font-display text-4xl sm:text-5xl text-balance">
-              Não somos um projeto.<br />
-              <span className="italic">Somos uma onda.</span>
+              Não somos apenas um projeto.<br />
+              <span className="italic">Somos uma geração que decidiu transformar o futuro.</span>
             </h2>
             <p className="mt-6 text-lg text-foreground/80">
-              Água Pura nasce do movimento <strong>Pure Water Wave</strong> — uma geração de jovens
-              que escolheu viver de outra forma.
+              O Pure Water Wave nasceu da crença de que a mudança da sociedade começa dentro 
+              de cada pessoa e se fortalece através da família.
             </p>
 
             <ul className="mt-8 space-y-5">
@@ -651,14 +651,16 @@ export default function Home() {
                 <span className="mt-1 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground font-display">P</span>
                 <div>
                   <p className="font-semibold text-foreground">Pure — pureza</p>
-                  <p className="text-muted-foreground">Pureza do corpo, do espírito e do coração.</p>
+                  <p className="text-muted-foreground">Integridade para fazer a diferença.</p>
                 </div>
               </li>
               <li className="flex gap-4">
                 <span className="mt-1 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground font-display">W</span>
                 <div>
                   <p className="font-semibold text-foreground">Water — água</p>
-                  <p className="text-muted-foreground">Movimento, vida e direção para um propósito maior.</p>
+                  <p className="text-muted-foreground">Movimento que gera transformação. 
+                  Assim como a água cria novos caminhos, incentivamos jovens a crescer, aprender e 
+                  impactar positivamente as pessoas ao seu redor.</p>
                 </div>
               </li>
               <li className="flex gap-4">
@@ -666,8 +668,7 @@ export default function Home() {
                 <div>
                   <p className="font-semibold text-foreground">Wave — onda</p>
                   <p className="text-muted-foreground">
-                    Uma onda de jovens que abraça pessoas, transcende culturas e cuida da sociedade
-                    e do meio ambiente.
+                    Uma onda de jovens que abraça pessoas, transcende culturas e cuida da sociedade e do meio ambiente.
                   </p>
                 </div>
               </li>
