@@ -53,6 +53,12 @@ const a3 = "/assets/avatar-3.jpg";
 const a4 = "/assets/avatar-4.jpg";
 const a5 = "/assets/avatar-5.jpg";
 const a6 = "/assets/avatar-6.jpg";
+const f1 = "/assets/familly-1.jpeg";
+const f2 = "/assets/familly-motokini.jpeg";
+const f3 = "/assets/familly-rezende.jpeg";
+const y1 = "/assets/PANA3260.JPG";
+const y2 = "/assets/young-1.jpeg";
+const y3 = "/assets/young-2.jpeg";
 
 // WhatsApp destination (international format, digits only)
 const WHATSAPP_NUMBER = "5511999999999";
@@ -79,7 +85,7 @@ const IMPACTS: Impact[] = [
     icon: Rocket,
     title: "Jovens preparados para liderar",
     desc: "Sua doação permite que jovens participem de treinamentos, workshops e programas que desenvolvem liderança, responsabilidade e propósito de vida.",
-    gallery: [g1, g4, g2],
+    gallery: [y1, y2, y3],
     long:
       "Promovemos trilhas formativas com encontros semanais, workshops temáticos e mentorias com lideranças de diferentes áreas. Cada jovem recebe acompanhamento individual e participa de dinâmicas de grupo que desenvolvem autoconhecimento, comunicação, propósito e liderança consciente.",
   },
@@ -87,7 +93,7 @@ const IMPACTS: Impact[] = [
     icon: HouseHeart,
     title: "Famílias mais fortes",
     desc: "Investimos na formação de valores que fortalecem relacionamentos, promovem o respeito e ajudam a construir famílias saudáveis e duradouras.",
-    gallery: [g4, g2, g1],
+    gallery: [f1, f2, f3],
     long:
       "Trabalhamos valores como integridade, respeito, gratidão e responsabilidade através de programas estruturados de educação humana. Conteúdos vivenciais que ajudam o jovem a construir uma base sólida para tomar boas decisões na vida pessoal, profissional e cívica.",
   },
@@ -704,7 +710,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SOCIAL PROOF */}
+     
       <section className="py-24 sm:py-32 bg-gradient-wave overflow-hidden">
         <div className="mx-auto max-w-7xl px-6">
           {/*<div className="text-center max-w-2xl mx-auto">
@@ -730,7 +736,7 @@ export default function Home() {
           </div>*/}
 
           {/* International presence with flags */}
-          {/*<div className="mt-10 rounded-3xl bg-card border border-border p-8 shadow-card">
+          <div className="mt-10 rounded-3xl bg-card border border-border p-8 shadow-card">
             <div className="flex items-center gap-3 text-primary">
               <Globe2 className="h-5 w-5" />
               <p className="text-sm uppercase tracking-wider font-semibold">Presença internacional</p>
@@ -746,10 +752,10 @@ export default function Home() {
                 </span>
               ))}
             </div>
-          </div>*/}
+          </div>
 
           {/* Testimonials carousel — auto-scrolling marquee */}
-          {/*<div className="mt-14">
+          <div className="mt-14">
             <div className="flex items-end justify-between gap-6 mb-8">
               <h3 className="font-display text-3xl sm:text-4xl text-balance">
                 Histórias que movem a onda.
@@ -796,11 +802,10 @@ export default function Home() {
                 ))}
               </div>
             </div>
-          </div>*/}
+          </div>
         </div>
       </section>
 
-      {/* DONATION SECTION */}
       <section id="doar" className="py-24 sm:py-32 bg-background scroll-mt-16">
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center max-w-2xl mx-auto">
