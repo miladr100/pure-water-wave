@@ -47,9 +47,9 @@ const g1 = "/assets/gallery-1.jpeg";
 const g2 = "/assets/gallery-2.jpeg";
 const g3 = "/assets/gallery-3.jpeg";
 const g4 = "/assets/gallery-4.jpeg";
-const a1 = "/assets/avatar-1.jpg";
-const a2 = "/assets/avatar-2.jpg";
-const a3 = "/assets/avatar-3.jpg";
+const a1 = "/assets/avatar-1.jpeg";
+const a2 = "/assets/avatar-2.jpeg";
+const a3 = "/assets/avatar-3.jpeg";
 const a4 = "/assets/avatar-4.jpg";
 const a5 = "/assets/avatar-5.jpg";
 const a6 = "/assets/avatar-6.jpg";
@@ -117,21 +117,21 @@ const DONATIONS = [
 const TESTIMONIALS = [
   {
     photo: a1,
-    quote: "Encontrei propósito, amigos do mundo inteiro e uma comunidade que acredita em mim.",
-    name: "Mariana Souza",
+    quote: "Através do Pure Water, fui enviada em uma missão à Europa para servir, pensando apenas em ajudar a restaurar o mundo. Mas, ao longo da jornada, descobri que Deus também estavam restaurando o meu próprio coração, pois eu também faço parte deste mundo que Eles desejam restaurar.",
+    name: "Heayun Pereira Cypion Yurkin",
     role: "Jovem participante — Brasil",
   },
   {
     photo: a2,
-    quote: "Vi de perto como a formação muda o olhar de um jovem sobre si e sobre a sociedade.",
-    name: "Luís Tavares",
-    role: "Voluntário — Portugal",
+    quote: "O Pure Water me ajudou a abrir meu coração, não só para as pessoas, mas também para mim mesma e, mais importante ainda, para Deus.",
+    name: "Azucena De Lora",
+    role: "Jovem participante — Panamá",
   },
   {
     photo: a3,
-    quote: "O intercâmbio com jovens de outros países nos ensinou que somos uma só onda.",
-    name: "Camila Acosta",
-    role: "Líder regional — Argentina",
+    quote: "Pude encontrar meu eu original e encontrar pessoas que contribuíram com meu crescimento.",
+    name: "Alice Cunha",
+    role: "Jovem participante — Brasil",
   },
   {
     photo: a4,
