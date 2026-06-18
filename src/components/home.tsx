@@ -135,21 +135,9 @@ const TESTIMONIALS = [
   },
   {
     photo: a4,
-    quote: "Aprendi a servir minha comunidade e descobri que sou capaz de inspirar outros jovens.",
-    name: "Adilson Neves",
-    role: "Jovem líder — São Tomé e Príncipe",
-  },
-  {
-    photo: a5,
-    quote: "Cada encontro é uma semente. Hoje vejo minha cidade florescer com o que plantamos.",
-    name: "Yara Quispe",
-    role: "Voluntária — Bolívia",
-  },
-  {
-    photo: a6,
-    quote: "Cheguei tímido e saí com coragem para liderar um projeto social no meu bairro.",
-    name: "Mateo Vargas",
-    role: "Jovem participante — Peru",
+    quote: "Viver para o bem do outro sem esperar nada em troca",
+    name: "Iago Martins",
+    role: "Jovem líder — Brasil",
   },
 ];
 
