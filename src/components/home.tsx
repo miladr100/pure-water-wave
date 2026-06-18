@@ -50,7 +50,7 @@ const g4 = "/assets/gallery-4.jpeg";
 const a1 = "/assets/avatar-1.jpeg";
 const a2 = "/assets/avatar-2.jpeg";
 const a3 = "/assets/avatar-3.jpeg";
-const a4 = "/assets/avatar-4.jpg";
+const a4 = "/assets/iago.jpeg";
 const a5 = "/assets/avatar-5.jpg";
 const a6 = "/assets/avatar-6.jpg";
 const f1 = "/assets/familly-1.jpeg";
@@ -59,6 +59,8 @@ const f3 = "/assets/familly-rezende.jpeg";
 const y1 = "/assets/PANA3260.JPG";
 const y2 = "/assets/young-1.jpeg";
 const y3 = "/assets/young-2.jpeg";
+const aca = "/assets/academy2.jpeg";
+
 
 // WhatsApp destination (international format, digits only)
 const WHATSAPP_NUMBER = "5511999999999";
@@ -668,7 +670,7 @@ export default function Home() {
               <img src={g1} alt="Jovens em workshop" width={800} height={800} loading="lazy" className="rounded-3xl aspect-square object-cover shadow-card" />
               <img src={g2} alt="Intercâmbio cultural entre jovens" width={800} height={800} loading="lazy" className="rounded-3xl aspect-square object-cover shadow-card mt-10 animate-float" />
               <img src={g3} alt="Ação social ambiental" width={800} height={800} loading="lazy" className="rounded-3xl aspect-square object-cover shadow-card -mt-6" />
-              <img src={g4} alt="Jovem palestrando em encontro" width={800} height={800} loading="lazy" className="rounded-3xl aspect-square object-cover shadow-card" />
+              <img src={aca} alt="Jovem palestrando em encontro" width={800} height={800} loading="lazy" className="rounded-3xl aspect-square object-cover shadow-card" />
             </div>
           </div>
         </div>
