@@ -6,7 +6,7 @@ import { CheckoutResult } from "@/components/checkout-result";
 
 export const metadata: Metadata = {
   title: "Doação confirmada — Água Pura",
-  description: "Obrigado por fazer parte da onda.",
+  description: "Obrigado pela sua contribuição. Sua doação foi recebida com sucesso.",
 };
 
 export default function CheckoutSuccessPage() {
@@ -15,8 +15,33 @@ export default function CheckoutSuccessPage() {
       <CheckoutDonationGate>
         <CheckoutResult
           variant="success"
-          title="Obrigado pela doação!"
-          description="Seu pagamento foi aprovado. Você faz parte da onda de jovens que transformam o mundo com pureza e propósito."
+          wide
+          title="❤️ Obrigado pela sua contribuição!"
+          description={
+            <>
+              <p className="text-lg font-medium text-foreground">
+                Sua doação foi recebida com sucesso.
+              </p>
+              <div className="mt-6 space-y-4 text-left text-muted-foreground">
+                <p>
+                  Obrigado por acreditar que o futuro da sociedade começa dentro da família.
+                </p>
+                <p>
+                  Através da sua generosidade, jovens terão acesso a programas de formação,
+                  ações sociais, experiências transformadoras e oportunidades para desenvolver
+                  liderança, caráter e propósito de vida.
+                </p>
+                <p>
+                  Cada contribuição — seja uma doação única ou um compromisso contínuo — ajuda a
+                  fortalecer famílias, transformar comunidades e inspirar uma nova geração a fazer
+                  a diferença no mundo.
+                </p>
+                <p className="font-medium text-foreground">
+                  Hoje, você se tornou parte desta onda de transformação.
+                </p>
+              </div>
+            </>
+          }
         />
       </CheckoutDonationGate>
     </Suspense>

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { Payment, Preference } from "mercadopago";
+import { Preference } from "mercadopago";
 
 import {
   canUseAutoReturn,
@@ -7,7 +7,10 @@ import {
   isMercadoPagoTestMode,
   mercadoPagoClient,
 } from "@/lib/mercadopago";
-import { parseUserIdFromExternalReference } from "@/lib/mercadopago-donation";
+import {
+  getMercadoPagoDonationAmount,
+  parseUserIdFromExternalReference,
+} from "@/lib/mercadopago-donation";
 import { connectDB } from "@/lib/mongodb";
 import { User } from "@/models/user";
 
@@ -16,27 +19,6 @@ type RetryBody = {
   preferenceId?: string;
   paymentId?: string;
 };
-
-async function getAmountFromMercadoPago(
-  preferenceId?: string,
-  paymentId?: string
-) {
-  if (preferenceId) {
-    const preference = new Preference(mercadoPagoClient);
-    const prefData = await preference.get({ preferenceId });
-    const amount = prefData.items?.[0]?.unit_price;
-    if (amount && amount > 0) return amount;
-  }
-
-  if (paymentId) {
-    const payment = new Payment(mercadoPagoClient);
-    const paymentData = await payment.get({ id: paymentId });
-    const amount = paymentData.transaction_amount;
-    if (amount && amount > 0) return amount;
-  }
-
-  return null;
-}
 
 export async function POST(request: Request) {
   try {
@@ -82,7 +64,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const amount = await getAmountFromMercadoPago(preferenceId, paymentId);
+    const amount = await getMercadoPagoDonationAmount(preferenceId, paymentId);
     if (!amount) {
       return NextResponse.json(
         { error: "Não foi possível recuperar o valor da doação" },

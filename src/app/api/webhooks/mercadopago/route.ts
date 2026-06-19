@@ -5,6 +5,7 @@ import {
   isApprovedDonation,
   markSameDayDonationIfNeeded,
 } from "@/lib/donation-same-day";
+import { notifyDonationSuccessIfNeeded } from "@/lib/donation-success-notification";
 import {
   mapMercadoPagoPaymentData,
   parseUserIdFromExternalReference,
@@ -106,6 +107,15 @@ async function processPaymentNotification(paymentId: string) {
       userId: user._id,
       referenceDate,
     });
+
+    const amount = paymentData.transaction_amount;
+    if (amount && amount > 0) {
+      await notifyDonationSuccessIfNeeded({
+        externalReference: mapped.externalReference,
+        user,
+        amount,
+      });
+    }
   }
 
   console.info("Pagamento Mercado Pago:", {

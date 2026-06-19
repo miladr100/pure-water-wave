@@ -1,3 +1,7 @@
+import { Payment, Preference } from "mercadopago";
+
+import { mercadoPagoClient } from "@/lib/mercadopago";
+
 export type MercadoPagoRedirectParams = {
   collection_id?: string | null;
   collection_status?: string | null;
@@ -38,6 +42,27 @@ export function parseUserIdFromExternalReference(
 ): string | undefined {
   const match = externalReference.match(/^doacao-([a-f0-9]{24})-\d+$/i);
   return match?.[1];
+}
+
+export async function getMercadoPagoDonationAmount(
+  preferenceId?: string | null,
+  paymentId?: string | null,
+) {
+  if (preferenceId) {
+    const preference = new Preference(mercadoPagoClient);
+    const prefData = await preference.get({ preferenceId });
+    const amount = prefData.items?.[0]?.unit_price;
+    if (amount && amount > 0) return amount;
+  }
+
+  if (paymentId) {
+    const payment = new Payment(mercadoPagoClient);
+    const paymentData = await payment.get({ id: paymentId });
+    const amount = paymentData.transaction_amount;
+    if (amount && amount > 0) return amount;
+  }
+
+  return null;
 }
 
 export function mapMercadoPagoPaymentData(payment: {

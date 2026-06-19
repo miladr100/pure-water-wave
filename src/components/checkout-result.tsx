@@ -1,15 +1,18 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 import { CheckoutRetryButton } from "@/components/checkout-retry-button";
 import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type CheckoutResultProps = {
   title: string;
-  description: string;
+  description: ReactNode;
   variant?: "success" | "pending" | "failure";
   retryPayment?: boolean;
   retryHref?: string;
+  wide?: boolean;
 };
 
 export function CheckoutResult({
@@ -17,15 +20,21 @@ export function CheckoutResult({
   description,
   retryPayment = false,
   retryHref,
+  wide = false,
 }: CheckoutResultProps) {
   return (
     <main className="min-h-screen flex items-center justify-center p-6 bg-gradient-wave">
-      <div className="w-full max-w-lg rounded-3xl bg-card border border-border p-10 shadow-card text-center">
+      <div
+        className={cn(
+          "w-full rounded-3xl bg-card border border-border p-10 shadow-card text-center",
+          wide ? "max-w-2xl" : "max-w-lg",
+        )}
+      >
         <BrandLogo className="mx-auto h-14 w-14" />
         <h1 className="mt-6 font-display text-3xl sm:text-4xl text-balance">
           {title}
         </h1>
-        <p className="mt-4 text-muted-foreground leading-relaxed">{description}</p>
+        <div className="mt-4 leading-relaxed">{description}</div>
         <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
           <Button asChild className="h-11 rounded-full px-8">
             <Link href="/">Voltar ao site</Link>

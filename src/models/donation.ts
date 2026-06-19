@@ -21,6 +21,7 @@ const donationSchema = new Schema(
     processingMode: { type: String },
     merchantAccountId: { type: String },
     sameDayDonation: { type: String },
+    successEmailSentAt: { type: Date },
   },
   { timestamps: true }
 );

@@ -4,7 +4,9 @@ import {
   isApprovedDonation,
   markSameDayDonationIfNeeded,
 } from "@/lib/donation-same-day";
+import { notifyDonationSuccessIfNeeded } from "@/lib/donation-success-notification";
 import {
+  getMercadoPagoDonationAmount,
   mapMercadoPagoRedirectParams,
   parseUserIdFromExternalReference,
   type MercadoPagoRedirectParams,
@@ -61,6 +63,19 @@ export async function POST(request: Request) {
         userId: user._id,
         referenceDate: new Date(),
       });
+
+      const amount = await getMercadoPagoDonationAmount(
+        mapped.preferenceId,
+        mapped.paymentId,
+      );
+
+      if (amount) {
+        await notifyDonationSuccessIfNeeded({
+          externalReference: mapped.externalReference,
+          user,
+          amount,
+        });
+      }
     }
 
     return NextResponse.json({ ok: true });
