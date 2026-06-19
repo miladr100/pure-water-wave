@@ -4,9 +4,10 @@ import { useState } from "react";
 import {
   Heart,
   Waves,
+  Rocket,
   Sparkles,
   Globe2,
-  Users,
+  HouseHeart,
   GraduationCap,
   HandHeart,
   ShieldCheck,
@@ -46,12 +47,20 @@ const g1 = "/assets/gallery-1.jpeg";
 const g2 = "/assets/gallery-2.jpeg";
 const g3 = "/assets/gallery-3.jpeg";
 const g4 = "/assets/gallery-4.jpeg";
-const a1 = "/assets/avatar-1.jpg";
-const a2 = "/assets/avatar-2.jpg";
-const a3 = "/assets/avatar-3.jpg";
-const a4 = "/assets/avatar-4.jpg";
+const a1 = "/assets/avatar-1.jpeg";
+const a2 = "/assets/avatar-2.jpeg";
+const a3 = "/assets/avatar-3.jpeg";
+const a4 = "/assets/iago.jpeg";
 const a5 = "/assets/avatar-5.jpg";
 const a6 = "/assets/avatar-6.jpg";
+const f1 = "/assets/familly-1.jpeg";
+const f2 = "/assets/familly-motokini.jpeg";
+const f3 = "/assets/familly-rezende.jpeg";
+const y1 = "/assets/PANA3260.JPG";
+const y2 = "/assets/young-1.jpeg";
+const y3 = "/assets/young-2.jpeg";
+const aca = "/assets/academy2.jpeg";
+
 
 // WhatsApp destination (international format, digits only)
 const WHATSAPP_NUMBER = "5511999999999";
@@ -75,26 +84,18 @@ type Impact = {
 
 const IMPACTS: Impact[] = [
   {
-    icon: GraduationCap,
-    title: "Formações e workshops",
-    desc: "Trilhas de desenvolvimento para jovens líderes.",
-    gallery: [g1, g4, g2],
+    icon: Rocket,
+    title: "Jovens preparados para liderar",
+    desc: "Sua doação permite que jovens participem de treinamentos, workshops e programas que desenvolvem liderança, responsabilidade e propósito de vida.",
+    gallery: [y1, y2, y3],
     long:
       "Promovemos trilhas formativas com encontros semanais, workshops temáticos e mentorias com lideranças de diferentes áreas. Cada jovem recebe acompanhamento individual e participa de dinâmicas de grupo que desenvolvem autoconhecimento, comunicação, propósito e liderança consciente.",
   },
   {
-    icon: HandHeart,
-    title: "Ações sociais e culturais",
-    desc: "Iniciativas que transformam comunidades inteiras.",
-    gallery: [g3, g1, g4],
-    long:
-      "Levamos ações culturais, educativas e de cuidado a comunidades em situação de vulnerabilidade. Mutirões, oficinas de arte, atividades com crianças e idosos, distribuição de alimentos e campanhas de saúde — sempre com protagonismo dos jovens locais.",
-  },
-  {
-    icon: Users,
-    title: "Educação em valores",
-    desc: "Programas de liderança, ética e responsabilidade.",
-    gallery: [g4, g2, g1],
+    icon: HouseHeart,
+    title: "Famílias mais fortes",
+    desc: "Investimos na formação de valores que fortalecem relacionamentos, promovem o respeito e ajudam a construir famílias saudáveis e duradouras.",
+    gallery: [f1, f2, f3],
     long:
       "Trabalhamos valores como integridade, respeito, gratidão e responsabilidade através de programas estruturados de educação humana. Conteúdos vivenciais que ajudam o jovem a construir uma base sólida para tomar boas decisões na vida pessoal, profissional e cívica.",
   },
@@ -105,22 +106,6 @@ const IMPACTS: Impact[] = [
     gallery: [g2, g3, g4],
     long:
       "Conectamos jovens de Brasil, Argentina, Bolívia, Peru, Portugal e São Tomé e Príncipe em encontros presenciais e virtuais. O intercâmbio amplia visão de mundo, fortalece amizades transcontinentais e inspira novos projetos colaborativos entre culturas.",
-  },
-  {
-    icon: Sparkles,
-    title: "Consciência e pureza",
-    desc: "Jovens com clareza de propósito e coração aberto.",
-    gallery: [g1, g2, g3],
-    long:
-      "Cultivamos práticas de silêncio, leitura, autorreflexão e serviço ao próximo. Um caminho de pureza interior que reflete em escolhas mais coerentes, relações mais verdadeiras e um senso de propósito que move o jovem para fora de si.",
-  },
-  {
-    icon: Waves,
-    title: "Cuidado com o planeta",
-    desc: "Cuidado ativo com o meio ambiente e a sociedade.",
-    gallery: [g3, g4, g2],
-    long:
-      "Organizamos limpezas de praias e rios, plantios coletivos, hortas comunitárias e campanhas de consumo consciente. A ecologia integral nos lembra que cuidar da casa comum é também cuidar das pessoas que vivem nela.",
   },
 ];
 
@@ -134,39 +119,27 @@ const DONATIONS = [
 const TESTIMONIALS = [
   {
     photo: a1,
-    quote: "Encontrei propósito, amigos do mundo inteiro e uma comunidade que acredita em mim.",
-    name: "Mariana Souza",
+    quote: "Através do Pure Water, fui enviada em uma missão à Europa para servir, pensando apenas em ajudar a restaurar o mundo. Mas, ao longo da jornada, descobri que Deus também estavam restaurando o meu próprio coração, pois eu também faço parte deste mundo que Eles desejam restaurar.",
+    name: "Heayun Pereira Cypion Yurkin",
     role: "Jovem participante — Brasil",
   },
   {
     photo: a2,
-    quote: "Vi de perto como a formação muda o olhar de um jovem sobre si e sobre a sociedade.",
-    name: "Luís Tavares",
-    role: "Voluntário — Portugal",
+    quote: "O Pure Water me ajudou a abrir meu coração, não só para as pessoas, mas também para mim mesma e, mais importante ainda, para Deus.",
+    name: "Azucena De Lora",
+    role: "Jovem participante — Panamá",
   },
   {
     photo: a3,
-    quote: "O intercâmbio com jovens de outros países nos ensinou que somos uma só onda.",
-    name: "Camila Acosta",
-    role: "Líder regional — Argentina",
+    quote: "Pude encontrar meu eu original e encontrar pessoas que contribuíram com meu crescimento.",
+    name: "Alice Cunha",
+    role: "Jovem participante — Brasil",
   },
   {
     photo: a4,
-    quote: "Aprendi a servir minha comunidade e descobri que sou capaz de inspirar outros jovens.",
-    name: "Adilson Neves",
-    role: "Jovem líder — São Tomé e Príncipe",
-  },
-  {
-    photo: a5,
-    quote: "Cada encontro é uma semente. Hoje vejo minha cidade florescer com o que plantamos.",
-    name: "Yara Quispe",
-    role: "Voluntária — Bolívia",
-  },
-  {
-    photo: a6,
-    quote: "Cheguei tímido e saí com coragem para liderar um projeto social no meu bairro.",
-    name: "Mateo Vargas",
-    role: "Jovem participante — Peru",
+    quote: "Viver para o bem do outro sem esperar nada em troca",
+    name: "Iago Martins",
+    role: "Jovem líder — Brasil",
   },
 ];
 
@@ -540,13 +513,12 @@ export default function Home() {
               <Waves className="h-3.5 w-3.5" /> Movimento Pure Water Wave
             </span>
             <h1 className="mt-6 font-display text-5xl sm:text-6xl lg:text-7xl leading-[1.02] text-balance">
-              Uma onda de jovens<br />
-              transformando o mundo<br />
-              <span className="italic font-normal text-white/85">com pureza e propósito.</span>
+              O futuro da sociedade<br />
+              começa dentro<br />
+              <span className="italic font-normal text-white/85">da família.</span>
             </h1>
             <p className="mt-6 max-w-2xl text-lg sm:text-xl text-white/85 text-balance">
-              Sua doação ajuda jovens a viverem com propósito, pureza e responsabilidade social —
-              em comunidades de 6 países.
+              Sua contribuição ajuda a formar jovens líderes, fortalecer famílias e construir uma geração guiada por propósito, valores e esperança.
             </p>
 
             <div className="mt-9 flex flex-wrap gap-3">
@@ -608,11 +580,10 @@ export default function Home() {
           <div className="max-w-3xl">
             <span className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">Promessa de impacto</span>
             <h2 className="mt-3 font-display text-4xl sm:text-5xl text-balance">
-              O que sua doação torna possível.
+              O futuro de uma geração começa com a sua doação.
             </h2>
             <p className="mt-5 text-lg text-muted-foreground">
-              Cada real apoia jovens em formação, ações reais e encontros que mudam a forma como
-              olhamos para nós mesmos e para o mundo.{" "}
+              Muitos jovens crescem sem direção, sem oportunidades e sem referências positivas. Sua contribuição ajuda a formar líderes, fortalecer famílias e transformar vidas através da educação, dos valores e do serviço à sociedade. Cada doação é um investimento em uma geração que pode mudar o mundo..{" "}
               <span className="text-foreground/80">Clique em cada pilar para ver imagens e a história por trás.</span>
             </p>
           </div>
@@ -657,12 +628,12 @@ export default function Home() {
           <div className="lg:col-span-6">
             <span className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">Nossa história</span>
             <h2 className="mt-3 font-display text-4xl sm:text-5xl text-balance">
-              Não somos um projeto.<br />
-              <span className="italic">Somos uma onda.</span>
+              Não somos apenas um projeto.<br />
+              <span className="italic">Somos uma geração que decidiu transformar o futuro.</span>
             </h2>
             <p className="mt-6 text-lg text-foreground/80">
-              Água Pura nasce do movimento <strong>Pure Water Wave</strong> — uma geração de jovens
-              que escolheu viver de outra forma.
+              O Pure Water Wave nasceu da crença de que a mudança da sociedade começa dentro 
+              de cada pessoa e se fortalece através da família.
             </p>
 
             <ul className="mt-8 space-y-5">
@@ -670,14 +641,16 @@ export default function Home() {
                 <span className="mt-1 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground font-display">P</span>
                 <div>
                   <p className="font-semibold text-foreground">Pure — pureza</p>
-                  <p className="text-muted-foreground">Pureza do corpo, do espírito e do coração.</p>
+                  <p className="text-muted-foreground">Integridade para fazer a diferença.</p>
                 </div>
               </li>
               <li className="flex gap-4">
                 <span className="mt-1 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground font-display">W</span>
                 <div>
                   <p className="font-semibold text-foreground">Water — água</p>
-                  <p className="text-muted-foreground">Movimento, vida e direção para um propósito maior.</p>
+                  <p className="text-muted-foreground">Movimento que gera transformação. 
+                  Assim como a água cria novos caminhos, incentivamos jovens a crescer, aprender e 
+                  impactar positivamente as pessoas ao seu redor.</p>
                 </div>
               </li>
               <li className="flex gap-4">
@@ -685,8 +658,7 @@ export default function Home() {
                 <div>
                   <p className="font-semibold text-foreground">Wave — onda</p>
                   <p className="text-muted-foreground">
-                    Uma onda de jovens que abraça pessoas, transcende culturas e cuida da sociedade
-                    e do meio ambiente.
+                    Uma onda de jovens que abraça pessoas, transcende culturas e cuida da sociedade e do meio ambiente.
                   </p>
                 </div>
               </li>
@@ -698,7 +670,7 @@ export default function Home() {
               <img src={g1} alt="Jovens em workshop" width={800} height={800} loading="lazy" className="rounded-3xl aspect-square object-cover shadow-card" />
               <img src={g2} alt="Intercâmbio cultural entre jovens" width={800} height={800} loading="lazy" className="rounded-3xl aspect-square object-cover shadow-card mt-10 animate-float" />
               <img src={g3} alt="Ação social ambiental" width={800} height={800} loading="lazy" className="rounded-3xl aspect-square object-cover shadow-card -mt-6" />
-              <img src={g4} alt="Jovem palestrando em encontro" width={800} height={800} loading="lazy" className="rounded-3xl aspect-square object-cover shadow-card" />
+              <img src={aca} alt="Jovem palestrando em encontro" width={800} height={800} loading="lazy" className="rounded-3xl aspect-square object-cover shadow-card" />
             </div>
           </div>
         </div>
@@ -729,7 +701,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SOCIAL PROOF */}
+     
       <section className="py-24 sm:py-32 bg-gradient-wave overflow-hidden">
         <div className="mx-auto max-w-7xl px-6">
           {/*<div className="text-center max-w-2xl mx-auto">
@@ -755,7 +727,7 @@ export default function Home() {
           </div>*/}
 
           {/* International presence with flags */}
-          {/*<div className="mt-10 rounded-3xl bg-card border border-border p-8 shadow-card">
+          <div className="mt-10 rounded-3xl bg-card border border-border p-8 shadow-card">
             <div className="flex items-center gap-3 text-primary">
               <Globe2 className="h-5 w-5" />
               <p className="text-sm uppercase tracking-wider font-semibold">Presença internacional</p>
@@ -771,10 +743,10 @@ export default function Home() {
                 </span>
               ))}
             </div>
-          </div>*/}
+          </div>
 
           {/* Testimonials carousel — auto-scrolling marquee */}
-          {/*<div className="mt-14">
+          <div className="mt-14">
             <div className="flex items-end justify-between gap-6 mb-8">
               <h3 className="font-display text-3xl sm:text-4xl text-balance">
                 Histórias que movem a onda.
@@ -821,11 +793,10 @@ export default function Home() {
                 ))}
               </div>
             </div>
-          </div>*/}
+          </div>
         </div>
       </section>
 
-      {/* DONATION SECTION */}
       <section id="doar" className="py-24 sm:py-32 bg-background scroll-mt-16">
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center max-w-2xl mx-auto">
