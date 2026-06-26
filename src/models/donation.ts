@@ -20,8 +20,10 @@ const donationSchema = new Schema(
     siteId: { type: String },
     processingMode: { type: String },
     merchantAccountId: { type: String },
+    amount: { type: Number },
     sameDayDonation: { type: String },
     successEmailSentAt: { type: Date },
+    failureEmailSentAt: { type: Date },
   },
   { timestamps: true }
 );

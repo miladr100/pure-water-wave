@@ -5,7 +5,7 @@ const ngrokHost = process.env.NEXT_PUBLIC_APP_URL
   : undefined;
 
 const nextConfig: NextConfig = {
-  ...(ngrokHost && { allowedDevOrigins: ["e4d0-187-59-103-98.ngrok-free.app"] }),
+  ...(ngrokHost && { allowedDevOrigins: ["ca18-2804-7f3-4a14-3eef-fc15-ffac-6543-b66a.ngrok-free.app"] }),
 };
 
 export default nextConfig;

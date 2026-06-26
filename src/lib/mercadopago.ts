@@ -9,6 +9,10 @@ export function getAppBaseUrl() {
   return url.replace(/\/$/, "");
 }
 
+export function getDonationPageUrl() {
+  return `${getAppBaseUrl()}/#doar`;
+}
+
 export function isMercadoPagoTestMode() {
   return process.env.MERCADOPAGO_ACCESS_TOKEN?.startsWith("TEST-") ?? false;
 }

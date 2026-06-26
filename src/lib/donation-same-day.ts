@@ -4,15 +4,30 @@ import { connectDB } from "@/lib/mongodb";
 import { Donation } from "@/models/donation";
 
 const PENDING_STATUSES = ["pending", "in_process", "authorized"] as const;
+const FAILED_STATUSES = ["rejected", "cancelled", "canceled"] as const;
 
 export function isApprovedPaymentStatus(status?: string | null) {
   return status === "approved";
+}
+
+export function isFailedPaymentStatus(status?: string | null) {
+  return (
+    status != null &&
+    FAILED_STATUSES.includes(status as (typeof FAILED_STATUSES)[number])
+  );
 }
 
 export function isApprovedDonation(status?: string | null, collectionStatus?: string | null) {
   return (
     isApprovedPaymentStatus(status) ||
     isApprovedPaymentStatus(collectionStatus)
+  );
+}
+
+export function isFailedDonation(status?: string | null, collectionStatus?: string | null) {
+  return (
+    isFailedPaymentStatus(status) ||
+    isFailedPaymentStatus(collectionStatus)
   );
 }
 

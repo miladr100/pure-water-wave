@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 
 import {
   isApprovedDonation,
+  isFailedDonation,
   markSameDayDonationIfNeeded,
 } from "@/lib/donation-same-day";
+import { notifyDonationFailureIfNeeded } from "@/lib/donation-failure-notification";
 import { notifyDonationSuccessIfNeeded } from "@/lib/donation-success-notification";
 import {
   getMercadoPagoDonationAmount,
@@ -52,9 +54,20 @@ export async function POST(request: Request) {
       );
     }
 
+    const amount = await getMercadoPagoDonationAmount(
+      mapped.preferenceId,
+      mapped.paymentId,
+    );
+
     await Donation.findOneAndUpdate(
       { externalReference: mapped.externalReference },
-      { $set: { ...mapped, user: user._id } },
+      {
+        $set: {
+          ...mapped,
+          user: user._id,
+          ...(amount ? { amount } : {}),
+        },
+      },
       { upsert: true, new: true }
     );
 
@@ -64,11 +77,6 @@ export async function POST(request: Request) {
         referenceDate: new Date(),
       });
 
-      const amount = await getMercadoPagoDonationAmount(
-        mapped.preferenceId,
-        mapped.paymentId,
-      );
-
       if (amount) {
         await notifyDonationSuccessIfNeeded({
           externalReference: mapped.externalReference,
@@ -76,6 +84,11 @@ export async function POST(request: Request) {
           amount,
         });
       }
+    } else if (isFailedDonation(mapped.status, mapped.collectionStatus)) {
+      await notifyDonationFailureIfNeeded({
+        externalReference: mapped.externalReference,
+        user,
+      });
     }
 
     return NextResponse.json({ ok: true });

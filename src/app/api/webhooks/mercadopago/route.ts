@@ -3,8 +3,10 @@ import { Payment } from "mercadopago";
 
 import {
   isApprovedDonation,
+  isFailedDonation,
   markSameDayDonationIfNeeded,
 } from "@/lib/donation-same-day";
+import { notifyDonationFailureIfNeeded } from "@/lib/donation-failure-notification";
 import { notifyDonationSuccessIfNeeded } from "@/lib/donation-success-notification";
 import {
   mapMercadoPagoPaymentData,
@@ -90,9 +92,20 @@ async function processPaymentNotification(paymentId: string) {
   const user = await User.findById(userId);
   if (!user) return;
 
+  const amount =
+    paymentData.transaction_amount && paymentData.transaction_amount > 0
+      ? paymentData.transaction_amount
+      : undefined;
+
   await Donation.findOneAndUpdate(
     { externalReference: mapped.externalReference },
-    { $set: { ...mapped, user: user._id } },
+    {
+      $set: {
+        ...mapped,
+        user: user._id,
+        ...(amount ? { amount } : {}),
+      },
+    },
     { upsert: true }
   );
 
@@ -108,14 +121,18 @@ async function processPaymentNotification(paymentId: string) {
       referenceDate,
     });
 
-    const amount = paymentData.transaction_amount;
-    if (amount && amount > 0) {
+    if (amount) {
       await notifyDonationSuccessIfNeeded({
         externalReference: mapped.externalReference,
         user,
         amount,
       });
     }
+  } else if (isFailedDonation(mapped.status, mapped.collectionStatus)) {
+    await notifyDonationFailureIfNeeded({
+      externalReference: mapped.externalReference,
+      user,
+    });
   }
 
   console.info("Pagamento Mercado Pago:", {
