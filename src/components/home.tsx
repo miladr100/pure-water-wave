@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   Heart,
   Waves,
@@ -494,12 +495,20 @@ export default function Home() {
             <a href="#prova" className="hover:text-primary-foreground transition">Histórias</a>
             <a href="#doar" className="hover:text-primary-foreground transition">Doar</a>
           </nav>
-          <a
-            href="#doar"
-            className="hidden sm:inline-flex items-center gap-2 rounded-full bg-white/95 text-primary-deep px-5 py-2.5 text-sm font-semibold shadow-soft hover:bg-white transition"
-          >
-            <Heart className="h-4 w-4 fill-current" /> Doar agora
-          </a>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              href="/login"
+              className="inline-flex items-center rounded-full border border-white/40 bg-white/10 px-4 py-2.5 text-sm font-semibold text-primary-foreground backdrop-blur transition hover:bg-white/20"
+            >
+              Login
+            </Link>
+            <a
+              href="#doar"
+              className="inline-flex items-center gap-2 rounded-full bg-white/95 text-primary-deep px-5 py-2.5 text-sm font-semibold shadow-soft hover:bg-white transition"
+            >
+              <Heart className="h-4 w-4 fill-current" /> Doar agora
+            </a>
+          </div>
         </div>
       </header>
 

@@ -193,3 +193,10 @@
   }
   .animate-marquee { animation: marquee 40s linear infinite; }
 }
+
+.react-pdf__Page__textContent .pdf-search-highlight {
+  background-color: rgb(254 240 138);
+  color: inherit;
+  border-radius: 0.125rem;
+  padding-inline: 0.125rem;
+}

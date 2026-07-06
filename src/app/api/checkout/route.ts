@@ -53,7 +53,10 @@ export async function POST(request: Request) {
 
     const user = await User.findOneAndUpdate(
       { phone: userPhone },
-      { fullName, phone: userPhone, email: userEmail },
+      {
+        $set: { fullName, phone: userPhone, email: userEmail },
+        $setOnInsert: { role: "doador" },
+      },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 

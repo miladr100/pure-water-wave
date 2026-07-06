@@ -6,6 +6,8 @@ const ngrokHost = process.env.NEXT_PUBLIC_APP_URL
 
 const nextConfig: NextConfig = {
   ...(ngrokHost && { allowedDevOrigins: ["ca18-2804-7f3-4a14-3eef-fc15-ffac-6543-b66a.ngrok-free.app"] }),
+  serverExternalPackages: ["pdfjs-dist"],
+  turbopack: {},
 };
 
 export default nextConfig;
