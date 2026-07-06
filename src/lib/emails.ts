@@ -1,8 +1,10 @@
 import { Resend } from "resend";
 
 import { FailureDonationEmail } from "@/app/emails/FailureDonationEmail";
+import { RemarketingDonationEmail } from "@/app/emails/RemarketingDonationEmail";
 import { SuccessDonationEmail } from "@/app/emails/SuccessDonationEmail";
 import { getEmailLogoAttachment } from "@/lib/email-assets";
+import { getDonationPageUrl } from "@/lib/mercadopago";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -16,6 +18,11 @@ interface FailureDonationEmailParams {
   userFirstname: string;
   email: string;
   paymentUrl: string;
+}
+
+interface RemarketingDonationEmailParams {
+  userFirstname: string;
+  email: string;
 }
 
 export async function sendEmailSuccessDonation({
@@ -64,4 +71,27 @@ export async function sendEmailFailureDonation({
   }
 
   console.info("E-mail de falha de doação enviado para:", email);
+}
+
+export async function sendEmailRemarketingDonation({
+  userFirstname,
+  email,
+}: RemarketingDonationEmailParams) {
+  const { error } = await resend.emails.send({
+    from: "Pure Water Wave <contact@purewaterwave.org>",
+    to: [email],
+    subject: "Sua doação ainda pode fazer a diferença",
+    react: RemarketingDonationEmail({
+      userFirstname,
+      donationUrl: getDonationPageUrl(),
+    }),
+    attachments: [getEmailLogoAttachment()],
+  });
+
+  if (error) {
+    console.error("Error sending remarketing email notification:", error);
+    throw new Error("Error sending remarketing email notification");
+  }
+
+  console.info("E-mail de remarketing enviado para:", email);
 }
