@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { BookOpen, BookOpenCheck } from "lucide-react";
 import { Document, Page } from "react-pdf";
@@ -14,10 +13,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  getLibraryPdfReaderPath,
   getProtectedPdfApiUrl,
   type LibraryPdf,
 } from "@/lib/library-pdfs";
+import { LibraryPdfCardLink } from "@/components/library-pdf-card-link";
 import "@/lib/pdf-worker";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -34,8 +33,8 @@ export function LibraryPdfCard({ pdf }: LibraryPdfCardProps) {
   const [previewFailed, setPreviewFailed] = useState(false);
 
   return (
-    <Link href={getLibraryPdfReaderPath(pdf.id)} className="group block h-full">
-      <Card className="flex h-full flex-col overflow-hidden border-border/60 shadow-card transition hover:-translate-y-0.5 hover:shadow-glow">
+    <LibraryPdfCardLink pdfId={pdf.id}>
+      <Card className="flex h-full flex-col overflow-hidden border-border/60 shadow-card transition group-hover:-translate-y-0.5 group-hover:shadow-glow">
         <div
           className={`relative flex h-64 items-center justify-center overflow-hidden bg-gradient-to-br ${pdf.coverColor} p-4`}
         >
@@ -81,6 +80,6 @@ export function LibraryPdfCard({ pdf }: LibraryPdfCardProps) {
           </p>
         </CardContent>
       </Card>
-    </Link>
+    </LibraryPdfCardLink>
   );
 }

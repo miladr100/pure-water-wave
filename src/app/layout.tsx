@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 
 import { Providers } from "@/components/providers";
+import { PwaProvider } from "@/components/pwa-provider";
 
 import "./globals.css";
 
@@ -26,10 +27,25 @@ const ogDescription =
 const ogImage =
   "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/062a1507-f67a-4d17-a837-07298dfd864f/id-preview-4435ff7c--cf8a61b8-da7c-405a-8496-391f50a552e5.lovable.app-1780430246026.png";
 
+const libraryAppName = "Biblioteca Água Pura";
+
 export const metadata: Metadata = {
   title: siteTitle,
   description: siteDescription,
+  applicationName: libraryAppName,
   authors: [{ name: "Água Pura" }],
+  appleWebApp: {
+    capable: true,
+    title: libraryAppName,
+    statusBarStyle: "default",
+  },
+  icons: {
+    icon: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
+  },
   openGraph: {
     title: siteTitle,
     description: ogDescription,
@@ -44,6 +60,13 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#1a4d7a",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -55,7 +78,9 @@ export default function RootLayout({
       className={`${fraunces.variable} ${plusJakartaSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Providers>{children}</Providers>
+        <PwaProvider>
+          <Providers>{children}</Providers>
+        </PwaProvider>
       </body>
     </html>
   );

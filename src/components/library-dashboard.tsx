@@ -1,6 +1,7 @@
 import { LogoutButton } from "@/components/logout-button";
 import { LibraryPdfCardLoader } from "@/components/library-pdf-card-loader";
 import { LibrarySearch } from "@/components/library-search";
+import { PwaInstallPrompt } from "@/components/pwa-install-prompt";
 import { BrandLogo } from "@/components/brand-logo";
 import { LIBRARY_PDFS } from "@/lib/library-pdfs";
 import type { SessionPayload } from "@/lib/auth";
@@ -41,6 +42,8 @@ export function LibraryDashboard({ session }: LibraryDashboardProps) {
             famílias e lideranças.
           </p>
         </section>
+
+        <PwaInstallPrompt />
 
         <LibrarySearch />
 

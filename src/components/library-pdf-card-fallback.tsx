@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { BookOpen, BookOpenCheck } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getLibraryPdfReaderPath, type LibraryPdf } from "@/lib/library-pdfs";
+import type { LibraryPdf } from "@/lib/library-pdfs";
+import { LibraryPdfCardLink } from "@/components/library-pdf-card-link";
 
 type LibraryPdfCardFallbackProps = {
   pdf: LibraryPdf;
@@ -17,7 +17,7 @@ type LibraryPdfCardFallbackProps = {
 
 export function LibraryPdfCardFallback({ pdf }: LibraryPdfCardFallbackProps) {
   return (
-    <Link href={getLibraryPdfReaderPath(pdf.id)} className="group block h-full">
+    <LibraryPdfCardLink pdfId={pdf.id}>
       <Card className="flex h-full flex-col overflow-hidden border-border/60 shadow-card">
         <div
           className={`relative flex h-64 items-center justify-center bg-gradient-to-br ${pdf.coverColor} p-4`}
@@ -42,6 +42,6 @@ export function LibraryPdfCardFallback({ pdf }: LibraryPdfCardFallbackProps) {
           </p>
         </CardContent>
       </Card>
-    </Link>
+    </LibraryPdfCardLink>
   );
 }
