@@ -77,3 +77,7 @@ export function getProtectedPdfApiUrl(id: string) {
 export function getLibraryPdfReaderPath(id: string) {
   return `/biblioteca/ler/${id}`;
 }
+
+export function getLibraryPdfPreviewUrl(id: string) {
+  return `/library-previews/${id}.jpg`;
+}

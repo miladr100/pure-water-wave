@@ -62,6 +62,7 @@ export function PdfViewer({
   const [isSearching, setIsSearching] = useState(false);
   const [pageHighlightLayout, setPageHighlightLayout] =
     useState<PageHighlightLayout | null>(null);
+  const [pageInput, setPageInput] = useState("1");
   const pendingInitialSearch = useRef(initialQuery?.trim() || "");
 
   const fileSource = useMemo(
@@ -81,6 +82,7 @@ export function PdfViewer({
     setSearchResults([]);
     setCurrentResultIndex(0);
     setPageHighlightLayout(null);
+    setPageInput(initialPage && initialPage > 0 ? String(initialPage) : "1");
     pendingInitialSearch.current = initialQuery?.trim() || "";
     pdfRef.current = null;
   }, [pdf.id, initialPage, initialQuery]);
@@ -153,6 +155,26 @@ export function PdfViewer({
       cancelled = true;
     };
   }, [activeQuery, pageNumber, searchResults, currentResultIndex, numPages]);
+
+  useEffect(() => {
+    setPageInput(String(pageNumber));
+  }, [pageNumber]);
+
+  function commitPageInput() {
+    const parsed = Number.parseInt(pageInput, 10);
+
+    if (!Number.isFinite(parsed) || parsed < 1) {
+      setPageInput(String(pageNumber));
+      return;
+    }
+
+    if (numPages > 0) {
+      setPageNumber(Math.min(parsed, numPages));
+      return;
+    }
+
+    setPageNumber(parsed);
+  }
 
   const customTextRenderer = useCallback(
     ({ str, itemIndex }: { str: string; itemIndex: number }) => {
@@ -240,11 +262,8 @@ export function PdfViewer({
       : null;
 
   return (
-    <div
-      className="flex min-h-screen select-none flex-col bg-gradient-to-b from-background via-secondary/30 to-background"
-      onContextMenu={(event) => event.preventDefault()}
-    >
-      <header className="border-b border-border/60 bg-card/80 backdrop-blur">
+    <div className="flex min-h-screen flex-col bg-gradient-to-b from-background via-secondary/30 to-background">
+      <header className="select-none border-b border-border/60 bg-card/80 backdrop-blur">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-4">
           <div className="flex min-w-0 items-center gap-3">
             <BrandLogo className="h-9 w-9 shrink-0" />
@@ -270,7 +289,7 @@ export function PdfViewer({
         </div>
       </header>
 
-      <div className="border-b border-border/60 bg-card/60">
+      <div className="select-none border-b border-border/60 bg-card/60">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-3">
           <form
             onSubmit={handleSearch}
@@ -319,7 +338,7 @@ export function PdfViewer({
         </div>
       </div>
 
-      <div className="border-b border-border/60 bg-card/60">
+      <div className="select-none border-b border-border/60 bg-card/60">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-3">
           <div className="flex items-center gap-2">
             <Button
@@ -332,9 +351,27 @@ export function PdfViewer({
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span className="min-w-28 text-center text-sm text-muted-foreground">
-              Página {pageNumber} de {numPages || "—"}
-            </span>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Página</span>
+              <Input
+                type="number"
+                min={1}
+                max={numPages > 0 ? numPages : undefined}
+                value={pageInput}
+                onChange={(event) => setPageInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    commitPageInput();
+                  }
+                }}
+                onBlur={commitPageInput}
+                className="h-8 w-20 px-2 text-center"
+                disabled={numPages === 0}
+                aria-label="Ir para página"
+              />
+              <span>de {numPages || "—"}</span>
+            </div>
             <Button
               type="button"
               variant="outline"
@@ -376,7 +413,7 @@ export function PdfViewer({
       </div>
 
       <main className="flex flex-1 justify-center overflow-auto px-4 py-8">
-        <div className="w-full max-w-5xl">
+        <div className="w-full max-w-5xl pdf-viewer-page">
           {loadError ? (
             <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center text-sm text-destructive">
               {loadError}

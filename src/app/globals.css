@@ -210,3 +210,9 @@
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
+
+.pdf-viewer-page .react-pdf__Page__textContent,
+.pdf-viewer-page .react-pdf__Page__textContent span {
+  user-select: text;
+  -webkit-user-select: text;
+}

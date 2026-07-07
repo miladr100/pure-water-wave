@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "generate:pwa-icons": "node scripts/generate-pwa-icons.mjs",
+    "generate:library-previews": "node scripts/generate-library-previews.mjs",
     "start": "next start",
     "lint": "eslint"
   },
@@ -72,6 +73,8 @@
     "esbuild": "^0.28.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
+    "pdf-to-img": "^6.2.0",
+    "sharp": "^0.35.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
