@@ -20,7 +20,7 @@ function SearchResultSnippet({ snippet, query }: { snippet: string; query: strin
   return (
     <span>
       {before}
-      <mark className="rounded-sm bg-amber-200/80 px-0.5 text-foreground dark:bg-amber-500/40">
+      <mark className="rounded-sm bg-amber-200/50 px-0.5 text-foreground ring-1 ring-amber-500/60 dark:bg-amber-500/25">
         {match}
       </mark>
       {after}

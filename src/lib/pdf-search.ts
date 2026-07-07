@@ -126,12 +126,160 @@ export function getSnippetHighlightParts(snippet: string, query: string) {
   };
 }
 
+export type PageHighlightLayout = {
+  items: Array<{
+    str: string;
+    itemIndex: number;
+    normStart: number;
+    normEnd: number;
+  }>;
+  normalizedQuery: string;
+  pageMatches: Array<PdfSearchMatch & { globalIndex: number }>;
+  activeGlobalIndex: number;
+};
+
+export async function buildPageHighlightLayout(
+  pdf: PDFDocumentProxy,
+  pageNumber: number,
+  query: string,
+  searchResults: PdfSearchMatch[],
+  currentResultIndex: number,
+): Promise<PageHighlightLayout | null> {
+  const normalizedQuery = normalizeSearchText(query.trim());
+
+  if (!normalizedQuery) {
+    return null;
+  }
+
+  const page = await pdf.getPage(pageNumber);
+  const content = await page.getTextContent();
+
+  let normOffset = 0;
+  const items = content.items.map((item, itemIndex) => {
+    const str = "str" in item ? item.str : "";
+    const normStart = normOffset;
+    const normPart = normalizeSearchText(str);
+    normOffset += normPart.length;
+
+    if (itemIndex < content.items.length - 1) {
+      normOffset += 1;
+    }
+
+    return { str, itemIndex, normStart, normEnd: normOffset };
+  });
+
+  const pageMatches = searchResults
+    .map((match, globalIndex) => ({ ...match, globalIndex }))
+    .filter((match) => match.pageNumber === pageNumber);
+
+  const activeMatch = searchResults[currentResultIndex];
+  const activeGlobalIndex =
+    activeMatch?.pageNumber === pageNumber ? currentResultIndex : -1;
+
+  return {
+    items,
+    normalizedQuery,
+    pageMatches,
+    activeGlobalIndex,
+  };
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function applyHighlightRanges(
+  value: string,
+  ranges: Array<{ start: number; end: number; isActive: boolean }>,
+) {
+  if (ranges.length === 0) {
+    return escapeHtml(value);
+  }
+
+  const sorted = [...ranges].sort((a, b) => a.start - b.start);
+  let result = "";
+  let cursor = 0;
+
+  for (const range of sorted) {
+    const start = Math.max(0, Math.min(value.length, range.start));
+    const end = Math.max(start, Math.min(value.length, range.end));
+
+    if (end <= start) {
+      continue;
+    }
+
+    result += escapeHtml(value.slice(cursor, start));
+    const className = range.isActive
+      ? "pdf-search-highlight-active"
+      : "pdf-search-highlight";
+    result += `<mark class="${className}">${escapeHtml(value.slice(start, end))}</mark>`;
+    cursor = end;
+  }
+
+  result += escapeHtml(value.slice(cursor));
+  return result;
+}
+
+export function highlightPdfTextItem(
+  str: string,
+  itemIndex: number,
+  layout: PageHighlightLayout,
+) {
+  const item = layout.items[itemIndex];
+
+  if (!item || !layout.normalizedQuery) {
+    return escapeHtml(str);
+  }
+
+  const ranges: Array<{ start: number; end: number; isActive: boolean }> = [];
+
+  for (const match of layout.pageMatches) {
+    const matchStart = match.matchIndex;
+    const matchEnd = matchStart + layout.normalizedQuery.length;
+
+    if (matchStart >= item.normEnd || matchEnd <= item.normStart) {
+      continue;
+    }
+
+    const relativeNormStart = Math.max(0, matchStart - item.normStart);
+    const relativeNormEnd = Math.min(
+      normalizeSearchText(str).length,
+      matchEnd - item.normStart,
+    );
+    const start = mapNormalizedIndexToOriginal(str, relativeNormStart);
+    const end = mapNormalizedIndexToOriginal(str, relativeNormEnd);
+
+    ranges.push({
+      start,
+      end,
+      isActive: match.globalIndex === layout.activeGlobalIndex,
+    });
+  }
+
+  if (ranges.length === 0) {
+    return escapeHtml(str);
+  }
+
+  return applyHighlightRanges(str, ranges);
+}
+
 export function highlightPdfText(str: string, query: string) {
   const normalizedQuery = normalizeSearchText(query);
 
   if (!normalizedQuery || !normalizeSearchText(str).includes(normalizedQuery)) {
-    return str;
+    return escapeHtml(str);
   }
 
-  return `<mark class="pdf-search-highlight">${str}</mark>`;
+  const matchIndex = normalizeSearchText(str).indexOf(normalizedQuery);
+  const start = mapNormalizedIndexToOriginal(str, matchIndex);
+  const end = mapNormalizedIndexToOriginal(
+    str,
+    matchIndex + normalizedQuery.length,
+  );
+
+  return applyHighlightRanges(str, [{ start, end, isActive: true }]);
 }

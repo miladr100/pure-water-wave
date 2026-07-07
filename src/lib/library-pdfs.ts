@@ -56,6 +56,14 @@ export const LIBRARY_PDFS: LibraryPdf[] = [
     filename: "A vontade de Deus e o Mundo.pdf",
     coverColor: "from-sky-800 to-blue-500",
   },
+  {
+    id: "biblia-sagrada-pt",
+    title: "Bíblia Sagrada",
+    subtitle: "Edição em português",
+    language: "Português",
+    filename: "Bíblia Sagrada Português.pdf",
+    coverColor: "from-amber-900 to-yellow-700",
+  },
 ];
 
 export function getLibraryPdfById(id: string) {

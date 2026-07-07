@@ -22,8 +22,10 @@ import {
   type LibraryPdf,
 } from "@/lib/library-pdfs";
 import {
-  highlightPdfText,
+  buildPageHighlightLayout,
+  highlightPdfTextItem,
   searchPdfDocument,
+  type PageHighlightLayout,
   type PdfSearchMatch,
 } from "@/lib/pdf-search";
 import type { SessionPayload } from "@/lib/auth";
@@ -58,6 +60,8 @@ export function PdfViewer({
   const [searchResults, setSearchResults] = useState<PdfSearchMatch[]>([]);
   const [currentResultIndex, setCurrentResultIndex] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
+  const [pageHighlightLayout, setPageHighlightLayout] =
+    useState<PageHighlightLayout | null>(null);
   const pendingInitialSearch = useRef(initialQuery?.trim() || "");
 
   const fileSource = useMemo(
@@ -76,6 +80,7 @@ export function PdfViewer({
     setActiveQuery("");
     setSearchResults([]);
     setCurrentResultIndex(0);
+    setPageHighlightLayout(null);
     pendingInitialSearch.current = initialQuery?.trim() || "";
     pdfRef.current = null;
   }, [pdf.id, initialPage, initialQuery]);
@@ -124,9 +129,40 @@ export function PdfViewer({
     }
   }
 
+  useEffect(() => {
+    if (!pdfRef.current || !activeQuery || searchResults.length === 0) {
+      setPageHighlightLayout(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    void buildPageHighlightLayout(
+      pdfRef.current,
+      pageNumber,
+      activeQuery,
+      searchResults,
+      currentResultIndex,
+    ).then((layout) => {
+      if (!cancelled) {
+        setPageHighlightLayout(layout);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeQuery, pageNumber, searchResults, currentResultIndex, numPages]);
+
   const customTextRenderer = useCallback(
-    ({ str }: { str: string }) => highlightPdfText(str, activeQuery),
-    [activeQuery],
+    ({ str, itemIndex }: { str: string; itemIndex: number }) => {
+      if (!pageHighlightLayout) {
+        return str;
+      }
+
+      return highlightPdfTextItem(str, itemIndex, pageHighlightLayout);
+    },
+    [pageHighlightLayout],
   );
 
   function goToPreviousPage() {
@@ -374,12 +410,16 @@ export function PdfViewer({
               className="flex justify-center"
             >
               <Page
-                key={`${pdf.id}-${pageNumber}-${scale}-${activeQuery}`}
+                key={`${pdf.id}-${pageNumber}-${scale}-${activeQuery}-${currentResultIndex}`}
                 pageNumber={pageNumber}
                 scale={scale}
                 renderTextLayer
                 renderAnnotationLayer={false}
-                customTextRenderer={activeQuery ? customTextRenderer : undefined}
+                customTextRenderer={
+                  activeQuery && pageHighlightLayout
+                    ? customTextRenderer
+                    : undefined
+                }
                 className="overflow-hidden rounded-lg bg-white shadow-card"
               />
             </Document>
