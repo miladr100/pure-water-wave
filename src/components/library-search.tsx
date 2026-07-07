@@ -64,7 +64,17 @@ export function LibrarySearch() {
     try {
       const response = await fetch(
         `/api/biblioteca/search?q=${encodeURIComponent(trimmedQuery)}`,
+        { credentials: "same-origin" },
       );
+
+      const contentType = response.headers.get("content-type") ?? "";
+
+      if (!contentType.includes("application/json")) {
+        throw new Error(
+          "O servidor retornou uma resposta inválida. Tente novamente em instantes.",
+        );
+      }
+
       const data = (await response.json()) as {
         error?: string;
         results?: LibrarySearchResult[];

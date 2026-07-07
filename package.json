@@ -7,6 +7,7 @@
     "build": "next build",
     "generate:pwa-icons": "node scripts/generate-pwa-icons.mjs",
     "generate:library-previews": "node scripts/generate-library-previews.mjs",
+    "generate:library-search-index": "node scripts/generate-library-search-index.mjs",
     "start": "next start",
     "lint": "eslint"
   },

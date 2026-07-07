@@ -1,5 +1,5 @@
 import { readFile } from "fs/promises";
-import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
+import path from "path";
 
 import { getLibraryPdfFilePath } from "@/lib/library-pdf-files";
 import { LIBRARY_PDFS, type LibraryPdf } from "@/lib/library-pdfs";
@@ -18,25 +18,113 @@ export type LibrarySearchResult = {
 
 export const MAX_LIBRARY_SEARCH_RESULTS = 50;
 
-async function searchSinglePdf(
-  pdfMeta: LibraryPdf,
-  normalizedQuery: string,
-  query: string,
-  remainingSlots: number,
-) {
-  const filePath = getLibraryPdfFilePath(pdfMeta.id);
+const SEARCH_INDEX_DIR = path.join(process.cwd(), "content", "search-index");
 
-  if (!filePath || remainingSlots <= 0) {
-    return [];
+type SearchIndexPage = {
+  pageNumber: number;
+  text: string;
+};
+
+type SearchIndex = {
+  pages: SearchIndexPage[];
+};
+
+async function loadSearchIndex(pdfId: string) {
+  try {
+    const indexPath = path.join(SEARCH_INDEX_DIR, `${pdfId}.json`);
+    const raw = await readFile(indexPath, "utf-8");
+    return JSON.parse(raw) as SearchIndex;
+  } catch {
+    return null;
+  }
+}
+
+async function loadPdfDocument(pdfId: string) {
+  const filePath = getLibraryPdfFilePath(pdfId);
+
+  if (!filePath) {
+    return null;
   }
 
+  const { getDocument } = await import("pdfjs-dist/legacy/build/pdf.mjs");
   const buffer = await readFile(filePath);
-  const pdf = await getDocument({
+
+  return getDocument({
     data: new Uint8Array(buffer),
     useSystemFonts: true,
     disableFontFace: true,
     isEvalSupported: false,
   }).promise;
+}
+
+function collectMatchesFromPages(
+  pdfMeta: LibraryPdf,
+  pages: SearchIndexPage[],
+  normalizedQuery: string,
+  query: string,
+  remainingSlots: number,
+) {
+  const results: LibrarySearchResult[] = [];
+
+  for (const page of pages) {
+    if (results.length >= remainingSlots) {
+      break;
+    }
+
+    const normalizedPageText = normalizeSearchText(page.text);
+    let matchIndex = normalizedPageText.indexOf(normalizedQuery);
+
+    while (matchIndex !== -1 && results.length < remainingSlots) {
+      results.push({
+        pdfId: pdfMeta.id,
+        pdfTitle: pdfMeta.title,
+        pdfSubtitle: pdfMeta.subtitle,
+        pageNumber: page.pageNumber,
+        snippet: extractSnippetAroundMatch(page.text, query, matchIndex),
+      });
+
+      matchIndex = normalizedPageText.indexOf(
+        normalizedQuery,
+        matchIndex + normalizedQuery.length,
+      );
+    }
+  }
+
+  return results;
+}
+
+async function searchSinglePdfFromIndex(
+  pdfMeta: LibraryPdf,
+  normalizedQuery: string,
+  query: string,
+  remainingSlots: number,
+) {
+  const index = await loadSearchIndex(pdfMeta.id);
+
+  if (!index) {
+    return null;
+  }
+
+  return collectMatchesFromPages(
+    pdfMeta,
+    index.pages,
+    normalizedQuery,
+    query,
+    remainingSlots,
+  );
+}
+
+async function searchSinglePdfFromFile(
+  pdfMeta: LibraryPdf,
+  normalizedQuery: string,
+  query: string,
+  remainingSlots: number,
+) {
+  const pdf = await loadPdfDocument(pdfMeta.id);
+
+  if (!pdf) {
+    return [];
+  }
 
   const results: LibrarySearchResult[] = [];
 
@@ -51,8 +139,8 @@ async function searchSinglePdf(
       const pageText = content.items
         .map((item) => ("str" in item ? item.str : ""))
         .join(" ");
-      const normalizedPageText = normalizeSearchText(pageText);
 
+      const normalizedPageText = normalizeSearchText(pageText);
       let matchIndex = normalizedPageText.indexOf(normalizedQuery);
 
       while (matchIndex !== -1 && results.length < remainingSlots) {
@@ -75,6 +163,35 @@ async function searchSinglePdf(
   }
 
   return results;
+}
+
+async function searchSinglePdf(
+  pdfMeta: LibraryPdf,
+  normalizedQuery: string,
+  query: string,
+  remainingSlots: number,
+) {
+  if (remainingSlots <= 0) {
+    return [];
+  }
+
+  const indexedResults = await searchSinglePdfFromIndex(
+    pdfMeta,
+    normalizedQuery,
+    query,
+    remainingSlots,
+  );
+
+  if (indexedResults) {
+    return indexedResults;
+  }
+
+  return searchSinglePdfFromFile(
+    pdfMeta,
+    normalizedQuery,
+    query,
+    remainingSlots,
+  );
 }
 
 export async function searchAllLibraryPdfs(query: string) {

@@ -3,6 +3,10 @@ import { NextResponse } from "next/server";
 import { searchAllLibraryPdfs } from "@/lib/pdf-library-search";
 import { requirePastorSession } from "@/lib/require-pastor-session";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const maxDuration = 60;
+
 export async function GET(request: Request) {
   try {
     const session = await requirePastorSession();
