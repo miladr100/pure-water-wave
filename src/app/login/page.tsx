@@ -13,7 +13,7 @@ import { getSession, isPastorSession } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Login — Água Pura",
-  description: "Acesse a área restrita do movimento Água Pura.",
+  description: "Acesse a área restrita do movimento Água Pura",
 };
 
 export default async function LoginPage() {
