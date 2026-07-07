@@ -1,7 +1,11 @@
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
-import sharp from "sharp";
+/**
+ * Gera ícones PWA em public/icons/.
+ * Uso local (após alterar o logo): npm install -D sharp && npm run generate:pwa-icons
+ */
+const sharp = (await import("sharp")).default;
 
 const rootDir = process.cwd();
 const source = path.join(rootDir, "public", "assets", "pwlogo.png");
