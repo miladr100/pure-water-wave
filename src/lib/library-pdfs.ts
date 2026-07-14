@@ -22,7 +22,7 @@ export const LIBRARY_PDFS: LibraryPdf[] = [
     subtitle: "Edição em coreano",
     language: "Coreano",
     filename: "Princípio Divino Coreano.pdf",
-    coverColor: "from-indigo-800 to-violet-500",
+    coverColor: "from-primary-deep to-primary",
   },
   {
     id: "principio-divino-es",
@@ -30,7 +30,7 @@ export const LIBRARY_PDFS: LibraryPdf[] = [
     subtitle: "Libro 3 colores",
     language: "Espanhol",
     filename: "Libro Principio Divino 3 Colores Espanhol.pdf",
-    coverColor: "from-coral to-orange-500",
+    coverColor: "from-primary-deep to-primary",
   },
   {
     id: "novas-essencias-unificacao",
@@ -38,7 +38,7 @@ export const LIBRARY_PDFS: LibraryPdf[] = [
     subtitle: "Edição atual",
     language: "Português",
     filename: "Novas Essencias do Pensamento de Unificacao atual.pdf",
-    coverColor: "from-emerald-700 to-teal-500",
+    coverColor: "from-primary-deep to-primary",
   },
   {
     id: "epopeia-povo-han",
@@ -46,7 +46,7 @@ export const LIBRARY_PDFS: LibraryPdf[] = [
     subtitle: "História e formação",
     language: "Português",
     filename: "A Epopeia da História do Povo Han Escolhido da Coreia.pdf",
-    coverColor: "from-rose-700 to-amber-600",
+    coverColor: "from-primary-deep to-primary",
   },
   {
     id: "vontade-de-deus-e-o-mundo",
@@ -54,7 +54,7 @@ export const LIBRARY_PDFS: LibraryPdf[] = [
     subtitle: "Formação pastoral",
     language: "Português",
     filename: "A vontade de Deus e o Mundo.pdf",
-    coverColor: "from-sky-800 to-blue-500",
+    coverColor: "from-primary-deep to-primary",
   },
   {
     id: "biblia-sagrada-pt",
@@ -62,7 +62,7 @@ export const LIBRARY_PDFS: LibraryPdf[] = [
     subtitle: "Edição em português",
     language: "Português",
     filename: "Bíblia Sagrada Português.pdf",
-    coverColor: "from-amber-900 to-yellow-700",
+    coverColor: "from-primary-deep to-primary",
   },
 ];
 
