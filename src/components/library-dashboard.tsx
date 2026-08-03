@@ -1,4 +1,5 @@
 import { LogoutButton } from "@/components/logout-button";
+import { LibraryAiCta } from "@/components/library-ai-cta";
 import { LibraryPdfCardLoader } from "@/components/library-pdf-card-loader";
 import { LibrarySearch } from "@/components/library-search";
 import { PwaInstallPrompt } from "@/components/pwa-install-prompt";
@@ -45,6 +46,7 @@ export function LibraryDashboard({ session }: LibraryDashboardProps) {
 
         <PwaInstallPrompt />
 
+        <LibraryAiCta />
         <LibrarySearch />
 
         <section className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
