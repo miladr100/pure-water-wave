@@ -21,6 +21,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { USER_LANGUAGE_LABELS, USER_LANGUAGES, type UserLanguage } from "@/lib/user-languages";
+import {
+  SYSTEM_USER_ROLE_LABELS,
+  SYSTEM_USER_ROLES,
+  type SystemUserRole,
+} from "@/lib/user-roles";
 
 type RegisterFormProps = {
   onSuccessChange?: (success: boolean) => void;
@@ -57,6 +62,7 @@ export function RegisterForm({ onSuccessChange }: RegisterFormProps) {
   const [churchName, setChurchName] = useState("");
   const [country, setCountry] = useState("");
   const [language, setLanguage] = useState<UserLanguage | "">("");
+  const [role, setRole] = useState<SystemUserRole | "">("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -69,6 +75,12 @@ export function RegisterForm({ onSuccessChange }: RegisterFormProps) {
 
     if (!language) {
       setError("Selecione uma língua.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!role) {
+      setError("Selecione a função.");
       setIsLoading(false);
       return;
     }
@@ -98,6 +110,7 @@ export function RegisterForm({ onSuccessChange }: RegisterFormProps) {
           churchName,
           country,
           language,
+          role,
         }),
       });
 
@@ -119,6 +132,7 @@ export function RegisterForm({ onSuccessChange }: RegisterFormProps) {
       setChurchName("");
       setCountry("");
       setLanguage("");
+      setRole("");
     } catch {
       setError("Não foi possível concluir o cadastro.");
     } finally {
@@ -258,6 +272,27 @@ export function RegisterForm({ onSuccessChange }: RegisterFormProps) {
           required
           disabled={isLoading}
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="role">Função</Label>
+        <Select
+          value={role}
+          onValueChange={(value) => setRole(value as SystemUserRole)}
+          disabled={isLoading}
+          required
+        >
+          <SelectTrigger id="role">
+            <SelectValue placeholder="Selecione a função" />
+          </SelectTrigger>
+          <SelectContent>
+            {SYSTEM_USER_ROLES.map((code) => (
+              <SelectItem key={code} value={code}>
+                {SYSTEM_USER_ROLE_LABELS[code]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="space-y-2">

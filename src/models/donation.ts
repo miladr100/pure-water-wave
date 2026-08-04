@@ -8,7 +8,7 @@ import {
 
 const donationSchema = new Schema(
   {
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "Donor", required: true },
     collectionId: { type: String },
     collectionStatus: { type: String },
     paymentId: { type: String },
@@ -25,7 +25,7 @@ const donationSchema = new Schema(
     successEmailSentAt: { type: Date },
     failureEmailSentAt: { type: Date },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export type DonationDocument = InferSchemaType<typeof donationSchema> & {

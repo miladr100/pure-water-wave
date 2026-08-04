@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { PdfViewerLoader } from "@/components/pdf-viewer-loader";
-import { getSession, isPastorSession } from "@/lib/auth";
+import { getSession, isSystemUserSession } from "@/lib/auth";
 import { getLibraryPdfById } from "@/lib/library-pdfs";
 
 type LerPdfPageProps = {
@@ -27,7 +27,7 @@ export default async function LerPdfPage({ params, searchParams }: LerPdfPagePro
     redirect("/login");
   }
 
-  if (!isPastorSession(session)) {
+  if (!isSystemUserSession(session)) {
     redirect("/login");
   }
 

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { CadastroCard } from "@/components/register-form";
-import { getSession, isPastorSession } from "@/lib/auth";
+import { getSession, isSystemUserSession } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Cadastro — Água Pura",
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default async function CadastroPage() {
   const session = await getSession();
 
-  if (session && isPastorSession(session)) {
+  if (session && isSystemUserSession(session)) {
     redirect("/biblioteca");
   }
 
@@ -26,7 +26,7 @@ export default async function CadastroPage() {
             Água Pura
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Cadastro de pastores no movimento
+            Cadastro de usuários do sistema (Pastor ou HJ Team)
           </p>
         </div>
 

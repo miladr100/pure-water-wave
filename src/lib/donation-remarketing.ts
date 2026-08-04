@@ -4,9 +4,9 @@ import { getBrazilDayRange } from "@/lib/donation-same-day";
 import { sendEmailRemarketingDonation } from "@/lib/emails";
 import { connectDB } from "@/lib/mongodb";
 import { Donation } from "@/models/donation";
-import { User } from "@/models/user";
+import { Donor } from "@/models/donor";
 
-type RemarketingUser = {
+type RemarketingDonor = {
   _id: Types.ObjectId;
   email: string;
   fullName: string;
@@ -26,13 +26,13 @@ function buildRemarketingNotSentTodayFilter(start: Date, end: Date) {
   };
 }
 
-async function userQualifiesForRemarketing(
-  userId: Types.ObjectId,
+async function donorQualifiesForRemarketing(
+  donorId: Types.ObjectId,
   start: Date,
   end: Date,
 ) {
   const hasApprovedDonationToday = await Donation.exists({
-    user: userId,
+    user: donorId,
     createdAt: { $gte: start, $lte: end },
     $or: [{ status: "approved" }, { collectionStatus: "approved" }],
   });
@@ -42,7 +42,7 @@ async function userQualifiesForRemarketing(
   }
 
   const hasAbandonedDonationToday = await Donation.exists({
-    user: userId,
+    user: donorId,
     createdAt: { $gte: start, $lte: end },
     sameDayDonation: { $ne: "success" },
     failureEmailSentAt: { $exists: false },
@@ -51,7 +51,7 @@ async function userQualifiesForRemarketing(
   return Boolean(hasAbandonedDonationToday);
 }
 
-async function sendRemarketingIfNeeded(user: RemarketingUser) {
+async function sendRemarketingIfNeeded(donor: RemarketingDonor) {
   if (!process.env.RESEND_API_KEY) {
     console.warn("RESEND_API_KEY não configurada; e-mail de remarketing não enviado.");
     return false;
@@ -60,27 +60,27 @@ async function sendRemarketingIfNeeded(user: RemarketingUser) {
   const now = new Date();
   const { start, end } = getBrazilDayRange(now);
 
-  const reservedUser = await User.findOneAndUpdate(
+  const reservedDonor = await Donor.findOneAndUpdate(
     {
-      _id: user._id,
+      _id: donor._id,
       ...buildRemarketingNotSentTodayFilter(start, end),
     },
     { $set: { remarketingEmailSentAt: now } },
   );
 
-  if (!reservedUser) {
+  if (!reservedDonor) {
     return false;
   }
 
   try {
     await sendEmailRemarketingDonation({
-      userFirstname: getFirstName(user.fullName),
-      email: user.email,
+      userFirstname: getFirstName(donor.fullName),
+      email: donor.email,
     });
     return true;
   } catch (error) {
-    await User.updateOne(
-      { _id: user._id },
+    await Donor.updateOne(
+      { _id: donor._id },
       { $unset: { remarketingEmailSentAt: "" } },
     );
     console.error("Erro ao enviar e-mail de remarketing:", error);
@@ -94,28 +94,28 @@ export async function processAbandonedDonationRemarketing() {
   const now = new Date();
   const { start, end } = getBrazilDayRange(now);
 
-  const candidates = await User.find({
+  const candidates = await Donor.find({
     updatedAt: { $gte: start, $lte: end },
     ...buildRemarketingNotSentTodayFilter(start, end),
   })
     .select("_id email fullName")
-    .lean<RemarketingUser[]>();
+    .lean<RemarketingDonor[]>();
 
   let sent = 0;
   let skipped = 0;
 
-  for (const user of candidates) {
-    const qualifies = await userQualifiesForRemarketing(user._id, start, end);
+  for (const donor of candidates) {
+    const qualifies = await donorQualifiesForRemarketing(donor._id, start, end);
 
     if (!qualifies) {
       skipped++;
       continue;
     }
 
-    const didSend = await sendRemarketingIfNeeded(user);
+    const didSend = await sendRemarketingIfNeeded(donor);
     if (didSend) {
       sent++;
-      console.info("E-mail de remarketing enviado para:", user.email);
+      console.info("E-mail de remarketing enviado para:", donor.email);
     } else {
       skipped++;
     }

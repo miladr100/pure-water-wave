@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { createSessionToken, getSessionCookieOptions } from "@/lib/auth";
 import { connectDB } from "@/lib/mongodb";
 import { verifyPassword } from "@/lib/password";
-import { User } from "@/models/user";
+import { SystemUser } from "@/models/system-user";
 
 type LoginBody = {
   login?: string;
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
 
     await connectDB();
 
-    const user = await User.findOne({
+    const user = await SystemUser.findOne({
       $or: [{ login: normalizedLogin }, { email: normalizedLogin }],
     }).select("+password");
 
@@ -58,16 +58,16 @@ export async function POST(request: Request) {
       );
     }
 
-    if (user.role !== "pastor") {
+    if (user.role !== "pastor" && user.role !== "hjteam") {
       return NextResponse.json(
-        { error: "Acesso restrito a pastores" },
+        { error: "Acesso restrito a usuários do sistema" },
         { status: 403 },
       );
     }
 
     const token = await createSessionToken({
       userId: user._id.toString(),
-      login: user.login ?? user.email,
+      login: user.login,
       fullName: user.fullName,
       role: user.role,
     });

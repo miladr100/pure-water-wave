@@ -4,8 +4,9 @@ import { isValidPhoneWithDdd, normalizePhone } from "@/lib/phone";
 import { hashPassword } from "@/lib/password";
 import { isValidRegisterSecret } from "@/lib/register-secret";
 import { isUserLanguage } from "@/lib/user-languages";
+import { isSystemUserRole } from "@/lib/user-roles";
 import { connectDB } from "@/lib/mongodb";
-import { User } from "@/models/user";
+import { SystemUser } from "@/models/system-user";
 
 type RegisterBody = {
   secret?: string;
@@ -16,13 +17,14 @@ type RegisterBody = {
   churchName?: string;
   country?: string;
   language?: string;
+  role?: string;
 };
 
 const MIN_PASSWORD_LENGTH = 6;
 
 async function isPhoneUsedByAnotherUser(phone: string, userId?: string) {
   const filter = userId ? { phone, _id: { $ne: userId } } : { phone };
-  const user = await User.exists(filter);
+  const user = await SystemUser.exists(filter);
   return Boolean(user);
 }
 
@@ -45,16 +47,30 @@ export async function POST(request: Request) {
     const churchName = body.churchName?.trim() ?? "";
     const country = body.country?.trim() ?? "";
     const language = body.language?.trim() ?? "";
+    const role = body.role?.trim().toLowerCase() ?? "";
 
     if (!isValidRegisterSecret(secret)) {
       return NextResponse.json({ error: "Segredo de cadastro inválido" }, { status: 403 });
     }
 
-    if (!fullName || !email || !password || !phone || !churchName || !country || !language) {
+    if (
+      !fullName ||
+      !email ||
+      !password ||
+      !phone ||
+      !churchName ||
+      !country ||
+      !language ||
+      !role
+    ) {
       return NextResponse.json(
         { error: "Preencha todos os campos obrigatórios" },
         { status: 400 },
       );
+    }
+
+    if (!isSystemUserRole(role)) {
+      return NextResponse.json({ error: "Função inválida" }, { status: 400 });
     }
 
     if (password.length < MIN_PASSWORD_LENGTH) {
@@ -82,39 +98,13 @@ export async function POST(request: Request) {
 
     await connectDB();
 
-    const hashedPassword = await hashPassword(password);
-
-    const profileData = {
-      fullName,
-      phone,
-      churchName,
-      country,
-      language,
-      login: email,
-      password: hashedPassword,
-      role: "pastor" as const,
-    };
-
-    const existingUserByEmail = await User.findOne({ email }).select("+password");
+    const existingUserByEmail = await SystemUser.findOne({ email }).select("+password");
 
     if (existingUserByEmail) {
-      if (existingUserByEmail.password) {
-        return NextResponse.json(
-          { error: "Este e-mail já está em uso por outro usuário" },
-          { status: 409 },
-        );
-      }
-
-      if (await isPhoneUsedByAnotherUser(phone, existingUserByEmail._id.toString())) {
-        return NextResponse.json(
-          { error: "Este telefone já está em uso por outro usuário" },
-          { status: 409 },
-        );
-      }
-
-      await User.updateOne({ _id: existingUserByEmail._id }, { $set: profileData });
-
-      return NextResponse.json({ ok: true, updated: true });
+      return NextResponse.json(
+        { error: "Este e-mail já está em uso por outro usuário" },
+        { status: 409 },
+      );
     }
 
     if (await isPhoneUsedByAnotherUser(phone)) {
@@ -124,9 +114,18 @@ export async function POST(request: Request) {
       );
     }
 
-    await User.create({
+    const hashedPassword = await hashPassword(password);
+
+    await SystemUser.create({
+      fullName,
+      phone,
       email,
-      ...profileData,
+      churchName,
+      country,
+      language,
+      login: email,
+      password: hashedPassword,
+      role,
     });
 
     return NextResponse.json({ ok: true, updated: false });

@@ -15,7 +15,7 @@ import {
 } from "@/lib/mercadopago-donation";
 import { connectDB } from "@/lib/mongodb";
 import { Donation } from "@/models/donation";
-import { User } from "@/models/user";
+import { Donor } from "@/models/donor";
 
 export async function POST(request: Request) {
   try {
@@ -46,10 +46,10 @@ export async function POST(request: Request) {
 
     await connectDB();
 
-    const user = await User.findById(userId);
-    if (!user) {
+    const donor = await Donor.findById(userId);
+    if (!donor) {
       return NextResponse.json(
-        { error: "Usuário não encontrado" },
+        { error: "Doador não encontrado" },
         { status: 404 }
       );
     }
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
       {
         $set: {
           ...mapped,
-          user: user._id,
+          user: donor._id,
           ...(amount ? { amount } : {}),
         },
       },
@@ -73,21 +73,21 @@ export async function POST(request: Request) {
 
     if (isApprovedDonation(mapped.status, mapped.collectionStatus)) {
       await markSameDayDonationIfNeeded({
-        userId: user._id,
+        userId: donor._id,
         referenceDate: new Date(),
       });
 
       if (amount) {
         await notifyDonationSuccessIfNeeded({
           externalReference: mapped.externalReference,
-          user,
+          user: donor,
           amount,
         });
       }
     } else if (isFailedDonation(mapped.status, mapped.collectionStatus)) {
       await notifyDonationFailureIfNeeded({
         externalReference: mapped.externalReference,
-        user,
+        user: donor,
       });
     }
 

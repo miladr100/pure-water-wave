@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
 import { SESSION_COOKIE } from "@/lib/session-cookie";
-import { isUserRole, type UserRole } from "@/lib/user-roles";
+import { isSystemUserRole, type SystemUserRole } from "@/lib/user-roles";
 
 export { SESSION_COOKIE } from "@/lib/session-cookie";
 
@@ -10,7 +10,7 @@ export type SessionPayload = {
   userId: string;
   login: string;
   fullName: string;
-  role: UserRole;
+  role: SystemUserRole;
 };
 
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
@@ -43,7 +43,7 @@ export async function verifySessionToken(token: string) {
     typeof userId !== "string" ||
     typeof login !== "string" ||
     typeof fullName !== "string" ||
-    !isUserRole(role)
+    !isSystemUserRole(role)
   ) {
     throw new Error("Sessão inválida");
   }
@@ -53,6 +53,10 @@ export async function verifySessionToken(token: string) {
 
 export function isPastorSession(session: SessionPayload | null) {
   return session?.role === "pastor";
+}
+
+export function isSystemUserSession(session: SessionPayload | null) {
+  return session != null && isSystemUserRole(session.role);
 }
 
 export async function getSession() {

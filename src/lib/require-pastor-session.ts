@@ -1,9 +1,9 @@
-import { getSession, isPastorSession } from "@/lib/auth";
+import { getSession, isSystemUserSession } from "@/lib/auth";
 
 export async function requirePastorSession() {
   const session = await getSession();
 
-  if (!session || !isPastorSession(session)) {
+  if (!session || !isSystemUserSession(session)) {
     return null;
   }
 

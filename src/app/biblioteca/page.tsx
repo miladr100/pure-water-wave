@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { LibraryDashboard } from "@/components/library-dashboard";
-import { getSession, isPastorSession } from "@/lib/auth";
+import { getSession, isSystemUserSession } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Biblioteca — Água Pura",
@@ -22,7 +22,7 @@ export default async function BibliotecaPage() {
     redirect("/login");
   }
 
-  if (!isPastorSession(session)) {
+  if (!isSystemUserSession(session)) {
     redirect("/login");
   }
 

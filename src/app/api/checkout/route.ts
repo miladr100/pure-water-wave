@@ -8,7 +8,7 @@ import {
   mercadoPagoClient,
 } from "@/lib/mercadopago";
 import { connectDB } from "@/lib/mongodb";
-import { User } from "@/models/user";
+import { Donor } from "@/models/donor";
 
 type CheckoutBody = {
   amount?: number;
@@ -51,17 +51,16 @@ export async function POST(request: Request) {
 
     await connectDB();
 
-    const user = await User.findOneAndUpdate(
+    const donor = await Donor.findOneAndUpdate(
       { phone: userPhone },
       {
         $set: { fullName, phone: userPhone, email: userEmail },
-        $setOnInsert: { role: "doador" },
       },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+      { upsert: true, new: true, setDefaultsOnInsert: true },
     );
 
     const baseUrl = getAppBaseUrl();
-    const externalReference = `doacao-${user._id}-${Date.now()}`;
+    const externalReference = `doacao-${donor._id}-${Date.now()}`;
     const preference = new Preference(mercadoPagoClient);
 
     const result = await preference.create({

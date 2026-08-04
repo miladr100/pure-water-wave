@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getSession, isPastorSession } from "@/lib/auth";
+import { getSession, isSystemUserSession } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Login — Água Pura",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export default async function LoginPage() {
   const session = await getSession();
 
-  if (session && isPastorSession(session)) {
+  if (session && isSystemUserSession(session)) {
     redirect("/biblioteca");
   }
 
@@ -39,7 +39,7 @@ export default async function LoginPage() {
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="font-display text-2xl">Login</CardTitle>
             <CardDescription>
-              Área exclusiva para pastores do movimento Água Pura.
+              Área exclusiva para usuários do sistema Água Pura.
             </CardDescription>
           </CardHeader>
           <CardContent>

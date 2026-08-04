@@ -12,7 +12,7 @@ import {
   parseUserIdFromExternalReference,
 } from "@/lib/mercadopago-donation";
 import { connectDB } from "@/lib/mongodb";
-import { User } from "@/models/user";
+import { Donor } from "@/models/donor";
 
 type RetryBody = {
   externalReference?: string;
@@ -56,10 +56,10 @@ export async function POST(request: Request) {
 
     await connectDB();
 
-    const user = await User.findById(userId);
-    if (!user) {
+    const donor = await Donor.findById(userId);
+    if (!donor) {
       return NextResponse.json(
-        { error: "Usuário não encontrado" },
+        { error: "Doador não encontrado" },
         { status: 404 }
       );
     }
@@ -73,7 +73,7 @@ export async function POST(request: Request) {
     }
 
     const baseUrl = getAppBaseUrl();
-    const newExternalReference = `doacao-${user._id}-${Date.now()}`;
+    const newExternalReference = `doacao-${donor._id}-${Date.now()}`;
     const preference = new Preference(mercadoPagoClient);
 
     const result = await preference.create({
@@ -89,8 +89,8 @@ export async function POST(request: Request) {
           },
         ],
         payer: {
-          name: user.fullName,
-          email: user.email,
+          name: donor.fullName,
+          email: donor.email,
         },
         back_urls: {
           success: `${baseUrl}/checkout/success`,

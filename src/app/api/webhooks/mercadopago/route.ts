@@ -15,7 +15,7 @@ import {
 import { mercadoPagoClient } from "@/lib/mercadopago";
 import { connectDB } from "@/lib/mongodb";
 import { Donation } from "@/models/donation";
-import { User } from "@/models/user";
+import { Donor } from "@/models/donor";
 
 type WebhookBody = {
   type?: string;
@@ -89,8 +89,8 @@ async function processPaymentNotification(paymentId: string) {
   if (!userId) return;
 
   await connectDB();
-  const user = await User.findById(userId);
-  if (!user) return;
+  const donor = await Donor.findById(userId);
+  if (!donor) return;
 
   const amount =
     paymentData.transaction_amount && paymentData.transaction_amount > 0
@@ -102,7 +102,7 @@ async function processPaymentNotification(paymentId: string) {
     {
       $set: {
         ...mapped,
-        user: user._id,
+        user: donor._id,
         ...(amount ? { amount } : {}),
       },
     },
@@ -117,21 +117,21 @@ async function processPaymentNotification(paymentId: string) {
         : new Date();
 
     await markSameDayDonationIfNeeded({
-      userId: user._id,
+      userId: donor._id,
       referenceDate,
     });
 
     if (amount) {
       await notifyDonationSuccessIfNeeded({
         externalReference: mapped.externalReference,
-        user,
+        user: donor,
         amount,
       });
     }
   } else if (isFailedDonation(mapped.status, mapped.collectionStatus)) {
     await notifyDonationFailureIfNeeded({
       externalReference: mapped.externalReference,
-      user,
+      user: donor,
     });
   }
 
