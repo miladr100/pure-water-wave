@@ -32,7 +32,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const results = await searchAllLibraryPdfs(query);
+    const results = await searchAllLibraryPdfs(query, session.language);
 
     return NextResponse.json({ query, results });
   } catch (error) {

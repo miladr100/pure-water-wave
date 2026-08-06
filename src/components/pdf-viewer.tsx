@@ -13,8 +13,10 @@ import {
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import { Document, Page } from "react-pdf";
 
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { LogoutButton } from "@/components/logout-button";
 import { BrandLogo } from "@/components/brand-logo";
+import { useLocale } from "@/components/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -50,6 +52,7 @@ export function PdfViewer({
   initialPage,
   initialQuery,
 }: PdfViewerProps) {
+  const { t } = useLocale();
   const pdfRef = useRef<PDFDocumentProxy | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [numPages, setNumPages] = useState(0);
@@ -257,8 +260,11 @@ export function PdfViewer({
   const searchStatus =
     activeQuery && !isSearching
       ? searchResults.length > 0
-        ? `${currentResultIndex + 1} de ${searchResults.length} ocorrências`
-        : "Nenhum resultado encontrado"
+        ? t.reader.occurrenceOf(
+            currentResultIndex + 1,
+            searchResults.length,
+          )
+        : t.reader.noResults
       : null;
 
   return (
@@ -281,9 +287,10 @@ export function PdfViewer({
             <Button asChild variant="outline" size="sm">
               <Link href="/biblioteca">
                 <ArrowLeft className="h-4 w-4" />
-                Biblioteca
+                {t.common.library}
               </Link>
             </Button>
+            <LanguageSwitcher />
             <LogoutButton />
           </div>
         </div>
@@ -300,13 +307,13 @@ export function PdfViewer({
               <Input
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
-                placeholder="Buscar termo no livro..."
+                placeholder={t.reader.searchPlaceholder}
                 className="pl-9"
                 disabled={isSearching || Boolean(loadError)}
               />
             </div>
             <Button type="submit" disabled={isSearching || Boolean(loadError)}>
-              {isSearching ? "Buscando..." : "Buscar"}
+              {isSearching ? t.common.searching : t.common.search}
             </Button>
           </form>
 
@@ -321,7 +328,7 @@ export function PdfViewer({
                     size="sm"
                     onClick={goToPreviousResult}
                   >
-                    Ocorrência anterior
+                    {t.reader.previousOccurrence}
                   </Button>
                   <Button
                     type="button"
@@ -329,7 +336,7 @@ export function PdfViewer({
                     size="sm"
                     onClick={goToNextResult}
                   >
-                    Próxima ocorrência
+                    {t.reader.nextOccurrence}
                   </Button>
                 </div>
               ) : null}
@@ -347,12 +354,12 @@ export function PdfViewer({
               size="icon"
               onClick={goToPreviousPage}
               disabled={pageNumber <= 1}
-              aria-label="Página anterior"
+              aria-label={t.reader.previousPage}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Página</span>
+              <span>{t.common.page}</span>
               <Input
                 type="number"
                 min={1}
@@ -368,9 +375,11 @@ export function PdfViewer({
                 onBlur={commitPageInput}
                 className="h-8 w-20 px-2 text-center"
                 disabled={numPages === 0}
-                aria-label="Ir para página"
+                aria-label={t.reader.goToPage}
               />
-              <span>de {numPages || "—"}</span>
+              <span>
+                {t.common.of} {numPages || "—"}
+              </span>
             </div>
             <Button
               type="button"
@@ -378,7 +387,7 @@ export function PdfViewer({
               size="icon"
               onClick={goToNextPage}
               disabled={numPages === 0 || pageNumber >= numPages}
-              aria-label="Próxima página"
+              aria-label={t.reader.nextPage}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -391,7 +400,7 @@ export function PdfViewer({
               size="icon"
               onClick={zoomOut}
               disabled={scale <= MIN_SCALE}
-              aria-label="Diminuir zoom"
+              aria-label={t.reader.zoomOut}
             >
               <ZoomOut className="h-4 w-4" />
             </Button>
@@ -404,7 +413,7 @@ export function PdfViewer({
               size="icon"
               onClick={zoomIn}
               disabled={scale >= MAX_SCALE}
-              aria-label="Aumentar zoom"
+              aria-label={t.reader.zoomIn}
             >
               <ZoomIn className="h-4 w-4" />
             </Button>
@@ -423,7 +432,7 @@ export function PdfViewer({
               file={fileSource}
               loading={
                 <div className="rounded-xl border border-border/60 bg-card p-10 text-center text-sm text-muted-foreground">
-                  Carregando material...
+                  {t.reader.loading}
                 </div>
               }
               onLoadSuccess={(loadedPdf) => {
@@ -441,7 +450,7 @@ export function PdfViewer({
                 }
               }}
               onLoadError={() => {
-                setLoadError("Não foi possível carregar este material.");
+                setLoadError(t.reader.loadError);
               }}
               error={null}
               className="flex justify-center"

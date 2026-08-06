@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { BookOpen, Search } from "lucide-react";
 
+import { useLocale } from "@/components/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getLibraryPdfReaderPath } from "@/lib/library-pdfs";
@@ -38,6 +39,7 @@ function buildReaderUrl(result: LibrarySearchResult, query: string) {
 }
 
 export function LibrarySearch() {
+  const { t } = useLocale();
   const [query, setQuery] = useState("");
   const [activeQuery, setActiveQuery] = useState("");
   const [results, setResults] = useState<LibrarySearchResult[]>([]);
@@ -70,9 +72,7 @@ export function LibrarySearch() {
       const contentType = response.headers.get("content-type") ?? "";
 
       if (!contentType.includes("application/json")) {
-        throw new Error(
-          "O servidor retornou uma resposta inválida. Tente novamente em instantes.",
-        );
+        throw new Error(t.search.invalidResponse);
       }
 
       const data = (await response.json()) as {
@@ -81,7 +81,7 @@ export function LibrarySearch() {
       };
 
       if (!response.ok) {
-        throw new Error(data.error ?? "Não foi possível buscar");
+        throw new Error(data.error ?? t.search.failed);
       }
 
       setActiveQuery(trimmedQuery);
@@ -89,9 +89,7 @@ export function LibrarySearch() {
       setHasSearched(true);
     } catch (searchError) {
       setError(
-        searchError instanceof Error
-          ? searchError.message
-          : "Não foi possível buscar",
+        searchError instanceof Error ? searchError.message : t.search.failed,
       );
       setResults([]);
       setHasSearched(true);
@@ -104,18 +102,18 @@ export function LibrarySearch() {
     ? error
       ? null
       : results.length > 0
-        ? `${results.length} ocorrência${results.length === 1 ? "" : "s"} encontrada${results.length === 1 ? "" : "s"}`
-        : `Nenhum resultado para “${activeQuery}”`
+        ? t.search.resultsCount(results.length)
+        : t.search.noResults(activeQuery)
     : null;
 
   return (
     <section className="mb-10 rounded-2xl border border-border/60 bg-card/80 p-6 shadow-sm backdrop-blur">
       <div className="mb-4">
         <h2 className="font-display text-xl font-semibold text-primary-deep">
-          Buscar em todos os livros
+          {t.search.title}
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Pesquise um termo e veja em qual livro e trecho ele aparece.
+          {t.search.description}
         </p>
       </div>
 
@@ -128,13 +126,13 @@ export function LibrarySearch() {
           <Input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Digite um termo ou frase..."
+            placeholder={t.search.placeholder}
             className="pl-9"
             disabled={isSearching}
           />
         </div>
         <Button type="submit" disabled={isSearching}>
-          {isSearching ? "Buscando..." : "Buscar"}
+          {isSearching ? t.common.searching : t.common.search}
         </Button>
       </form>
 
@@ -163,7 +161,7 @@ export function LibrarySearch() {
                   <span className="text-muted-foreground">{result.pdfSubtitle}</span>
                   <span className="text-muted-foreground">·</span>
                   <span className="text-muted-foreground">
-                    Página {result.pageNumber}
+                    {t.search.pageLabel(result.pageNumber)}
                   </span>
                 </div>
                 <p className="text-sm leading-relaxed text-foreground/90">

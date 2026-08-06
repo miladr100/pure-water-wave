@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { useLocale } from "@/components/locale-provider";
 import {
   Carousel,
   CarouselContent,
@@ -49,10 +50,12 @@ export function SupportMaterialsCarouselItem({
 }
 
 export function SupportMaterialsCarouselNavHint() {
+  const { t } = useLocale();
+
   return (
     <p className="mt-3 flex items-center justify-center gap-2 text-xs text-muted-foreground sm:hidden">
       <ChevronLeft className="h-3.5 w-3.5" />
-      Deslize ou use as setas
+      {t.support.swipeHint}
       <ChevronRight className="h-3.5 w-3.5" />
     </p>
   );

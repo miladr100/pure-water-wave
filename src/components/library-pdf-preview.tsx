@@ -4,10 +4,7 @@ import { useState } from "react";
 import { BookOpen } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import {
-  getLibraryPdfPreviewUrl,
-  type LibraryPdf,
-} from "@/lib/library-pdfs";
+import { getLibraryPdfLanguageLabel, getLibraryPdfPreviewUrl, type LibraryPdf } from "@/lib/library-pdfs";
 
 type LibraryPdfPreviewProps = {
   pdf: LibraryPdf;
@@ -22,7 +19,7 @@ export function LibraryPdfPreview({ pdf }: LibraryPdfPreviewProps) {
     >
       {!previewFailed ? (
         <img
-          src={getLibraryPdfPreviewUrl(pdf.id)}
+          src={getLibraryPdfPreviewUrl(pdf)}
           alt={`Prévia de ${pdf.title}`}
           width={220}
           height={286}
@@ -36,7 +33,7 @@ export function LibraryPdfPreview({ pdf }: LibraryPdfPreviewProps) {
       )}
 
       <Badge className="absolute right-4 top-4 border-white/20 bg-white/15 text-white hover:bg-white/15">
-        {pdf.language}
+        {getLibraryPdfLanguageLabel(pdf)}
       </Badge>
     </div>
   );

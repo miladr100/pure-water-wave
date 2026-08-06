@@ -1,8 +1,6 @@
-import Link from "next/link";
-import { BookOpen, FileText } from "lucide-react";
-
 import { BrandLogo } from "@/components/brand-logo";
-import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { LibraryHeaderNav } from "@/components/library-header-nav";
 import { LogoutButton } from "@/components/logout-button";
 
 type LibraryHeaderProps = {
@@ -32,24 +30,11 @@ export function LibraryHeader({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {showBackToLibrary ? (
-            <Button asChild variant="outline">
-              <Link href="/biblioteca">
-                <BookOpen className="h-4 w-4" />
-                Biblioteca
-              </Link>
-            </Button>
-          ) : null}
-
-          {showSupportMaterialsLink ? (
-            <Button asChild variant="outline">
-              <Link href="/biblioteca/materiais">
-                <FileText className="h-4 w-4" />
-                Material de apoio
-              </Link>
-            </Button>
-          ) : null}
-
+          <LibraryHeaderNav
+            showSupportMaterialsLink={showSupportMaterialsLink}
+            showBackToLibrary={showBackToLibrary}
+          />
+          <LanguageSwitcher />
           <LogoutButton />
         </div>
       </div>

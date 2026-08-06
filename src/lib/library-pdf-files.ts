@@ -9,28 +9,30 @@ function normalizeFilename(value: string) {
   return value.normalize("NFC");
 }
 
-function resolvePdfFilenameOnDisk(filename: string) {
+function resolvePdfFilenameOnDisk(folder: string, filename: string) {
+  const safeFolder = path.basename(folder);
   const safeFilename = path.basename(filename);
 
-  if (safeFilename !== filename) {
+  if (safeFolder !== folder || safeFilename !== filename) {
     return null;
   }
 
-  const directPath = path.join(PDF_STORAGE_DIR, safeFilename);
+  const folderPath = path.join(PDF_STORAGE_DIR, safeFolder);
+  const directPath = path.join(folderPath, safeFilename);
 
   try {
-    readdirSync(PDF_STORAGE_DIR);
+    readdirSync(folderPath);
   } catch {
     return directPath;
   }
 
-  const files = readdirSync(PDF_STORAGE_DIR);
+  const files = readdirSync(folderPath);
   const normalizedWanted = normalizeFilename(safeFilename);
   const match = files.find(
     (file) => normalizeFilename(file) === normalizedWanted,
   );
 
-  return path.join(PDF_STORAGE_DIR, match ?? safeFilename);
+  return path.join(folderPath, match ?? safeFilename);
 }
 
 export function getLibraryPdfFilePath(id: string) {
@@ -40,5 +42,5 @@ export function getLibraryPdfFilePath(id: string) {
     return null;
   }
 
-  return resolvePdfFilenameOnDisk(pdf.filename);
+  return resolvePdfFilenameOnDisk(pdf.folder, pdf.filename);
 }

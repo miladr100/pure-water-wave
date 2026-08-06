@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createSessionToken, getSessionCookieOptions } from "@/lib/auth";
 import { connectDB } from "@/lib/mongodb";
 import { verifyPassword } from "@/lib/password";
+import { isUserLanguage } from "@/lib/user-languages";
 import { SystemUser } from "@/models/system-user";
 
 type LoginBody = {
@@ -65,11 +66,14 @@ export async function POST(request: Request) {
       );
     }
 
+    const language = isUserLanguage(user.language) ? user.language : "pt";
+
     const token = await createSessionToken({
       userId: user._id.toString(),
       login: user.login,
       fullName: user.fullName,
       role: user.role,
+      language,
     });
 
     const response = NextResponse.json({
@@ -79,6 +83,7 @@ export async function POST(request: Request) {
         fullName: user.fullName,
         login: user.login,
         role: user.role,
+        language,
       },
     });
 

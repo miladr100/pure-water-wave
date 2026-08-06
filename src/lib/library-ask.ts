@@ -4,6 +4,7 @@ import {
 } from "@/lib/pdf-library-search";
 import { getLibraryPdfReaderPath } from "@/lib/library-pdfs";
 import { normalizeSearchText } from "@/lib/pdf-search";
+import type { UserLanguage } from "@/lib/user-languages";
 
 const MAX_CONTEXT_SNIPPETS = 12;
 const STOP_WORDS = new Set([
@@ -82,13 +83,16 @@ function resultKey(result: LibrarySearchResult) {
   return `${result.pdfId}:${result.pageNumber}:${result.snippet.slice(0, 40)}`;
 }
 
-export async function gatherLibraryContext(question: string) {
+export async function gatherLibraryContext(
+  question: string,
+  language: UserLanguage = "pt",
+) {
   const terms = extractSearchTerms(question);
   const queries = [question.trim(), ...terms].filter(Boolean);
   const byKey = new Map<string, LibrarySearchResult>();
 
   for (const query of queries) {
-    const results = await searchAllLibraryPdfs(query);
+    const results = await searchAllLibraryPdfs(query, language);
 
     for (const result of results) {
       const key = resultKey(result);
@@ -146,7 +150,10 @@ function toCitations(snippets: LibrarySearchResult[]): LibraryAskCitation[] {
     }));
 }
 
-export async function askLibraryAi(question: string): Promise<LibraryAskResult> {
+export async function askLibraryAi(
+  question: string,
+  language: UserLanguage = "pt",
+): Promise<LibraryAskResult> {
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey) {
@@ -155,7 +162,7 @@ export async function askLibraryAi(question: string): Promise<LibraryAskResult> 
     );
   }
 
-  const snippets = await gatherLibraryContext(question);
+  const snippets = await gatherLibraryContext(question, language);
   const citations = toCitations(snippets);
   const context = buildContextPrompt(snippets);
 

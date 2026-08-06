@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Download, Smartphone, X } from "lucide-react";
 
+import { useLocale } from "@/components/locale-provider";
 import { Button } from "@/components/ui/button";
 
 const DISMISS_KEY = "biblioteca-pwa-install-dismissed";
@@ -33,6 +34,7 @@ function isStandaloneMode() {
 }
 
 export function PwaInstallPrompt() {
+  const { t } = useLocale();
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -91,6 +93,8 @@ export function PwaInstallPrompt() {
     return null;
   }
 
+  const iosParts = t.pwa.iosDescription.split(/\{share\}|\{addToHome\}/);
+
   return (
     <section className="mb-8 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 via-card to-secondary/40 p-5 shadow-sm">
       <div className="flex items-start justify-between gap-4">
@@ -105,18 +109,19 @@ export function PwaInstallPrompt() {
 
           <div className="min-w-0">
             <h2 className="font-display text-lg font-semibold text-primary-deep">
-              Instalar no celular
+              {t.pwa.title}
             </h2>
             {isIos ? (
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                No Safari, toque em <strong>Compartilhar</strong> e depois em{" "}
-                <strong>Adicionar à Tela de Início</strong> para abrir a
-                biblioteca como app.
+                {iosParts[0]}
+                <strong>{t.pwa.share}</strong>
+                {iosParts[1]}
+                <strong>{t.pwa.addToHome}</strong>
+                {iosParts[2]}
               </p>
             ) : (
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                Instale a Biblioteca Água Pura no seu celular para acessar os
-                livros com mais rapidez, como um aplicativo.
+                {t.pwa.androidDescription}
               </p>
             )}
           </div>
@@ -128,7 +133,7 @@ export function PwaInstallPrompt() {
           size="icon"
           className="shrink-0"
           onClick={handleDismiss}
-          aria-label="Fechar aviso de instalação"
+          aria-label={t.pwa.dismissAria}
         >
           <X className="h-4 w-4" />
         </Button>
@@ -137,16 +142,16 @@ export function PwaInstallPrompt() {
       {!isIos ? (
         <div className="mt-4 flex flex-wrap gap-2">
           <Button type="button" onClick={handleInstall}>
-            Instalar biblioteca
+            {t.pwa.install}
           </Button>
           <Button type="button" variant="outline" onClick={handleDismiss}>
-            Agora não
+            {t.pwa.notNow}
           </Button>
         </div>
       ) : (
         <div className="mt-4">
           <Button type="button" variant="outline" onClick={handleDismiss}>
-            Entendi
+            {t.pwa.gotIt}
           </Button>
         </div>
       )}

@@ -36,7 +36,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await askLibraryAi(question);
+    const result = await askLibraryAi(question, session.language);
 
     return NextResponse.json(result);
   } catch (error) {

@@ -2,6 +2,7 @@
 
 import { BookOpenCheck } from "lucide-react";
 
+import { useLocale } from "@/components/locale-provider";
 import {
   Card,
   CardContent,
@@ -18,6 +19,8 @@ type LibraryPdfCardProps = {
 };
 
 export function LibraryPdfCard({ pdf }: LibraryPdfCardProps) {
+  const { t } = useLocale();
+
   return (
     <LibraryPdfCardLink pdfId={pdf.id}>
       <Card className="flex h-full flex-col overflow-hidden border-border/60 shadow-card transition group-hover:-translate-y-0.5 group-hover:shadow-glow">
@@ -32,7 +35,7 @@ export function LibraryPdfCard({ pdf }: LibraryPdfCardProps) {
 
         <CardContent className="mt-auto">
           <p className="inline-flex items-center gap-2 text-sm font-medium text-primary">
-            Ler material
+            {t.pdfCard.readMaterial}
             <BookOpenCheck className="h-4 w-4 transition group-hover:translate-x-0.5" />
           </p>
         </CardContent>

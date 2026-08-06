@@ -4,8 +4,10 @@ import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { ArrowLeft, BookOpen, Loader2, Send, Sparkles } from "lucide-react";
 
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { LogoutButton } from "@/components/logout-button";
 import { BrandLogo } from "@/components/brand-logo";
+import { useLocale } from "@/components/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { SessionPayload } from "@/lib/auth";
@@ -23,18 +25,28 @@ type LibraryAiChatProps = {
 };
 
 export function LibraryAiChat({ session }: LibraryAiChatProps) {
+  const { language, t } = useLocale();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "welcome",
       role: "assistant",
-      content:
-        "Olá! Posso ajudar a encontrar respostas com base nos livros da biblioteca. Faça uma pergunta sobre o conteúdo dos materiais.",
+      content: t.aiChat.welcome,
     },
   ]);
   const [question, setQuestion] = useState("");
   const [isAsking, setIsAsking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setMessages((current) => {
+      if (current.length === 1 && current[0]?.id === "welcome") {
+        return [{ ...current[0], content: t.aiChat.welcome }];
+      }
+
+      return current;
+    });
+  }, [language, t.aiChat.welcome]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -71,9 +83,7 @@ export function LibraryAiChat({ session }: LibraryAiChatProps) {
       const contentType = response.headers.get("content-type") ?? "";
 
       if (!contentType.includes("application/json")) {
-        throw new Error(
-          "O servidor retornou uma resposta inválida. Tente novamente.",
-        );
+        throw new Error(t.aiChat.invalidResponse);
       }
 
       const data = (await response.json()) as {
@@ -83,7 +93,7 @@ export function LibraryAiChat({ session }: LibraryAiChatProps) {
       };
 
       if (!response.ok) {
-        throw new Error(data.error ?? "Não foi possível obter a resposta");
+        throw new Error(data.error ?? t.aiChat.failed);
       }
 
       setMessages((current) => [
@@ -91,15 +101,13 @@ export function LibraryAiChat({ session }: LibraryAiChatProps) {
         {
           id: `assistant-${Date.now()}`,
           role: "assistant",
-          content: data.answer ?? "Não encontrei uma resposta nos livros.",
+          content: data.answer ?? t.aiChat.noAnswer,
           citations: data.citations ?? [],
         },
       ]);
     } catch (askError) {
       const message =
-        askError instanceof Error
-          ? askError.message
-          : "Não foi possível obter a resposta";
+        askError instanceof Error ? askError.message : t.aiChat.failed;
 
       setError(message);
       setMessages((current) => [
@@ -107,7 +115,7 @@ export function LibraryAiChat({ session }: LibraryAiChatProps) {
         {
           id: `assistant-error-${Date.now()}`,
           role: "assistant",
-          content: `Não consegui responder agora: ${message}`,
+          content: t.aiChat.errorReply(message),
         },
       ]);
     } finally {
@@ -123,10 +131,10 @@ export function LibraryAiChat({ session }: LibraryAiChatProps) {
             <BrandLogo className="h-9 w-9 shrink-0" />
             <div className="min-w-0">
               <p className="truncate font-display text-lg font-semibold text-primary-deep">
-                Fale com a IA
+                {t.aiChat.title}
               </p>
               <p className="truncate text-sm text-muted-foreground">
-                Respostas com base nos livros · {session.fullName}
+                {t.aiChat.subtitle(session.fullName)}
               </p>
             </div>
           </div>
@@ -135,9 +143,10 @@ export function LibraryAiChat({ session }: LibraryAiChatProps) {
             <Button asChild variant="outline" size="sm">
               <Link href="/biblioteca">
                 <ArrowLeft className="h-4 w-4" />
-                Biblioteca
+                {t.common.library}
               </Link>
             </Button>
+            <LanguageSwitcher />
             <LogoutButton />
           </div>
         </div>
@@ -145,8 +154,7 @@ export function LibraryAiChat({ session }: LibraryAiChatProps) {
 
       <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4 py-6 sm:px-6">
         <div className="mb-4 rounded-2xl border border-primary/15 bg-primary/5 px-4 py-3 text-sm text-muted-foreground">
-          A IA busca trechos nos livros da biblioteca e responde com citações.
-          Confira sempre as fontes indicadas.
+          {t.aiChat.banner}
         </div>
 
         <div className="flex-1 space-y-4 overflow-y-auto pb-4">
@@ -165,7 +173,7 @@ export function LibraryAiChat({ session }: LibraryAiChatProps) {
                 {message.role === "assistant" ? (
                   <div className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium text-primary">
                     <Sparkles className="h-3.5 w-3.5" />
-                    Assistente
+                    {t.aiChat.assistant}
                   </div>
                 ) : null}
 
@@ -174,7 +182,7 @@ export function LibraryAiChat({ session }: LibraryAiChatProps) {
                 {message.citations && message.citations.length > 0 ? (
                   <div className="mt-3 space-y-2 border-t border-border/50 pt-3">
                     <p className="text-xs font-medium text-muted-foreground">
-                      Fontes nos livros
+                      {t.aiChat.sources}
                     </p>
                     <ul className="space-y-2">
                       {message.citations.map((citation) => (
@@ -204,7 +212,7 @@ export function LibraryAiChat({ session }: LibraryAiChatProps) {
             <div className="flex justify-start">
               <div className="inline-flex items-center gap-2 rounded-2xl border border-border/60 bg-card px-4 py-3 text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                Consultando os livros...
+                {t.aiChat.thinking}
               </div>
             </div>
           ) : null}
@@ -225,7 +233,7 @@ export function LibraryAiChat({ session }: LibraryAiChatProps) {
                 event.currentTarget.form?.requestSubmit();
               }
             }}
-            placeholder="Ex.: O que ensina o Princípio Divino sobre a criação?"
+            placeholder={t.aiChat.placeholder}
             rows={3}
             disabled={isAsking}
             className="min-h-[84px] resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
@@ -235,19 +243,19 @@ export function LibraryAiChat({ session }: LibraryAiChatProps) {
               {error ? (
                 <span className="text-destructive">{error}</span>
               ) : (
-                "Enter envia · Shift+Enter quebra linha"
+                t.aiChat.sendHint
               )}
             </p>
             <Button type="submit" disabled={isAsking || !question.trim()}>
               {isAsking ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Enviando
+                  {t.aiChat.sending}
                 </>
               ) : (
                 <>
                   <Send className="h-4 w-4" />
-                  Perguntar
+                  {t.aiChat.ask}
                 </>
               )}
             </Button>

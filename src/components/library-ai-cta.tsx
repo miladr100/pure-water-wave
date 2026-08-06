@@ -1,11 +1,19 @@
+"use client";
+
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
 
+import { useLocale } from "@/components/locale-provider";
 import { Button } from "@/components/ui/button";
 
-export function LibraryAiCta() {
+const AI_CHAT_URL_DEFAULT =
+  "https://bot-pw-n8n.duckdns.org/webhook/2ba26011-ad3c-420d-8058-0529cdd65c77/chat";
+const AI_CHAT_URL_ES =
+  "https://bot-pw-n8n.duckdns.org/webhook/0ba4c34b-92d9-4756-b0d3-bc20d4d94dcd/chat";
 
-  const linkIaChat = "https://bot-pw-n8n.duckdns.org/webhook/2ba26011-ad3c-420d-8058-0529cdd65c77/chat"
+export function LibraryAiCta() {
+  const { language, t } = useLocale();
+  const linkIaChat = language === "es" ? AI_CHAT_URL_ES : AI_CHAT_URL_DEFAULT;
 
   return (
     <section className="mb-8 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 via-card to-secondary/40 p-6 shadow-sm">
@@ -16,11 +24,10 @@ export function LibraryAiCta() {
           </div>
           <div className="min-w-0">
             <h2 className="font-display text-xl font-semibold text-primary-deep">
-              Fale com a IA
+              {t.aiCta.title}
             </h2>
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-              Busque informações dos livros perguntando à nossa IA. Ela responde
-              com base nos materiais da biblioteca e indica as fontes.
+              {t.aiCta.description}
             </p>
           </div>
         </div>
@@ -28,7 +35,7 @@ export function LibraryAiCta() {
         <Button asChild className="shrink-0">
           <Link href={linkIaChat} target="_blank">
             <Sparkles className="h-4 w-4" />
-            Fale com a IA
+            {t.aiCta.button}
           </Link>
         </Button>
       </div>

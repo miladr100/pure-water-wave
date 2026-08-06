@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Download, FileText } from "lucide-react";
 
+import { useLocale } from "@/components/locale-provider";
 import {
   Card,
   CardContent,
@@ -18,6 +19,7 @@ type SupportDownloadCardProps = {
 };
 
 export function SupportDownloadCard({ item }: SupportDownloadCardProps) {
+  const { t } = useLocale();
   const [previewFailed, setPreviewFailed] = useState(false);
 
   return (
@@ -43,14 +45,16 @@ export function SupportDownloadCard({ item }: SupportDownloadCardProps) {
         <CardTitle className="font-display text-lg leading-tight">
           {item.title}
         </CardTitle>
-        <CardDescription className="text-sm">{item.subtitle}</CardDescription>
+        <CardDescription className="text-sm">
+          {t.support.downloadSubtitle}
+        </CardDescription>
       </CardHeader>
 
       <CardContent className="mt-auto">
         <Button asChild className="w-full">
           <a href={item.fileUrl} download target="_blank" rel="noreferrer">
             <Download className="h-4 w-4" />
-            {item.fileLabel}
+            {t.support.downloadPdf}
           </a>
         </Button>
       </CardContent>

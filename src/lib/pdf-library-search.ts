@@ -2,11 +2,15 @@ import { readFile } from "fs/promises";
 import path from "path";
 
 import { getLibraryPdfFilePath } from "@/lib/library-pdf-files";
-import { LIBRARY_PDFS, type LibraryPdf } from "@/lib/library-pdfs";
+import {
+  getLibraryPdfsByLanguage,
+  type LibraryPdf,
+} from "@/lib/library-pdfs";
 import {
   extractSnippetAroundMatch,
   normalizeSearchText,
 } from "@/lib/pdf-search";
+import type { UserLanguage } from "@/lib/user-languages";
 
 export type LibrarySearchResult = {
   pdfId: string;
@@ -194,7 +198,10 @@ async function searchSinglePdf(
   );
 }
 
-export async function searchAllLibraryPdfs(query: string) {
+export async function searchAllLibraryPdfs(
+  query: string,
+  language: UserLanguage = "pt",
+) {
   const trimmedQuery = query.trim();
   const normalizedQuery = normalizeSearchText(trimmedQuery);
 
@@ -203,8 +210,9 @@ export async function searchAllLibraryPdfs(query: string) {
   }
 
   const results: LibrarySearchResult[] = [];
+  const pdfs = getLibraryPdfsByLanguage(language);
 
-  for (const pdfMeta of LIBRARY_PDFS) {
+  for (const pdfMeta of pdfs) {
     const remainingSlots = MAX_LIBRARY_SEARCH_RESULTS - results.length;
 
     if (remainingSlots <= 0) {

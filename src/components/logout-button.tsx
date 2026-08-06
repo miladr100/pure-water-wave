@@ -3,10 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { useLocale } from "@/components/locale-provider";
 import { Button } from "@/components/ui/button";
 
 export function LogoutButton() {
   const router = useRouter();
+  const { t } = useLocale();
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleLogout() {
@@ -28,7 +30,7 @@ export function LogoutButton() {
       onClick={handleLogout}
       disabled={isLoading}
     >
-      {isLoading ? "Saindo..." : "Sair"}
+      {isLoading ? t.common.loggingOut : t.common.logout}
     </Button>
   );
 }
