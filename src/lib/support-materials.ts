@@ -35,8 +35,17 @@ const SUPPORT_DOWNLOADS_PT: SupportDownload[] = [
     fileLabel: "Baixar PDF",
   },
   {
+    id: "hj-journal-pt",
+    title: "HJ Journal",
+    subtitle: "Material para download (PDF)",
+    thumbnailUrl: "/library-previews/hj-journal-pt.jpeg",
+    fileUrl:
+      "https://drive.google.com/file/d/1IfBnTMpNu9YR3DoPp5IfzXnHLau4f3WU/view?usp=sharing",
+    fileLabel: "Baixar PDF",
+  },
+  {
     id: "ficha-de-verificacao-pt",
-    title: "Ficha de Verificação AFUPM-2023",
+    title: "Ficha de Verificação AFUPM",
     subtitle: "Material para download (PDF)",
     thumbnailUrl: "/library-previews/ficha-de-verificacao-afupm-pt.jpeg",
     fileUrl:
@@ -45,7 +54,7 @@ const SUPPORT_DOWNLOADS_PT: SupportDownload[] = [
   },
   {
     id: "ficha-de-filiacao-pt",
-    title: "Ficha de Filição AFUPM-2023",
+    title: "Ficha de Filição AFUPM",
     subtitle: "Material para download (PDF)",
     thumbnailUrl: "/library-previews/ficha-de-filiacao-afupm-pt.jpeg",
     fileUrl:
@@ -70,6 +79,15 @@ const SUPPORT_DOWNLOADS_ES: SupportDownload[] = [
     thumbnailUrl: "/library-previews/manual-auxiliar-videos-ki1-es.jpeg",
     fileUrl:
       "https://drive.google.com/file/d/1A0pKcr36EPRy4mSLvCRBREsrC_KNmIdR/view?usp=sharing",
+    fileLabel: "Baixar PDF",
+  },
+  {
+    id: "hj-journal-es",
+    title: "HJ Journal",
+    subtitle: "Material para descargar",
+    thumbnailUrl: "/library-previews/hj-journal-es.jpeg",
+    fileUrl:
+      "https://drive.google.com/file/d/1MoALyQAO7g50-bRGtOC4gj6MT8FMlqVu/view?usp=sharing",
     fileLabel: "Baixar PDF",
   },
   {
