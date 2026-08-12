@@ -26,12 +26,12 @@ const SUPPORT_DOWNLOADS_PT: SupportDownload[] = [
     fileLabel: "Baixar PDF",
   },
   {
-    id: "manual-auxiliar-videos-ki1-pt",
-    title: "Manual Auxiliar para o Kit 1",
+    id: "manual-apoio-videos-ki1-pt",
+    title: "Manual Apoio dos Vídeos do Kit 1",
     subtitle: "Material para download (PDF)",
-    thumbnailUrl: "/library-previews/manual-auxiliar-videos-ki1-pt.jpeg",
+    thumbnailUrl: "/library-previews/manual-apoio-videos-ki1-pt.jpeg",
     fileUrl:
-      "https://drive.google.com/file/d/12RzvHJeAnwJnZf0JuRrjsOKFQwa16ZJJ/view?usp=sharing",
+      "https://drive.google.com/file/d/1rKAKBJzrM6pJrOcynncX9fuSkY3Fa6N6/view?usp=sharing",
     fileLabel: "Baixar PDF",
   },
   {
@@ -73,12 +73,12 @@ const SUPPORT_DOWNLOADS_ES: SupportDownload[] = [
     fileLabel: "Baixar PDF",
   },
   {
-    id: "manual-auxiliar-videos-ki1-es",
-    title: "Manual del Sistema 1",
+    id: "manual-apoyo-videos-ki1-es",
+    title: "Manual de Apoyo de los Videos del Kit 1",
     subtitle: "Material para descargar",
-    thumbnailUrl: "/library-previews/manual-auxiliar-videos-ki1-es.jpeg",
+    thumbnailUrl: "/library-previews/manual-apoyo-videos-ki1-es.jpeg",
     fileUrl:
-      "https://drive.google.com/file/d/1A0pKcr36EPRy4mSLvCRBREsrC_KNmIdR/view?usp=sharing",
+      "https://drive.google.com/file/d/1LcvuEbjP6aAUsQWKD7grmHecjG1V80K6/view?usp=sharing",
     fileLabel: "Baixar PDF",
   },
   {

@@ -45,8 +45,11 @@ export async function POST(request: Request) {
 
     if (!user?.password) {
       return NextResponse.json(
-        { error: "Login ou senha inválidos" },
-        { status: 401 },
+        {
+          error: "Este usuário não está cadastrado",
+          code: "USER_NOT_FOUND",
+        },
+        { status: 404 },
       );
     }
 
@@ -54,7 +57,10 @@ export async function POST(request: Request) {
 
     if (!isValidPassword) {
       return NextResponse.json(
-        { error: "Login ou senha inválidos" },
+        {
+          error: "Senha incorreta",
+          code: "INVALID_PASSWORD",
+        },
         { status: 401 },
       );
     }

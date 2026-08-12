@@ -8,11 +8,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+type LoginErrorState =
+  | { kind: "message"; text: string }
+  | { kind: "not_registered" }
+  | null;
+
 export function LoginForm() {
   const router = useRouter();
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<LoginErrorState>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -29,18 +34,30 @@ export function LoginForm() {
 
       const data = (await response.json()) as {
         error?: string;
+        code?: string;
         redirectTo?: string;
       };
 
       if (!response.ok) {
-        setError(data.error ?? "Não foi possível entrar. Tente novamente.");
+        if (data.code === "USER_NOT_FOUND") {
+          setError({ kind: "not_registered" });
+          return;
+        }
+
+        setError({
+          kind: "message",
+          text: data.error ?? "Não foi possível entrar. Tente novamente.",
+        });
         return;
       }
 
       router.push(data.redirectTo ?? "/biblioteca");
       router.refresh();
     } catch {
-      setError("Não foi possível entrar. Tente novamente.");
+      setError({
+        kind: "message",
+        text: "Não foi possível entrar. Tente novamente.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -78,22 +95,29 @@ export function LoginForm() {
         />
       </div>
 
-      {error ? (
+      {error?.kind === "message" ? (
         <p className="text-sm text-destructive" role="alert">
-          {error}
+          {error.text}
         </p>
+      ) : null}
+
+      {error?.kind === "not_registered" ? (
+        <div className="space-y-1 text-center" role="alert">
+          <p className="text-sm text-destructive">
+            Este usuário não está cadastrado
+          </p>
+          <Link
+            href="/cadastro"
+            className="inline-block text-sm font-medium text-primary hover:underline"
+          >
+            Fazer meu cadastro
+          </Link>
+        </div>
       ) : null}
 
       <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
         {isLoading ? "Entrando..." : "Entrar"}
       </Button>
-
-      {/*<p className="text-center text-sm text-muted-foreground">
-        Ainda não tem conta?{" "}
-        <Link href="/cadastro" className="font-medium text-primary hover:underline">
-          Cadastre-se
-        </Link>
-      </p>*/}
     </form>
   );
 }
