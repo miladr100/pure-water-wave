@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  SupportDownloadCard,
-} from "@/components/support-download-card";
-import { SupportVideoCard } from "@/components/support-video-card";
+import { SupportDownloadCard } from "@/components/support-download-card";
 import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
 import {
@@ -12,11 +9,7 @@ import {
   SupportMaterialsCarouselNavHint,
   SupportMaterialsEmpty,
 } from "@/components/support-materials-carousel";
-import {
-  getSupportDownloadsByLanguage,
-  getSupportTestimonialVideos,
-  getSupportVideosByLanguage,
-} from "@/lib/support-materials";
+import { getSupportDownloadsByLanguage } from "@/lib/support-materials";
 import type { SessionPayload } from "@/lib/auth";
 
 type SupportMaterialsPageProps = {
@@ -27,8 +20,6 @@ export function SupportMaterialsPage({ session }: SupportMaterialsPageProps) {
   const { language, t } = useLocale();
   const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const downloads = getSupportDownloadsByLanguage(language);
-  const videos = getSupportVideosByLanguage(language);
-  const testimonials = getSupportTestimonialVideos(language);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">
@@ -49,7 +40,7 @@ export function SupportMaterialsPage({ session }: SupportMaterialsPageProps) {
           </p>
         </section>
 
-        <section className="mb-14">
+        <section>
           <div className="mb-5">
             <h2 className="font-display text-2xl font-semibold text-primary-deep">
               {t.support.downloadsTitle}
@@ -72,58 +63,6 @@ export function SupportMaterialsPage({ session }: SupportMaterialsPageProps) {
             </>
           ) : (
             <SupportMaterialsEmpty message={t.support.emptyDownloads} />
-          )}
-        </section>
-
-        <section className="mb-14">
-          <div className="mb-5">
-            <h2 className="font-display text-2xl font-semibold text-primary-deep">
-              {t.support.videosTitle}
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {t.support.videosHint}
-            </p>
-          </div>
-
-          {videos.length > 0 ? (
-            <>
-              <SupportMaterialsCarousel>
-                {videos.map((item) => (
-                  <SupportMaterialsCarouselItem key={item.id}>
-                    <SupportVideoCard item={item} />
-                  </SupportMaterialsCarouselItem>
-                ))}
-              </SupportMaterialsCarousel>
-              <SupportMaterialsCarouselNavHint />
-            </>
-          ) : (
-            <SupportMaterialsEmpty message={t.support.emptyVideos} />
-          )}
-        </section>
-
-        <section>
-          <div className="mb-5">
-            <h2 className="font-display text-2xl font-semibold text-primary-deep">
-              {t.support.testimonialsTitle}
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {t.support.videosHint}
-            </p>
-          </div>
-
-          {testimonials.length > 0 ? (
-            <>
-              <SupportMaterialsCarousel>
-                {testimonials.map((item) => (
-                  <SupportMaterialsCarouselItem key={item.id}>
-                    <SupportVideoCard item={item} />
-                  </SupportMaterialsCarouselItem>
-                ))}
-              </SupportMaterialsCarousel>
-              <SupportMaterialsCarouselNavHint />
-            </>
-          ) : (
-            <SupportMaterialsEmpty message={t.support.emptyVideos} />
           )}
         </section>
       </main>

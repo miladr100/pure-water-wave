@@ -395,14 +395,295 @@ const SUPPORT_TESTIMONIAL_VIDEOS: LocalizedSupportVideo[] = [
 export function getSupportTestimonialVideos(
   language: UserLanguage,
 ): SupportVideo[] {
-  const subtitle = TESTIMONIAL_SUBTITLES[language];
+  return localizeSupportVideos(
+    SUPPORT_TESTIMONIAL_VIDEOS,
+    language,
+    TESTIMONIAL_SUBTITLES[language],
+  );
+}
 
-  return SUPPORT_TESTIMONIAL_VIDEOS.map((video) => ({
+const FAITH_TESTIMONIAL_SUBTITLES: Record<UserLanguage, string> = {
+  pt: "Testemunhos sobre Vida de Fé",
+  es: "Testimonios sobre Vida de Fe",
+  en: "Testimonies on the Life of Faith",
+};
+
+const SUPPORT_FAITH_TESTIMONIAL_VIDEOS: LocalizedSupportVideo[] = [
+  {
+    id: "testemunho-fe-01-takuya-uchino",
+    youtubeId: "-VllizJCywU",
+    titles: {
+      pt: "01 — Takuya Uchino | Mudança de Paradigma",
+      es: "01 — Takuya Uchino | Cambio de Paradigma",
+      en: "01 — Takuya Uchino | Paradigm Shift",
+    },
+  },
+  {
+    id: "testemunho-fe-02-hwail-rober",
+    youtubeId: "fHFrWOznt8Q",
+    titles: {
+      pt: "02 — Hwail Rober | A decisão para fazer curso de vida de fé",
+      es: "02 — Hwail Rober | La decisión de hacer el curso de vida de fe",
+      en: "02 — Hwail Rober | The decision to take the life of faith course",
+    },
+  },
+  {
+    id: "testemunho-fe-03-edison-alexander-hiciano",
+    youtubeId: "Tgyju0VkobM",
+    titles: {
+      pt: "03 — Edison Alexander Hiciano | O antes e depois de conhecer o Princípio Divino",
+      es: "03 — Edison Alexander Hiciano | El antes y después de conocer el Principio Divino",
+      en: "03 — Edison Alexander Hiciano | Before and after knowing the Divine Principle",
+    },
+  },
+  {
+    id: "testemunho-fe-04-sandy-ji-bun",
+    youtubeId: "bPuPCmL-egY",
+    titles: {
+      pt: "04 — Sandy Ji Bun | A transformação na relação com a minha família",
+      es: "04 — Sandy Ji Bun | La transformación en la relación con mi familia",
+      en: "04 — Sandy Ji Bun | The transformation in my relationship with my family",
+    },
+  },
+  {
+    id: "testemunho-fe-05-evelin-agostina",
+    youtubeId: "8jsBFnhL5OQ",
+    titles: {
+      pt: "05 — Evelin Agostina | A batalha contra minhas naturezas decaídas",
+      es: "05 — Evelin Agostina | La batalla contra mis naturalezas caídas",
+      en: "05 — Evelin Agostina | The battle against my fallen natures",
+    },
+  },
+  {
+    id: "testemunho-fe-06-michiaki-yamane",
+    youtubeId: "L1sMQZz0p6w",
+    titles: {
+      pt: "06 — Michiaki Yamane | Porque eu vim para a Academia HJ?",
+      es: "06 — Michiaki Yamane | ¿Por qué vine a la Academia HJ?",
+      en: "06 — Michiaki Yamane | Why did I come to HJ Academy?",
+    },
+  },
+  {
+    id: "testemunho-fe-07-giovany-esteban",
+    youtubeId: "adp1c5LVxuE",
+    titles: {
+      pt: "07 — Giovany Esteban | Deus respondeu como devo seguir minha vida",
+      es: "07 — Giovany Esteban | Dios respondió cómo debo seguir mi vida",
+      en: "07 — Giovany Esteban | God answered how I should follow my life",
+    },
+  },
+  {
+    id: "testemunho-fe-08-leslie-rosario",
+    youtubeId: "M7vIzyb3qw4",
+    titles: {
+      pt: "08 — Leslie Rosário | Minha vitória no HJ Rang",
+      es: "08 — Leslie Rosário | Mi victoria en el HJ Rang",
+      en: "08 — Leslie Rosário | My victory at HJ Rang",
+    },
+  },
+  {
+    id: "testemunho-fe-09-felipe-arturo",
+    youtubeId: "ZU0Ol6-R2Zk",
+    titles: {
+      pt: "09 — Felipe Arturo | Mudança de planos",
+      es: "09 — Felipe Arturo | Cambio de planes",
+      en: "09 — Felipe Arturo | Change of plans",
+    },
+  },
+  {
+    id: "testemunho-fe-10-alberto-sebastian",
+    youtubeId: "egWqlpjDWU4",
+    titles: {
+      pt: "10 — Alberto Sebastian | Deus transformou minha vida de fé",
+      es: "10 — Alberto Sebastian | Dios transformó mi vida de fe",
+      en: "10 — Alberto Sebastian | God transformed my life of faith",
+    },
+  },
+  {
+    id: "testemunho-fe-11-aracely-pamela-ticona",
+    youtubeId: "ISJe9K8SLIU",
+    titles: {
+      pt: "11 — Aracely Pamela Ticona | Pedi “Deus por favor não me abandone”",
+      es: "11 — Aracely Pamela Ticona | Pedí “Dios, por favor, no me abandones”",
+      en: "11 — Aracely Pamela Ticona | I asked, “God, please do not abandon me”",
+    },
+  },
+  {
+    id: "testemunho-fe-12-juan-sebastian",
+    youtubeId: "1Ff74BFux5w",
+    titles: {
+      pt: "12 — Juan Sebastian | Experiências no curso da Água Pura",
+      es: "12 — Juan Sebastian | Experiencias en el curso de Agua Pura",
+      en: "12 — Juan Sebastian | Experiences in the Pure Water course",
+    },
+  },
+  {
+    id: "testemunho-fe-13-nestor-angel",
+    youtubeId: "3XuSuzR7T7c",
+    titles: {
+      pt: "13 — Néstor Angel | Meu caminho até a Academia HJ",
+      es: "13 — Néstor Angel | Mi camino hasta la Academia HJ",
+      en: "13 — Néstor Angel | My path to HJ Academy",
+    },
+  },
+  {
+    id: "testemunho-fe-14-wan-song-rocha",
+    youtubeId: "jW6wqK_dk2Q",
+    titles: {
+      pt: "14 — Wan Song Rocha | A busca pelo coração de piedade filial para Deus",
+      es: "14 — Wan Song Rocha | La búsqueda del corazón de piedad filial hacia Dios",
+      en: "14 — Wan Song Rocha | The search for a heart of filial piety toward God",
+    },
+  },
+  {
+    id: "testemunho-fe-15-nicolle-bezerra",
+    youtubeId: "wW8rO_OKNNU",
+    titles: {
+      pt: "15 — Nicolle Bezerra | Encontro de coração com a Verdadeira Mãe",
+      es: "15 — Nicolle Bezerra | Encuentro de corazón con la Verdadera Madre",
+      en: "15 — Nicolle Bezerra | A heart-to-heart encounter with True Mother",
+    },
+  },
+  {
+    id: "testemunho-fe-16-jesus-daniel",
+    youtubeId: "oQJHrDMbMpE",
+    titles: {
+      pt: "16 — Jesus Daniel | Construí determinação em meio às provações",
+      es: "16 — Jesus Daniel | Construí determinación en medio de las pruebas",
+      en: "16 — Jesus Daniel | I built determination amid trials",
+    },
+  },
+  {
+    id: "testemunho-fe-17-melany-fernanda",
+    youtubeId: "GPKm8uFm2MI",
+    titles: {
+      pt: "17 — Melany Fernanda | Decidi entregar toda minha vida à Deus",
+      es: "17 — Melany Fernanda | Decidí entregar toda mi vida a Dios",
+      en: "17 — Melany Fernanda | I decided to give my whole life to God",
+    },
+  },
+  {
+    id: "testemunho-fe-18-evelin-wendy",
+    youtubeId: "X8GmFrNpFc0",
+    titles: {
+      pt: "18 — Evelin Wendy | Fé é seguir em frente mesmo sem entender tudo",
+      es: "18 — Evelin Wendy | La fe es seguir adelante incluso sin entenderlo todo",
+      en: "18 — Evelin Wendy | Faith is moving forward even without understanding everything",
+    },
+  },
+  {
+    id: "testemunho-fe-19-song-sha",
+    youtubeId: "RE9_rZu8VF0",
+    titles: {
+      pt: "19 — Song Sha | Encontrando o caminho de fé através do amor da minha mãe",
+      es: "19 — Song Sha | Encontrando el camino de fe a través del amor de mi madre",
+      en: "19 — Song Sha | Finding the path of faith through my mother's love",
+    },
+  },
+  {
+    id: "testemunho-fe-20-eliel-isai",
+    youtubeId: "8PscfiLOj3Q",
+    titles: {
+      pt: "20 — Eliel Isai | Duvidei de Deus, mas ele me mostrou o caminho",
+      es: "20 — Eliel Isai | Dudé de Dios, pero Él me mostró el camino",
+      en: "20 — Eliel Isai | I doubted God, but He showed me the way",
+    },
+  },
+  {
+    id: "testemunho-fe-21-yuske-jitto",
+    youtubeId: "hD9pLB5EqK8",
+    titles: {
+      pt: "21 — Yuske Jitto | Quando minha vida de fé ganhou significado",
+      es: "21 — Yuske Jitto | Cuando mi vida de fe ganó significado",
+      en: "21 — Yuske Jitto | When my life of faith gained meaning",
+    },
+  },
+  {
+    id: "testemunho-fe-22-hyun-jong-milena",
+    youtubeId: "ylF66aLAgy0",
+    titles: {
+      pt: "22 — Hyun Jong Milena | Como cresci em dois anos de HJ Rang",
+      es: "22 — Hyun Jong Milena | Cómo crecí en dos años de HJ Rang",
+      en: "22 — Hyun Jong Milena | How I grew in two years of HJ Rang",
+    },
+  },
+  {
+    id: "testemunho-fe-23-heayun-yurkin",
+    youtubeId: "_DHtXT1toZ4",
+    titles: {
+      pt: "23 — Heayun Yurkin | Entrei na Academia Hyo Jeong para aprender como servir a Deus",
+      es: "23 — Heayun Yurkin | Entré en la Academia Hyo Jeong para aprender a servir a Dios",
+      en: "23 — Heayun Yurkin | I entered Hyo Jeong Academy to learn how to serve God",
+    },
+  },
+  {
+    id: "testemunho-fe-24-chungnam-asto",
+    youtubeId: "PgX2FAFiYZg",
+    titles: {
+      pt: "24 — Chungnam Asto | Vida de fé antes do HJ Rang",
+      es: "24 — Chungnam Asto | Vida de fe antes del HJ Rang",
+      en: "24 — Chungnam Asto | Life of faith before HJ Rang",
+    },
+  },
+  {
+    id: "testemunho-fe-25-luis-anticona",
+    youtubeId: "nEekYXkDloo",
+    titles: {
+      pt: "25 — Luís Anticona | “Você sabe ouvir o chamado de Deus?”",
+      es: "25 — Luís Anticona | “¿Sabes escuchar el llamado de Dios?”",
+      en: "25 — Luís Anticona | “Do you know how to hear God’s calling?”",
+    },
+  },
+  {
+    id: "testemunho-fe-26-mauro-gabarrin",
+    youtubeId: "gvX5aDi7boY",
+    titles: {
+      pt: "26 — Mauro Gabarrin | Encontrei as minhas naturezas decaídas",
+      es: "26 — Mauro Gabarrin | Encontré mis naturalezas caídas",
+      en: "26 — Mauro Gabarrin | I found my fallen natures",
+    },
+  },
+  {
+    id: "testemunho-fe-27-bianca-modise",
+    youtubeId: "8d6dhb-INUI",
+    titles: {
+      pt: "27 — Bianca Modise | Fé que ultrapassa a dor física",
+      es: "27 — Bianca Modise | Fe que supera el dolor físico",
+      en: "27 — Bianca Modise | Faith that goes beyond physical pain",
+    },
+  },
+  {
+    id: "testemunho-fe-28-maria-clarissa",
+    youtubeId: "9NBWtHV7RCA",
+    titles: {
+      pt: "28 — Maria Clarissa | Curiosidade que me fez conhecer o Princípio Divino",
+      es: "28 — Maria Clarissa | Curiosidad que me hizo conocer el Principio Divino",
+      en: "28 — Maria Clarissa | Curiosity that led me to know the Divine Principle",
+    },
+  },
+];
+
+function localizeSupportVideos(
+  videos: LocalizedSupportVideo[],
+  language: UserLanguage,
+  subtitle: string,
+): SupportVideo[] {
+  return videos.map((video) => ({
     id: video.id,
     youtubeId: video.youtubeId,
     title: video.titles[language],
     subtitle,
   }));
+}
+
+export function getSupportFaithTestimonialVideos(
+  language: UserLanguage,
+): SupportVideo[] {
+  return localizeSupportVideos(
+    SUPPORT_FAITH_TESTIMONIAL_VIDEOS,
+    language,
+    FAITH_TESTIMONIAL_SUBTITLES[language],
+  );
 }
 
 export function getSupportVideosByLanguage(

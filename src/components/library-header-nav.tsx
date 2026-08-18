@@ -1,18 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, FileText } from "lucide-react";
+import { BookOpen, FileText, PlayCircle } from "lucide-react";
 
 import { useLocale } from "@/components/locale-provider";
 import { Button } from "@/components/ui/button";
 
 type LibraryHeaderNavProps = {
   showSupportMaterialsLink?: boolean;
+  showVideosLink?: boolean;
   showBackToLibrary?: boolean;
 };
 
 export function LibraryHeaderNav({
   showSupportMaterialsLink = true,
+  showVideosLink = true,
   showBackToLibrary = false,
 }: LibraryHeaderNavProps) {
   const { t } = useLocale();
@@ -33,6 +35,15 @@ export function LibraryHeaderNav({
           <Link href="/biblioteca/materiais">
             <FileText className="h-4 w-4" />
             {t.common.supportMaterials}
+          </Link>
+        </Button>
+      ) : null}
+
+      {showVideosLink ? (
+        <Button asChild variant="outline">
+          <Link href="/biblioteca/videos">
+            <PlayCircle className="h-4 w-4" />
+            {t.common.videos}
           </Link>
         </Button>
       ) : null}

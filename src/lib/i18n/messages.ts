@@ -4,6 +4,7 @@ export type AppMessages = {
   common: {
     library: string;
     supportMaterials: string;
+    videos: string;
     logout: string;
     loggingOut: string;
     language: string;
@@ -17,6 +18,8 @@ export type AppMessages = {
     librarySubtitle: (firstName: string) => string;
     supportTitle: string;
     supportSubtitle: (firstName: string) => string;
+    videosTitle: string;
+    videosSubtitle: (firstName: string) => string;
   };
   dashboard: {
     heading: string;
@@ -55,11 +58,14 @@ export type AppMessages = {
   support: {
     heading: string;
     description: string;
+    videosPageHeading: string;
+    videosPageDescription: string;
     downloadsTitle: string;
     downloadsHint: string;
     videosTitle: string;
     videosHint: string;
     testimonialsTitle: string;
+    faithTestimonialsTitle: string;
     emptyDownloads: string;
     emptyVideos: string;
     swipeHint: string;
@@ -105,6 +111,7 @@ const pt: AppMessages = {
   common: {
     library: "Biblioteca",
     supportMaterials: "Material de apoio",
+    videos: "Vídeos",
     logout: "Sair",
     loggingOut: "Saindo...",
     language: "Idioma",
@@ -119,7 +126,10 @@ const pt: AppMessages = {
       `Olá, ${firstName}. Explore os materiais disponíveis.`,
     supportTitle: "Material de apoio",
     supportSubtitle: (firstName) =>
-      `Olá, ${firstName}. Baixe arquivos e assista aos vídeos.`,
+      `Olá, ${firstName}. Baixe os arquivos disponíveis.`,
+    videosTitle: "Vídeos",
+    videosSubtitle: (firstName) =>
+      `Olá, ${firstName}. Assista às trilhas de formação.`,
   },
   dashboard: {
     heading: "Sua biblioteca pastoral",
@@ -164,12 +174,16 @@ const pt: AppMessages = {
   support: {
     heading: "Materiais de apoio",
     description:
-      "Arquivos para download e vídeos de formação para apoiar seu trabalho pastoral.",
+      "Arquivos para download para apoiar seu trabalho pastoral.",
+    videosPageHeading: "Trilhas de vídeos",
+    videosPageDescription:
+      "Vídeos de formação para apoiar seu trabalho pastoral.",
     downloadsTitle: "Materiais para download",
     downloadsHint: "Toque no card para baixar o arquivo.",
     videosTitle: "Vídeos de Estudo do Princípio Divino",
     videosHint: "Toque no card para abrir o vídeo no YouTube.",
     testimonialsTitle: "Testemunhos sobre Restauração Material",
+    faithTestimonialsTitle: "Testemunhos sobre Vida de Fé",
     emptyDownloads: "Nenhum material para download ainda.",
     emptyVideos: "Nenhum vídeo disponível ainda.",
     swipeHint: "Deslize ou use as setas",
@@ -219,6 +233,7 @@ const en: AppMessages = {
   common: {
     library: "Library",
     supportMaterials: "Support materials",
+    videos: "Videos",
     logout: "Log out",
     loggingOut: "Logging out...",
     language: "Language",
@@ -233,7 +248,10 @@ const en: AppMessages = {
       `Hello, ${firstName}. Explore the available materials.`,
     supportTitle: "Support materials",
     supportSubtitle: (firstName) =>
-      `Hello, ${firstName}. Download files and watch the videos.`,
+      `Hello, ${firstName}. Download the available files.`,
+    videosTitle: "Videos",
+    videosSubtitle: (firstName) =>
+      `Hello, ${firstName}. Watch the training video tracks.`,
   },
   dashboard: {
     heading: "Your pastoral library",
@@ -277,13 +295,15 @@ const en: AppMessages = {
   },
   support: {
     heading: "Support materials",
-    description:
-      "Downloadable files and training videos to support your pastoral work.",
+    description: "Downloadable files to support your pastoral work.",
+    videosPageHeading: "Video tracks",
+    videosPageDescription: "Training videos to support your pastoral work.",
     downloadsTitle: "Downloads",
     downloadsHint: "Tap the card to download the file.",
     videosTitle: "Divine Principle Study Videos",
     videosHint: "Tap the card to open the video on YouTube.",
     testimonialsTitle: "Testimonies on Fundraising",
+    faithTestimonialsTitle: "Testimonies on the Life of Faith",
     emptyDownloads: "No downloadable materials yet.",
     emptyVideos: "No videos available yet.",
     swipeHint: "Swipe or use the arrows",
@@ -332,6 +352,7 @@ const es: AppMessages = {
   common: {
     library: "Biblioteca",
     supportMaterials: "Material de apoyo",
+    videos: "Videos",
     logout: "Salir",
     loggingOut: "Saliendo...",
     language: "Idioma",
@@ -346,7 +367,10 @@ const es: AppMessages = {
       `Hola, ${firstName}. Explora los materiales disponibles.`,
     supportTitle: "Material de apoyo",
     supportSubtitle: (firstName) =>
-      `Hola, ${firstName}. Descarga archivos y mira los videos.`,
+      `Hola, ${firstName}. Descarga los archivos disponibles.`,
+    videosTitle: "Videos",
+    videosSubtitle: (firstName) =>
+      `Hola, ${firstName}. Mira las pistas de formación.`,
   },
   dashboard: {
     heading: "Tu biblioteca pastoral",
@@ -392,12 +416,16 @@ const es: AppMessages = {
   support: {
     heading: "Materiales de apoyo",
     description:
-      "Archivos para descargar y videos de formación para apoyar tu trabajo pastoral.",
+      "Archivos para descargar para apoyar tu trabajo pastoral.",
+    videosPageHeading: "Pistas de videos",
+    videosPageDescription:
+      "Videos de formación para apoyar tu trabajo pastoral.",
     downloadsTitle: "Materiales para descargar",
     downloadsHint: "Toca la tarjeta para descargar el archivo.",
     videosTitle: "Videos de Estudio del Principio Divino",
     videosHint: "Toca la tarjeta para abrir el video en YouTube.",
     testimonialsTitle: "Testimonios sobre Restauración Material",
+    faithTestimonialsTitle: "Testimonios sobre Vida de Fe",
     emptyDownloads: "Aún no hay materiales para descargar.",
     emptyVideos: "Aún no hay videos disponibles.",
     swipeHint: "Desliza o usa las flechas",

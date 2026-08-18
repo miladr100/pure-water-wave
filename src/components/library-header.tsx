@@ -7,6 +7,7 @@ type LibraryHeaderProps = {
   title: string;
   subtitle: string;
   showSupportMaterialsLink?: boolean;
+  showVideosLink?: boolean;
   showBackToLibrary?: boolean;
 };
 
@@ -14,6 +15,7 @@ export function LibraryHeader({
   title,
   subtitle,
   showSupportMaterialsLink = true,
+  showVideosLink = true,
   showBackToLibrary = false,
 }: LibraryHeaderProps) {
   return (
@@ -32,6 +34,7 @@ export function LibraryHeader({
         <div className="flex flex-wrap items-center gap-2">
           <LibraryHeaderNav
             showSupportMaterialsLink={showSupportMaterialsLink}
+            showVideosLink={showVideosLink}
             showBackToLibrary={showBackToLibrary}
           />
           <LanguageSwitcher />
