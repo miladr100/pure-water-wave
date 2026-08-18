@@ -314,6 +314,97 @@ const SUPPORT_VIDEOS_ES: SupportVideo[] = [
   },
 ];
 
+type LocalizedSupportVideo = {
+  id: string;
+  youtubeId: string;
+  titles: Record<UserLanguage, string>;
+};
+
+const TESTIMONIAL_SUBTITLES: Record<UserLanguage, string> = {
+  pt: "Testemunhos sobre Restauração Material",
+  es: "Testimonios sobre Restauración Material",
+  en: "Testimonies on Fundraising",
+};
+
+const SUPPORT_TESTIMONIAL_VIDEOS: LocalizedSupportVideo[] = [
+  {
+    id: "testemunho-rm-01-henrry-valencia",
+    youtubeId: "Fw9XpXh3ZCg",
+    titles: {
+      pt: "01 — Henrry Valencia | Experiência com a Segunda Geração",
+      es: "01 — Henrry Valencia | Experiencia con la Segunda Generación",
+      en: "01 — Henrry Valencia | Experience with the Second Generation",
+    },
+  },
+  {
+    id: "testemunho-rm-02-juliana-de-cesero",
+    youtubeId: "AX4FRdksSls",
+    titles: {
+      pt: "02 — Juliana de Césero | Desafios da Restauração Material na Europa",
+      es: "02 — Juliana de Césero | Desafíos de la Restauración Material en Europa",
+      en: "02 — Juliana de Césero | Challenges of Fundraising in Europe",
+    },
+  },
+  {
+    id: "testemunho-rm-03-sofia-mijin-correa",
+    youtubeId: "9RMPkhfWHcU",
+    titles: {
+      pt: "03 — Sofia Mijin Correa | Deus me transformou através da Restauração Material",
+      es: "03 — Sofia Mijin Correa | Dios me transformó a través de la Restauración Material",
+      en: "03 — Sofia Mijin Correa | God transformed me through Fundraising",
+    },
+  },
+  {
+    id: "testemunho-rm-04-nari-tamar-alegre",
+    youtubeId: "-U6_SFXl6uY",
+    titles: {
+      pt: "04 — Nari Tamar Alegre | O receio da missão e a superação com Deus",
+      es: "04 — Nari Tamar Alegre | El temor de la misión y la superación con Dios",
+      en: "04 — Nari Tamar Alegre | Fear of the mission and overcoming it with God",
+    },
+  },
+  {
+    id: "testemunho-rm-05-alice-cunha",
+    youtubeId: "dZyeLsv_dys",
+    titles: {
+      pt: "05 — Alice Cunha | Experiência com o coração de Deus na RM na Europa",
+      es: "05 — Alice Cunha | Experiencia con el corazón de Dios en la RM en Europa",
+      en: "05 — Alice Cunha | Experience with God's heart in Fundraising in Europe",
+    },
+  },
+  {
+    id: "testemunho-rm-06-ki-sung",
+    youtubeId: "6Oh6WBCbYEg",
+    titles: {
+      pt: "06 — Ki Sung | Restauração Material nos EUA",
+      es: "06 — Ki Sung | Restauración Material en los EE. UU.",
+      en: "06 — Ki Sung | Fundraising in the USA",
+    },
+  },
+  {
+    id: "testemunho-rm-07-azucena-de-lora",
+    youtubeId: "maQSJR2YYRQ",
+    titles: {
+      pt: "07 — Azucena de Lora | Minha transformação através da Restauração Material",
+      es: "07 — Azucena de Lora | Mi transformación a través de la Restauración Material",
+      en: "07 — Azucena de Lora | My transformation through Fundraising",
+    },
+  },
+];
+
+export function getSupportTestimonialVideos(
+  language: UserLanguage,
+): SupportVideo[] {
+  const subtitle = TESTIMONIAL_SUBTITLES[language];
+
+  return SUPPORT_TESTIMONIAL_VIDEOS.map((video) => ({
+    id: video.id,
+    youtubeId: video.youtubeId,
+    title: video.titles[language],
+    subtitle,
+  }));
+}
+
 export function getSupportVideosByLanguage(
   language: UserLanguage,
 ): SupportVideo[] {

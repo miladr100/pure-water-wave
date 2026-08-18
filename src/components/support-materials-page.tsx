@@ -14,6 +14,7 @@ import {
 } from "@/components/support-materials-carousel";
 import {
   getSupportDownloadsByLanguage,
+  getSupportTestimonialVideos,
   getSupportVideosByLanguage,
 } from "@/lib/support-materials";
 import type { SessionPayload } from "@/lib/auth";
@@ -27,6 +28,7 @@ export function SupportMaterialsPage({ session }: SupportMaterialsPageProps) {
   const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const downloads = getSupportDownloadsByLanguage(language);
   const videos = getSupportVideosByLanguage(language);
+  const testimonials = getSupportTestimonialVideos(language);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">
@@ -73,7 +75,7 @@ export function SupportMaterialsPage({ session }: SupportMaterialsPageProps) {
           )}
         </section>
 
-        <section>
+        <section className="mb-14">
           <div className="mb-5">
             <h2 className="font-display text-2xl font-semibold text-primary-deep">
               {t.support.videosTitle}
@@ -87,6 +89,32 @@ export function SupportMaterialsPage({ session }: SupportMaterialsPageProps) {
             <>
               <SupportMaterialsCarousel>
                 {videos.map((item) => (
+                  <SupportMaterialsCarouselItem key={item.id}>
+                    <SupportVideoCard item={item} />
+                  </SupportMaterialsCarouselItem>
+                ))}
+              </SupportMaterialsCarousel>
+              <SupportMaterialsCarouselNavHint />
+            </>
+          ) : (
+            <SupportMaterialsEmpty message={t.support.emptyVideos} />
+          )}
+        </section>
+
+        <section>
+          <div className="mb-5">
+            <h2 className="font-display text-2xl font-semibold text-primary-deep">
+              {t.support.testimonialsTitle}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {t.support.videosHint}
+            </p>
+          </div>
+
+          {testimonials.length > 0 ? (
+            <>
+              <SupportMaterialsCarousel>
+                {testimonials.map((item) => (
                   <SupportMaterialsCarouselItem key={item.id}>
                     <SupportVideoCard item={item} />
                   </SupportMaterialsCarouselItem>

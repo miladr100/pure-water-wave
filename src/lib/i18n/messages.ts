@@ -59,6 +59,7 @@ export type AppMessages = {
     downloadsHint: string;
     videosTitle: string;
     videosHint: string;
+    testimonialsTitle: string;
     emptyDownloads: string;
     emptyVideos: string;
     swipeHint: string;
@@ -166,8 +167,9 @@ const pt: AppMessages = {
       "Arquivos para download e vídeos de formação para apoiar seu trabalho pastoral.",
     downloadsTitle: "Materiais para download",
     downloadsHint: "Toque no card para baixar o arquivo.",
-    videosTitle: "Vídeos",
+    videosTitle: "Vídeos de Estudo do Princípio Divino",
     videosHint: "Toque no card para abrir o vídeo no YouTube.",
+    testimonialsTitle: "Testemunhos sobre Restauração Material",
     emptyDownloads: "Nenhum material para download ainda.",
     emptyVideos: "Nenhum vídeo disponível ainda.",
     swipeHint: "Deslize ou use as setas",
@@ -279,8 +281,9 @@ const en: AppMessages = {
       "Downloadable files and training videos to support your pastoral work.",
     downloadsTitle: "Downloads",
     downloadsHint: "Tap the card to download the file.",
-    videosTitle: "Videos",
+    videosTitle: "Divine Principle Study Videos",
     videosHint: "Tap the card to open the video on YouTube.",
+    testimonialsTitle: "Testimonies on Fundraising",
     emptyDownloads: "No downloadable materials yet.",
     emptyVideos: "No videos available yet.",
     swipeHint: "Swipe or use the arrows",
@@ -392,8 +395,9 @@ const es: AppMessages = {
       "Archivos para descargar y videos de formación para apoyar tu trabajo pastoral.",
     downloadsTitle: "Materiales para descargar",
     downloadsHint: "Toca la tarjeta para descargar el archivo.",
-    videosTitle: "Videos",
+    videosTitle: "Videos de Estudio del Principio Divino",
     videosHint: "Toca la tarjeta para abrir el video en YouTube.",
+    testimonialsTitle: "Testimonios sobre Restauración Material",
     emptyDownloads: "Aún no hay materiales para descargar.",
     emptyVideos: "Aún no hay videos disponibles.",
     swipeHint: "Desliza o usa las flechas",
