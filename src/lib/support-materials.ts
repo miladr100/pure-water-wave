@@ -314,6 +314,147 @@ const SUPPORT_VIDEOS_ES: SupportVideo[] = [
   },
 ];
 
+const SUPPORT_VIDEOS_ES_SUBREGION_2: SupportVideo[] = [
+  {
+    id: "seminario-sr2-01-introduccion",
+    title: "01 — Introducción General",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "G-Yq-VT67oc",
+  },
+  {
+    id: "seminario-sr2-02-creacion",
+    title: "02 — Principios de la Creación",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "gZzz8jpBqzY",
+  },
+  {
+    id: "seminario-sr2-03-caida",
+    title: "03 — La Caída Humana",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "rqgI8hyBYBU",
+  },
+  {
+    id: "seminario-sr2-04-consumacion-pt1",
+    title: "04 — La Consumación de la Historia Humana (Parte 1)",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "VNs11b_odgw",
+  },
+  {
+    id: "seminario-sr2-04-consumacion-pt2",
+    title: "04 — La Consumación de la Historia Humana (Parte 2)",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "IUV8ed9lUjo",
+  },
+  {
+    id: "seminario-sr2-05-mesias",
+    title: "05 — La Misión del Mesías",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "VQpeZ5XCfk0",
+  },
+  {
+    id: "seminario-sr2-06-resurreccion",
+    title: "06 — La Resurrección",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "cP3vql91NN0",
+  },
+  {
+    id: "seminario-sr2-07-predestinacion",
+    title: "07 — La Predestinación",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "P7hF5S4--UY",
+  },
+  {
+    id: "seminario-sr2-08-cristologia",
+    title: "08 — Cristología",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "jz052rWRDLo",
+  },
+  {
+    id: "seminario-sr2-09-intro-restauracion",
+    title: "09 — Introducción a los Principios de la Restauración",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "zx1ANqAqpqU",
+  },
+  {
+    id: "seminario-sr2-10-familia-adan",
+    title: "10 — La Providencia de la Restauración Centrada en la Familia de Adán",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "v-KKUlRepFE",
+  },
+  {
+    id: "seminario-sr2-11-familia-noe",
+    title: "11 — La Providencia de la Restauración Centrada en la Familia de Noé",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "zvG463UOkdM",
+  },
+  {
+    id: "seminario-sr2-12-familia-abraham",
+    title: "12 — La Providencia de la Restauración Centrada en la Familia de Abraham",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "BaH5aAA8fIM",
+  },
+  {
+    id: "seminario-sr2-13-moises-pt1",
+    title: "13 — La Providencia de la Restauración Centrada en Moisés (Parte 1)",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "7suRkic1_fw",
+  },
+  {
+    id: "seminario-sr2-13-moises-pt2",
+    title: "13 — La Providencia de la Restauración Centrada en Moisés (Parte 2)",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "qT1KdEeR2j4",
+  },
+  {
+    id: "seminario-sr2-13-moises-pt3",
+    title: "13 — La Providencia de la Restauración Centrada en Moisés (Parte 3)",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "Se5UOTKkYsc",
+  },
+  {
+    id: "seminario-sr2-14-jesus-pt1",
+    title: "14 — La Providencia de la Restauración Centrada en Jesús (Parte 1)",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "gnFhOYLBJ4k",
+  },
+  {
+    id: "seminario-sr2-14-jesus-pt2",
+    title: "14 — La Providencia de la Restauración Centrada en Jesús (Parte 2)",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "ZJ0Hm8zSa28",
+  },
+  {
+    id: "seminario-sr2-15-ciclos-pt1",
+    title: "15 — Ciclos Históricos (Parte 1)",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "8qfAgCBYzdI",
+  },
+  {
+    id: "seminario-sr2-15-ciclos-pt2",
+    title: "15 — Ciclos Históricos (Parte 2)",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "tois1ltq0kI",
+  },
+  {
+    id: "seminario-sr2-15-ciclos-pt3",
+    title: "15 — Ciclos Históricos (Parte 3)",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "nWuwyJLo2Qo",
+  },
+  {
+    id: "seminario-sr2-15-ciclos-pt4",
+    title: "15 — Ciclos Históricos (Parte 4)",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "Tt9N5XJvE3M",
+  },
+  {
+    id: "seminario-sr2-16-segunda-llegada",
+    title: "16 — La segunda llegada",
+    subtitle: "Subregión 2 — Principio Divino",
+    youtubeId: "MA6FUqLQw94",
+  },
+];
+
 type LocalizedSupportVideo = {
   id: string;
   youtubeId: string;
@@ -690,6 +831,12 @@ export function getSupportVideosByLanguage(
   language: UserLanguage,
 ): SupportVideo[] {
   return language === "es" ? SUPPORT_VIDEOS_ES : SUPPORT_VIDEOS_PT;
+}
+
+export function getSupportSubregion2Videos(
+  language: UserLanguage,
+): SupportVideo[] {
+  return language === "es" ? SUPPORT_VIDEOS_ES_SUBREGION_2 : [];
 }
 
 export function getYoutubeThumbnailUrl(youtubeId: string) {

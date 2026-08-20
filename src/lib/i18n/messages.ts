@@ -64,6 +64,7 @@ export type AppMessages = {
     downloadsHint: string;
     videosTitle: string;
     videosHint: string;
+    subregion2VideosTitle: string;
     testimonialsTitle: string;
     faithTestimonialsTitle: string;
     emptyDownloads: string;
@@ -182,6 +183,7 @@ const pt: AppMessages = {
     downloadsHint: "Toque no card para baixar o arquivo.",
     videosTitle: "Vídeos de Estudo do Princípio Divino",
     videosHint: "Toque no card para abrir o vídeo no YouTube.",
+    subregion2VideosTitle: "Vídeos de Estudo do Princípio Divino da Subregião 2",
     testimonialsTitle: "Testemunhos sobre Restauração Material",
     faithTestimonialsTitle: "Testemunhos sobre Vida de Fé",
     emptyDownloads: "Nenhum material para download ainda.",
@@ -302,6 +304,7 @@ const en: AppMessages = {
     downloadsHint: "Tap the card to download the file.",
     videosTitle: "Divine Principle Study Videos",
     videosHint: "Tap the card to open the video on YouTube.",
+    subregion2VideosTitle: "Divine Principle Study Videos from Subregion 2",
     testimonialsTitle: "Testimonies on Fundraising",
     faithTestimonialsTitle: "Testimonies on the Life of Faith",
     emptyDownloads: "No downloadable materials yet.",
@@ -424,6 +427,7 @@ const es: AppMessages = {
     downloadsHint: "Toca la tarjeta para descargar el archivo.",
     videosTitle: "Videos de Estudio del Principio Divino",
     videosHint: "Toca la tarjeta para abrir el video en YouTube.",
+    subregion2VideosTitle: "Videos de Estudio del Principio Divino de la Subregión 2",
     testimonialsTitle: "Testimonios sobre Restauración Material",
     faithTestimonialsTitle: "Testimonios sobre Vida de Fe",
     emptyDownloads: "Aún no hay materiales para descargar.",

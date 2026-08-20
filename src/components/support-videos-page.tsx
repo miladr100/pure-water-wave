@@ -11,6 +11,7 @@ import {
 } from "@/components/support-materials-carousel";
 import {
   getSupportFaithTestimonialVideos,
+  getSupportSubregion2Videos,
   getSupportTestimonialVideos,
   getSupportVideosByLanguage,
   type SupportVideo,
@@ -63,6 +64,7 @@ export function SupportVideosPage({ session }: SupportVideosPageProps) {
   const { language, t } = useLocale();
   const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const studyVideos = getSupportVideosByLanguage(language);
+  const subregion2Videos = getSupportSubregion2Videos(language);
   const testimonials = getSupportTestimonialVideos(language);
   const faithTestimonials = getSupportFaithTestimonialVideos(language);
 
@@ -91,6 +93,14 @@ export function SupportVideosPage({ session }: SupportVideosPageProps) {
           videos={studyVideos}
           emptyMessage={t.support.emptyVideos}
         />
+        {subregion2Videos.length > 0 ? (
+          <VideoTrackSection
+            title={t.support.subregion2VideosTitle}
+            hint={t.support.videosHint}
+            videos={subregion2Videos}
+            emptyMessage={t.support.emptyVideos}
+          />
+        ) : null}
         <VideoTrackSection
           title={t.support.testimonialsTitle}
           hint={t.support.videosHint}
