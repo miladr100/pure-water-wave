@@ -196,7 +196,8 @@
 
 .react-pdf__Page__textContent .pdf-search-highlight {
   background-color: rgb(254 249 195 / 0.55);
-  color: inherit;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
   border-radius: 0.125rem;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
@@ -204,15 +205,46 @@
 
 .react-pdf__Page__textContent .pdf-search-highlight-active {
   background-color: rgb(251 191 36 / 0.45);
-  color: inherit;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
   border-radius: 0.125rem;
   box-shadow: inset 0 0 0 1.5px rgb(217 119 6 / 0.75);
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
 
+.pdf-viewer-page .react-pdf__Page {
+  background: #fff;
+}
+
+.pdf-viewer-page .react-pdf__Page canvas {
+  display: block;
+  background: #fff;
+}
+
 .pdf-viewer-page .react-pdf__Page__textContent,
-.pdf-viewer-page .react-pdf__Page__textContent span {
+.pdf-viewer-page .textLayer {
+  text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+}
+
+.pdf-viewer-page .react-pdf__Page__textContent,
+.pdf-viewer-page .react-pdf__Page__textContent span,
+.pdf-viewer-page .textLayer,
+.pdf-viewer-page .textLayer span {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  background-color: transparent;
   user-select: text;
   -webkit-user-select: text;
+}
+
+.pdf-viewer-page .react-pdf__Page__textContent .pdf-search-highlight,
+.pdf-viewer-page .textLayer .pdf-search-highlight {
+  background-color: rgb(254 249 195 / 0.55) !important;
+}
+
+.pdf-viewer-page .react-pdf__Page__textContent .pdf-search-highlight-active,
+.pdf-viewer-page .textLayer .pdf-search-highlight-active {
+  background-color: rgb(251 191 36 / 0.45) !important;
 }
