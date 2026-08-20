@@ -430,9 +430,6 @@ export function PdfViewer({
           ) : (
             <Document
               file={fileSource}
-              options={{
-                isOffscreenCanvasSupported: false,
-              }}
               loading={
                 <div className="rounded-xl border border-border/60 bg-card p-10 text-center text-sm text-muted-foreground">
                   {t.reader.loading}
@@ -462,7 +459,6 @@ export function PdfViewer({
                 key={`${pdf.id}-${pageNumber}-${scale}-${activeQuery}-${currentResultIndex}`}
                 pageNumber={pageNumber}
                 scale={scale}
-                canvasBackground="#ffffff"
                 renderTextLayer
                 renderAnnotationLayer={false}
                 customTextRenderer={

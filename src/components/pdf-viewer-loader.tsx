@@ -25,9 +25,13 @@ export function PdfViewerLoader({
   >(null);
 
   useEffect(() => {
-    void import("@/components/pdf-viewer").then((module) => {
-      setViewerComponent(() => module.PdfViewer);
-    });
+    void import("@/components/pdf-viewer")
+      .then((module) => {
+        setViewerComponent(() => module.PdfViewer);
+      })
+      .catch((error) => {
+        console.error("Erro ao carregar o leitor de PDF:", error);
+      });
   }, []);
 
   if (!ViewerComponent) {
