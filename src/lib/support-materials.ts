@@ -822,6 +822,141 @@ const SUPPORT_FAITH_TESTIMONIAL_VIDEOS: LocalizedSupportVideo[] = [
   },
 ];
 
+const AHA_TESTIMONIAL_SUBTITLES: Record<UserLanguage, string> = {
+  pt: "Testemunhos sobre Ahá",
+  es: "Testimonios sobre Ahá",
+  en: "Testimonies on Ahá",
+};
+
+const SUPPORT_AHA_TESTIMONIAL_VIDEOS: LocalizedSupportVideo[] = [
+  {
+    id: "testemunho-aha-01-valcir-zancan",
+    youtubeId: "VYra5tJ2dFw",
+    titles: {
+      pt: "01 — Valcir Zancan | O caminho para a perfeição individual é uma batalha diária",
+      es: "01 — Valcir Zancan | El camino hacia la perfección individual es una batalla diaria",
+      en: "01 — Valcir Zancan | The path to individual perfection is a daily battle",
+    },
+  },
+  {
+    id: "testemunho-aha-02-sandy-ji-bun",
+    youtubeId: "G9HvC-q6jzU",
+    titles: {
+      pt: "02 — Sandy Ji Bun | O julgamento pela palavra",
+      es: "02 — Sandy Ji Bun | El juicio por la palabra",
+      en: "02 — Sandy Ji Bun | The judgment by the Word",
+    },
+  },
+  {
+    id: "testemunho-aha-03-melissa-vino",
+    youtubeId: "a0p3jez7dP0",
+    titles: {
+      pt: "03 — Melissa Vino | Libertação de Espíritos",
+      es: "03 — Melissa Vino | Liberación de Espíritus",
+      en: "03 — Melissa Vino | Liberation of Spirits",
+    },
+  },
+  {
+    id: "testemunho-aha-04-sophia-eun-joung",
+    youtubeId: "FFMpHiv6xGc",
+    titles: {
+      pt: "04 — Sophia Eun Joung | Onde posso realmente encontrar Deus?",
+      es: "04 — Sophia Eun Joung | ¿Dónde puedo realmente encontrar a Dios?",
+      en: "04 — Sophia Eun Joung | Where can I truly find God?",
+    },
+  },
+  {
+    id: "testemunho-aha-05-dong-ok-kim",
+    youtubeId: "wmdUj4CoWhc",
+    titles: {
+      pt: "05 — Dong Ok Kim | “Deus, Venha comigo!”",
+      es: "05 — Dong Ok Kim | “¡Dios, ven conmigo!”",
+      en: "05 — Dong Ok Kim | “God, come with me!”",
+    },
+  },
+  {
+    id: "testemunho-aha-06-duhee-alves",
+    youtubeId: "SPE_wmhPVg0",
+    titles: {
+      pt: "06 — Duhee Alves | Experiência com Deus, através de uma Capivara",
+      es: "06 — Duhee Alves | Experiencia con Dios a través de un capibara",
+      en: "06 — Duhee Alves | Experience with God through a capybara",
+    },
+  },
+  {
+    id: "testemunho-aha-07-caue-il-jin",
+    youtubeId: "-Etb2i-255k",
+    titles: {
+      pt: "07 — Cauê Il Jin | Qualificação para ser um líder",
+      es: "07 — Cauê Il Jin | Calificación para ser un líder",
+      en: "07 — Cauê Il Jin | Qualification to be a leader",
+    },
+  },
+  {
+    id: "testemunho-aha-08-miun-cypion",
+    youtubeId: "cOVoE8aryc8",
+    titles: {
+      pt: "08 — Miun Cypion | Qual a minha visão de um verdadeiro líder?",
+      es: "08 — Miun Cypion | ¿Cuál es mi visión de un verdadero líder?",
+      en: "08 — Miun Cypion | What is my vision of a true leader?",
+    },
+  },
+  {
+    id: "testemunho-aha-09-abril-gladys",
+    youtubeId: "f3o_3N-Z8Jw",
+    titles: {
+      pt: "09 — Abril Gladys | Eu não queria ser uma preocupação para Deus",
+      es: "09 — Abril Gladys | No quería ser una preocupación para Dios",
+      en: "09 — Abril Gladys | I did not want to be a concern for God",
+    },
+  },
+  {
+    id: "testemunho-aha-10-diego-asla",
+    youtubeId: "tH4OKRMolkQ",
+    titles: {
+      pt: "10 — Diego Asla | Refleti sobre “Será que eu cumpri a minha...”",
+      es: "10 — Diego Asla | Reflexioné sobre “¿Habré cumplido mi...”",
+      en: "10 — Diego Asla | I reflected on “Did I fulfill my...”",
+    },
+  },
+  {
+    id: "testemunho-aha-11-juan-alberto",
+    youtubeId: "2BCIzV8e5qY",
+    titles: {
+      pt: "11 — Juan Alberto | Uma voz disse “Eu sou o Deus de Abraão, Isaac e Jacó”",
+      es: "11 — Juan Alberto | Una voz dijo “Yo soy el Dios de Abraham, Isaac y Jacob”",
+      en: "11 — Juan Alberto | A voice said “I am the God of Abraham, Isaac and Jacob”",
+    },
+  },
+  {
+    id: "testemunho-aha-12-alexandre-magalhaes",
+    youtubeId: "tXWgEoSWkUY",
+    titles: {
+      pt: "12 — Alexandre Magalhães | Exercitando com clareza as minhas naturezas...",
+      es: "12 — Alexandre Magalhães | Ejercitando con claridad mis naturalezas...",
+      en: "12 — Alexandre Magalhães | Clearly exercising my natures...",
+    },
+  },
+  {
+    id: "testemunho-aha-13-jhordan-ribeiro",
+    youtubeId: "xZ6k9oQUPzQ",
+    titles: {
+      pt: "13 — Jhordan Ribeiro | Como seguir um líder com comportamentos não...",
+      es: "13 — Jhordan Ribeiro | Cómo seguir a un líder con comportamientos no...",
+      en: "13 — Jhordan Ribeiro | How to follow a leader with behaviors that are not...",
+    },
+  },
+  {
+    id: "testemunho-aha-14-saul-gabriel",
+    youtubeId: "VfLvbYNVYVM",
+    titles: {
+      pt: "14 — Saúl Gabriel | Como chegamos até aqui?",
+      es: "14 — Saúl Gabriel | ¿Cómo llegamos hasta aquí?",
+      en: "14 — Saúl Gabriel | How did we get here?",
+    },
+  },
+];
+
 function localizeSupportVideos(
   videos: LocalizedSupportVideo[],
   language: UserLanguage,
@@ -842,6 +977,16 @@ export function getSupportFaithTestimonialVideos(
     SUPPORT_FAITH_TESTIMONIAL_VIDEOS,
     language,
     FAITH_TESTIMONIAL_SUBTITLES[language],
+  );
+}
+
+export function getSupportAhaTestimonialVideos(
+  language: UserLanguage,
+): SupportVideo[] {
+  return localizeSupportVideos(
+    SUPPORT_AHA_TESTIMONIAL_VIDEOS,
+    language,
+    AHA_TESTIMONIAL_SUBTITLES[language],
   );
 }
 

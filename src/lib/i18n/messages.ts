@@ -67,6 +67,7 @@ export type AppMessages = {
     subregion2VideosTitle: string;
     testimonialsTitle: string;
     faithTestimonialsTitle: string;
+    ahaTestimonialsTitle: string;
     emptyDownloads: string;
     emptyVideos: string;
     swipeHint: string;
@@ -186,6 +187,7 @@ const pt: AppMessages = {
     subregion2VideosTitle: "Vídeos de Estudo do Princípio Divino da Subregião 2",
     testimonialsTitle: "Testemunhos sobre Restauração Material",
     faithTestimonialsTitle: "Testemunhos sobre Vida de Fé",
+    ahaTestimonialsTitle: "Testemunhos sobre Ahá",
     emptyDownloads: "Nenhum material para download ainda.",
     emptyVideos: "Nenhum vídeo disponível ainda.",
     swipeHint: "Deslize ou use as setas",
@@ -307,6 +309,7 @@ const en: AppMessages = {
     subregion2VideosTitle: "Divine Principle Study Videos from Subregion 2",
     testimonialsTitle: "Testimonies on Fundraising",
     faithTestimonialsTitle: "Testimonies on the Life of Faith",
+    ahaTestimonialsTitle: "Testimonies on Ahá",
     emptyDownloads: "No downloadable materials yet.",
     emptyVideos: "No videos available yet.",
     swipeHint: "Swipe or use the arrows",
@@ -430,6 +433,7 @@ const es: AppMessages = {
     subregion2VideosTitle: "Videos de Estudio del Principio Divino de la Subregión 2",
     testimonialsTitle: "Testimonios sobre Restauración Material",
     faithTestimonialsTitle: "Testimonios sobre Vida de Fe",
+    ahaTestimonialsTitle: "Testimonios sobre Ahá",
     emptyDownloads: "Aún no hay materiales para descargar.",
     emptyVideos: "Aún no hay videos disponibles.",
     swipeHint: "Desliza o usa las flechas",

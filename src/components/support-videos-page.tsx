@@ -10,6 +10,7 @@ import {
   SupportMaterialsEmpty,
 } from "@/components/support-materials-carousel";
 import {
+  getSupportAhaTestimonialVideos,
   getSupportFaithTestimonialVideos,
   getSupportSubregion2Videos,
   getSupportTestimonialVideos,
@@ -67,6 +68,7 @@ export function SupportVideosPage({ session }: SupportVideosPageProps) {
   const subregion2Videos = getSupportSubregion2Videos(language);
   const testimonials = getSupportTestimonialVideos(language);
   const faithTestimonials = getSupportFaithTestimonialVideos(language);
+  const ahaTestimonials = getSupportAhaTestimonialVideos(language);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">
@@ -111,6 +113,12 @@ export function SupportVideosPage({ session }: SupportVideosPageProps) {
           title={t.support.faithTestimonialsTitle}
           hint={t.support.videosHint}
           videos={faithTestimonials}
+          emptyMessage={t.support.emptyVideos}
+        />
+        <VideoTrackSection
+          title={t.support.ahaTestimonialsTitle}
+          hint={t.support.videosHint}
+          videos={ahaTestimonials}
           emptyMessage={t.support.emptyVideos}
         />
       </main>
