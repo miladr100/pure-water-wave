@@ -35,6 +35,15 @@ const SUPPORT_DOWNLOADS_PT: SupportDownload[] = [
     fileLabel: "Baixar PDF",
   },
   {
+    id: "livro-hdh-palavras-verdadeiros-pais-pt",
+    title: "Livro de HDH das Palavras dos Verdadeiros Pais",
+    subtitle: "Material para download (PDF)",
+    thumbnailUrl: "/library-previews/livro-hdh-palavras-verdadeiros-pais-pt.jpeg",
+    fileUrl:
+      "https://drive.google.com/file/d/1DMjMxkcJXY7jQCBBhRfgqifV3OO_BC_-/view?usp=sharing",
+    fileLabel: "Baixar PDF",
+  },
+  {
     id: "hj-journal-pt",
     title: "HJ Journal",
     subtitle: "Material para download (PDF)",
@@ -89,6 +98,15 @@ const SUPPORT_DOWNLOADS_ES: SupportDownload[] = [
     fileUrl:
       "https://drive.google.com/file/d/1MoALyQAO7g50-bRGtOC4gj6MT8FMlqVu/view?usp=sharing",
     fileLabel: "Baixar PDF",
+  },
+  {
+    id: "libro-hdh-palabras-padres-verdaderos-es",
+    title: "Libro de HDH de las Palabras de los Padres Verdaderos",
+    subtitle: "Material para descargar",
+    thumbnailUrl: "/library-previews/libro-hdh-palabras-padres-verdaderos-es.jpeg",
+    fileUrl:
+      "https://drive.google.com/file/d/1Q1aiglsoK1urMIOMngHUgZlkTIyHaxaJ/view?usp=sharing",
+    fileLabel: "Abrir PDF",
   },
   {
     id: "ficha-compromiso-es",
