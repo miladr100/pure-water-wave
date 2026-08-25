@@ -60,6 +60,7 @@
 }
 
 :root {
+  color-scheme: light;
   --radius: 1rem;
   --background: oklch(0.99 0.005 220);
   --foreground: oklch(0.20 0.04 235);
@@ -100,6 +101,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: oklch(0.18 0.04 235);
   --foreground: oklch(0.97 0.01 220);
   --card: oklch(0.22 0.05 235);

@@ -26,6 +26,7 @@ export function SupportMaterialsPage({ session }: SupportMaterialsPageProps) {
       <LibraryHeader
         title={t.header.supportTitle}
         subtitle={t.header.supportSubtitle(firstName)}
+        fullName={session.fullName}
         showSupportMaterialsLink={false}
         showBackToLibrary
       />

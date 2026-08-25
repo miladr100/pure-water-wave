@@ -4,9 +4,8 @@ import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { ArrowLeft, BookOpen, Loader2, Send, Sparkles } from "lucide-react";
 
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { LogoutButton } from "@/components/logout-button";
-import { BrandLogo } from "@/components/brand-logo";
+import { LibrarySettingsMenu } from "@/components/library-settings-menu";
 import { useLocale } from "@/components/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -128,7 +127,10 @@ export function LibraryAiChat({ session }: LibraryAiChatProps) {
       <header className="border-b border-border/60 bg-card/80 backdrop-blur">
         <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-4 px-6 py-4">
           <div className="flex min-w-0 items-center gap-3">
-            <BrandLogo className="h-9 w-9 shrink-0" />
+            <LibrarySettingsMenu
+              fullName={session.fullName}
+              logoClassName="h-9 w-9"
+            />
             <div className="min-w-0">
               <p className="truncate font-display text-lg font-semibold text-primary-deep">
                 {t.aiChat.title}
@@ -146,7 +148,6 @@ export function LibraryAiChat({ session }: LibraryAiChatProps) {
                 {t.common.library}
               </Link>
             </Button>
-            <LanguageSwitcher />
             <LogoutButton />
           </div>
         </div>

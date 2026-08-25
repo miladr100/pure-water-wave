@@ -75,6 +75,7 @@ export function SupportVideosPage({ session }: SupportVideosPageProps) {
       <LibraryHeader
         title={t.header.videosTitle}
         subtitle={t.header.videosSubtitle(firstName)}
+        fullName={session.fullName}
         showVideosLink={false}
         showBackToLibrary
       />

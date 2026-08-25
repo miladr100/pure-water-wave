@@ -23,6 +23,7 @@ export function LibraryDashboard({ session }: LibraryDashboardProps) {
       <LibraryHeader
         title={t.header.libraryTitle}
         subtitle={t.header.librarySubtitle(firstName)}
+        fullName={session.fullName}
       />
 
       <main className="mx-auto max-w-7xl px-6 py-10">

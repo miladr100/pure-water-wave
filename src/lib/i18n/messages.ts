@@ -107,6 +107,28 @@ export type AppMessages = {
     noAnswer: string;
     errorReply: (message: string) => string;
   };
+  settings: {
+    open: string;
+    title: string;
+    description: string;
+    name: string;
+    saveName: string;
+    saving: string;
+    nameUpdated: string;
+    nameFailed: string;
+    passwordSection: string;
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+    changePassword: string;
+    changingPassword: string;
+    passwordUpdated: string;
+    passwordFailed: string;
+    passwordsMismatch: string;
+    appearance: string;
+    light: string;
+    dark: string;
+  };
 };
 
 const pt: AppMessages = {
@@ -231,6 +253,28 @@ const pt: AppMessages = {
     noAnswer: "Não encontrei uma resposta nos livros.",
     errorReply: (message) => `Não consegui responder agora: ${message}`,
   },
+  settings: {
+    open: "Abrir configurações",
+    title: "Configurações",
+    description: "Atualize seu nome, senha, aparência e idioma.",
+    name: "Nome",
+    saveName: "Salvar nome",
+    saving: "Salvando...",
+    nameUpdated: "Nome atualizado.",
+    nameFailed: "Não foi possível atualizar o nome.",
+    passwordSection: "Alterar senha",
+    currentPassword: "Senha atual",
+    newPassword: "Nova senha",
+    confirmPassword: "Confirmar nova senha",
+    changePassword: "Alterar senha",
+    changingPassword: "Alterando...",
+    passwordUpdated: "Senha alterada.",
+    passwordFailed: "Não foi possível alterar a senha.",
+    passwordsMismatch: "As senhas não coincidem.",
+    appearance: "Aparência",
+    light: "Claro",
+    dark: "Escuro",
+  },
 };
 
 const en: AppMessages = {
@@ -351,6 +395,28 @@ const en: AppMessages = {
     failed: "Could not get an answer",
     noAnswer: "I could not find an answer in the books.",
     errorReply: (message) => `I could not answer right now: ${message}`,
+  },
+  settings: {
+    open: "Open settings",
+    title: "Settings",
+    description: "Update your name, password, appearance, and language.",
+    name: "Name",
+    saveName: "Save name",
+    saving: "Saving...",
+    nameUpdated: "Name updated.",
+    nameFailed: "Could not update the name.",
+    passwordSection: "Change password",
+    currentPassword: "Current password",
+    newPassword: "New password",
+    confirmPassword: "Confirm new password",
+    changePassword: "Change password",
+    changingPassword: "Changing...",
+    passwordUpdated: "Password changed.",
+    passwordFailed: "Could not change the password.",
+    passwordsMismatch: "Passwords do not match.",
+    appearance: "Appearance",
+    light: "Light",
+    dark: "Dark",
   },
 };
 
@@ -477,6 +543,28 @@ const es: AppMessages = {
     failed: "No fue posible obtener la respuesta",
     noAnswer: "No encontré una respuesta en los libros.",
     errorReply: (message) => `No pude responder ahora: ${message}`,
+  },
+  settings: {
+    open: "Abrir configuración",
+    title: "Configuración",
+    description: "Actualiza tu nombre, contraseña, apariencia e idioma.",
+    name: "Nombre",
+    saveName: "Guardar nombre",
+    saving: "Guardando...",
+    nameUpdated: "Nombre actualizado.",
+    nameFailed: "No fue posible actualizar el nombre.",
+    passwordSection: "Cambiar contraseña",
+    currentPassword: "Contraseña actual",
+    newPassword: "Nueva contraseña",
+    confirmPassword: "Confirmar nueva contraseña",
+    changePassword: "Cambiar contraseña",
+    changingPassword: "Cambiando...",
+    passwordUpdated: "Contraseña cambiada.",
+    passwordFailed: "No fue posible cambiar la contraseña.",
+    passwordsMismatch: "Las contraseñas no coinciden.",
+    appearance: "Apariencia",
+    light: "Claro",
+    dark: "Oscuro",
   },
 };
 

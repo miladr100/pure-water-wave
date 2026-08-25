@@ -13,9 +13,8 @@ import {
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import { Document, Page } from "react-pdf";
 
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { LogoutButton } from "@/components/logout-button";
-import { BrandLogo } from "@/components/brand-logo";
+import { LibrarySettingsMenu } from "@/components/library-settings-menu";
 import { useLocale } from "@/components/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -272,7 +271,10 @@ export function PdfViewer({
       <header className="select-none border-b border-border/60 bg-card/80 backdrop-blur">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-4">
           <div className="flex min-w-0 items-center gap-3">
-            <BrandLogo className="h-9 w-9 shrink-0" />
+            <LibrarySettingsMenu
+              fullName={session.fullName}
+              logoClassName="h-9 w-9"
+            />
             <div className="min-w-0">
               <p className="truncate font-display text-lg font-semibold text-primary-deep">
                 {pdf.title}
@@ -290,7 +292,6 @@ export function PdfViewer({
                 {t.common.library}
               </Link>
             </Button>
-            <LanguageSwitcher />
             <LogoutButton />
           </div>
         </div>
