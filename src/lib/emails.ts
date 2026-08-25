@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 
+import { PasswordResetEmail } from "@/app/emails/PasswordResetEmail";
 import { FailureDonationEmail } from "@/app/emails/FailureDonationEmail";
 import { RemarketingDonationEmail } from "@/app/emails/RemarketingDonationEmail";
 import { SuccessDonationEmail } from "@/app/emails/SuccessDonationEmail";
@@ -7,6 +8,36 @@ import { getEmailLogoAttachment } from "@/lib/email-assets";
 import { getDonationPageUrl } from "@/lib/mercadopago";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+interface PasswordResetEmailParams {
+  userFirstname: string;
+  email: string;
+  code: string;
+}
+
+export async function sendEmailPasswordReset({
+  userFirstname,
+  email,
+  code,
+}: PasswordResetEmailParams) {
+  const { error } = await resend.emails.send({
+    from: "Pure Water Wave <contact@purewaterwave.org>",
+    to: [email],
+    subject: "Código para redefinir sua senha",
+    react: PasswordResetEmail({
+      userFirstname,
+      code,
+    }),
+    attachments: [getEmailLogoAttachment()],
+  });
+
+  if (error) {
+    console.error("Error sending password reset email:", error);
+    throw new Error("Error sending password reset email");
+  }
+
+  console.info("E-mail de redefinição de senha enviado para:", email);
+}
 
 interface SuccessDonationEmailParams {
   userFirstname: string;

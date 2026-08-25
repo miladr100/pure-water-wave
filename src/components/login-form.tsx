@@ -118,6 +118,15 @@ export function LoginForm() {
       <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
         {isLoading ? "Entrando..." : "Entrar"}
       </Button>
+
+      <p className="text-center text-sm text-muted-foreground">
+        <Link
+          href="/esqueci-senha"
+          className="font-medium text-primary hover:underline"
+        >
+          Esqueci minha senha
+        </Link>
+      </p>
     </form>
   );
 }
