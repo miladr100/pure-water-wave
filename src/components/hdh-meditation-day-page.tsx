@@ -11,11 +11,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { SessionPayload } from "@/lib/auth";
 import { formatHdhTitle } from "@/lib/hdh-title";
-import type { HdhMeditationDay } from "@/lib/hdh-meditation";
+import { getHdhMeditationDay } from "@/lib/hdh-meditation";
 
 type HdhMeditationDayPageProps = {
   session: SessionPayload;
-  day: HdhMeditationDay;
+  dayId: number;
   previousDayId: number | null;
   nextDayId: number | null;
 };
@@ -31,13 +31,16 @@ function emptyAnswers(count: number) {
 
 export function HdhMeditationDayPage({
   session,
-  day,
+  dayId,
   previousDayId,
   nextDayId,
 }: HdhMeditationDayPageProps) {
-  const { t } = useLocale();
+  const { language, t } = useLocale();
+  const day = getHdhMeditationDay(dayId, language);
   const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
-  const [answers, setAnswers] = useState(() => emptyAnswers(day.questions.length));
+  const [answers, setAnswers] = useState(() =>
+    emptyAnswers(day?.questions.length ?? 0),
+  );
   const [inspiration, setInspiration] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -45,6 +48,10 @@ export function HdhMeditationDayPage({
   const [error, setError] = useState("");
 
   const loadEntry = useCallback(async () => {
+    if (!day) {
+      return;
+    }
+
     setIsLoading(true);
     setError("");
     setInfo("");
@@ -74,11 +81,15 @@ export function HdhMeditationDayPage({
     } finally {
       setIsLoading(false);
     }
-  }, [day.id, day.questions, t.hdh.loadFailed]);
+  }, [day, t.hdh.loadFailed]);
 
   useEffect(() => {
     void loadEntry();
   }, [loadEntry]);
+
+  if (!day) {
+    return null;
+  }
 
   async function handleSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

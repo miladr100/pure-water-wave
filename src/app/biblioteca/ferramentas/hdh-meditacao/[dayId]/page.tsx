@@ -21,7 +21,8 @@ export async function generateMetadata({
   params,
 }: HdhDayRouteProps): Promise<Metadata> {
   const { dayId } = await params;
-  const day = parseHdhDayId(dayId);
+  const session = await getSession();
+  const day = parseHdhDayId(dayId, session?.language ?? "pt");
 
   if (!day) {
     return {
@@ -31,7 +32,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `Dia ${day.id}: ${formatHdhTitle(day.title)} — Biblioteca Água Pura`,
+    title: `${formatHdhTitle(day.title)} — Biblioteca Água Pura`,
     robots: { index: false, follow: false },
   };
 }
@@ -67,7 +68,7 @@ export default async function BibliotecaHdhMeditacaoDayPage({
   return (
     <HdhMeditationDayPage
       session={session}
-      day={day}
+      dayId={day.id}
       previousDayId={previousDayId}
       nextDayId={nextDayId}
     />

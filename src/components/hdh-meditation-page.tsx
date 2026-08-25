@@ -15,7 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { SessionPayload } from "@/lib/auth";
-import { HDH_MEDITATION_DAYS } from "@/lib/hdh-meditation";
+import { getHdhMeditationDays } from "@/lib/hdh-meditation";
 import { formatHdhTitle } from "@/lib/hdh-title";
 
 type HdhMeditationPageProps = {
@@ -23,9 +23,10 @@ type HdhMeditationPageProps = {
 };
 
 export function HdhMeditationPage({ session }: HdhMeditationPageProps) {
-  const { t } = useLocale();
+  const { language, t } = useLocale();
   const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const [savedDayIds, setSavedDayIds] = useState<Set<number>>(new Set());
+  const days = getHdhMeditationDays(language);
 
   useEffect(() => {
     let cancelled = false;
@@ -80,7 +81,7 @@ export function HdhMeditationPage({ session }: HdhMeditationPageProps) {
         </section>
 
         <section className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          {HDH_MEDITATION_DAYS.map((day) => {
+          {days.map((day) => {
             const saved = savedDayIds.has(day.id);
 
             return (

@@ -75,7 +75,7 @@ export async function GET(request: Request) {
     }
 
     const dayId = Number(dayIdRaw);
-    const day = getHdhMeditationDay(dayId);
+    const day = getHdhMeditationDay(dayId, session.language);
 
     if (!day) {
       return NextResponse.json({ error: "Dia inválido" }, { status: 400 });
@@ -116,7 +116,7 @@ export async function PUT(request: Request) {
 
     const body = (await request.json()) as HdhReflectionBody;
     const dayId = Number(body.dayId);
-    const day = getHdhMeditationDay(dayId);
+    const day = getHdhMeditationDay(dayId, session.language);
 
     if (!day) {
       return NextResponse.json({ error: "Dia inválido" }, { status: 400 });
@@ -131,7 +131,14 @@ export async function PUT(request: Request) {
       );
     }
 
-    const normalized = normalizeAnswers(body.answers, day.questions.length);
+    const answerCount = Math.min(
+      8,
+      Math.max(
+        day.questions.length,
+        Array.isArray(body.answers) ? body.answers.length : 0,
+      ),
+    );
+    const normalized = normalizeAnswers(body.answers, answerCount);
 
     if ("error" in normalized) {
       return NextResponse.json({ error: normalized.error }, { status: 400 });

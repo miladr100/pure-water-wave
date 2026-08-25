@@ -128,10 +128,30 @@ const SUPPORT_DOWNLOADS_ES: SupportDownload[] = [
   },
 ];
 
+const SUPPORT_DOWNLOADS_EN: SupportDownload[] = [
+  {
+    id: "hdh-meditation-true-parents-words-en",
+    title: "HDH and Meditation of True Parents Words",
+    subtitle: "Downloadable material (PDF)",
+    thumbnailUrl: "/library-previews/hdh-meditation-true-parents-words-en.jpeg",
+    fileUrl:
+      "https://drive.google.com/file/d/1mc8bShpAIdSRgWF2pEtF5ASEGplHdFKk/view?usp=sharing",
+    fileLabel: "Download PDF",
+  },
+];
+
 export function getSupportDownloadsByLanguage(
   language: UserLanguage,
 ): SupportDownload[] {
-  return language === "es" ? SUPPORT_DOWNLOADS_ES : SUPPORT_DOWNLOADS_PT;
+  if (language === "es") {
+    return SUPPORT_DOWNLOADS_ES;
+  }
+
+  if (language === "en") {
+    return SUPPORT_DOWNLOADS_EN;
+  }
+
+  return SUPPORT_DOWNLOADS_PT;
 }
 
 const SUPPORT_VIDEOS_PT: SupportVideo[] = [
