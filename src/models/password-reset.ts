@@ -12,6 +12,7 @@ const passwordResetSchema = new Schema(
     codeHash: { type: String, required: true },
     expiresAt: { type: Date, required: true, expires: 0 },
     attempts: { type: Number, default: 0, required: true },
+    verifiedAt: { type: Date, default: null },
   },
   { timestamps: true },
 );

@@ -1,17 +1,16 @@
 import { NextResponse } from "next/server";
 
-import { sendEmailPasswordChanged } from "@/lib/emails";
 import { connectDB } from "@/lib/mongodb";
-import { hashPassword } from "@/lib/password";
+import { verifyPassword } from "@/lib/password";
 import { PasswordReset } from "@/models/password-reset";
 import { SystemUser } from "@/models/system-user";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MIN_PASSWORD_LENGTH = 6;
+const MAX_ATTEMPTS = 5;
 
-type ResetBody = {
+type VerifyBody = {
   email?: string;
-  password?: string;
+  code?: string;
 };
 
 export async function POST(request: Request) {
@@ -23,17 +22,17 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = (await request.json()) as ResetBody;
+    const body = (await request.json()) as VerifyBody;
     const email = body.email?.trim().toLowerCase() ?? "";
-    const password = body.password ?? "";
+    const code = body.code?.replace(/\s+/g, "") ?? "";
 
     if (!email || !EMAIL_PATTERN.test(email)) {
       return NextResponse.json({ error: "Informe um e-mail válido" }, { status: 400 });
     }
 
-    if (password.length < MIN_PASSWORD_LENGTH) {
+    if (!/^\d{6}$/.test(code)) {
       return NextResponse.json(
-        { error: `A senha deve ter pelo menos ${MIN_PASSWORD_LENGTH} caracteres` },
+        { error: "Informe o código de 6 dígitos" },
         { status: 400 },
       );
     }
@@ -46,7 +45,7 @@ export async function POST(request: Request) {
 
     if (!user) {
       return NextResponse.json(
-        { error: "Confirme o código antes de redefinir a senha" },
+        { error: "Código inválido ou expirado" },
         { status: 400 },
       );
     }
@@ -57,42 +56,38 @@ export async function POST(request: Request) {
 
     if (!reset || reset.expiresAt.getTime() < Date.now()) {
       return NextResponse.json(
-        { error: "Código inválido ou expirado. Solicite um novo código." },
+        { error: "Código inválido ou expirado" },
         { status: 400 },
       );
     }
 
-    if (!reset.verifiedAt) {
+    if (reset.attempts >= MAX_ATTEMPTS) {
       return NextResponse.json(
-        { error: "Confirme o código antes de redefinir a senha" },
+        { error: "Muitas tentativas. Solicite um novo código." },
+        { status: 429 },
+      );
+    }
+
+    const isValidCode = await verifyPassword(code, reset.codeHash);
+
+    if (!isValidCode) {
+      reset.attempts += 1;
+      await reset.save();
+
+      return NextResponse.json(
+        { error: "Código inválido ou expirado" },
         { status: 400 },
       );
     }
 
-    const hashedPassword = await hashPassword(password);
-
-    await SystemUser.updateOne(
-      { _id: user._id },
-      { password: hashedPassword },
-    );
-    await PasswordReset.deleteMany({ email: user.email });
-
-    const firstName = user.fullName.trim().split(/\s+/)[0] ?? user.fullName;
-
-    try {
-      await sendEmailPasswordChanged({
-        userFirstname: firstName,
-        email: user.email,
-      });
-    } catch (error) {
-      console.error("Senha alterada, mas o e-mail de aviso falhou:", error);
-    }
+    reset.verifiedAt = new Date();
+    await reset.save();
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    console.error("Erro ao redefinir senha:", error);
+    console.error("Erro ao confirmar código de redefinição:", error);
     return NextResponse.json(
-      { error: "Não foi possível redefinir a senha. Tente novamente." },
+      { error: "Não foi possível confirmar o código. Tente novamente." },
       { status: 500 },
     );
   }

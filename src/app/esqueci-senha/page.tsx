@@ -43,7 +43,7 @@ export default async function ForgotPasswordPage() {
               Esqueci minha senha
             </CardTitle>
             <CardDescription>
-              Informe seu e-mail para receber um código temporário.
+              Informe o e-mail, confirme o código e defina uma nova senha.
             </CardDescription>
           </CardHeader>
           <CardContent>
