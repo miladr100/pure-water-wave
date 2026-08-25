@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, NotebookPen } from "lucide-react";
+import { ArrowRight, BookOpen, NotebookPen } from "lucide-react";
 
 import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
@@ -31,12 +31,23 @@ function toolCopy(
     };
   }
 
+  if (tool.id === "hdh-meditation") {
+    return {
+      name: t.tools.hdhName,
+      description: t.tools.hdhDescription,
+    };
+  }
+
   return { name: tool.id, description: "" };
 }
 
 function ToolIcon({ icon }: { icon: LibraryTool["icon"] }) {
   if (icon === "journal") {
     return <NotebookPen className="h-8 w-8" />;
+  }
+
+  if (icon === "hdh") {
+    return <BookOpen className="h-8 w-8" />;
   }
 
   return null;

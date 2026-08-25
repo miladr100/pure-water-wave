@@ -25,6 +25,8 @@ export type AppMessages = {
     toolsSubtitle: (firstName: string) => string;
     journalTitle: string;
     journalSubtitle: (firstName: string) => string;
+    hdhTitle: string;
+    hdhSubtitle: (firstName: string) => string;
   };
   dashboard: {
     heading: string;
@@ -118,6 +120,31 @@ export type AppMessages = {
     open: string;
     hjJournalName: string;
     hjJournalDescription: string;
+    hdhName: string;
+    hdhDescription: string;
+  };
+  hdh: {
+    brand: string;
+    day: (n: number) => string;
+    daysHeading: string;
+    daysDescription: string;
+    questionsCount: (n: number) => string;
+    openDay: string;
+    completed: string;
+    backToDays: string;
+    previousDay: string;
+    nextDay: string;
+    readingTitle: string;
+    questionsTitle: string;
+    inspirationTitle: string;
+    inspirationHint: string;
+    inspirationPlaceholder: string;
+    answerPlaceholder: string;
+    save: string;
+    saving: string;
+    saved: string;
+    saveFailed: string;
+    loadFailed: string;
   };
   journal: {
     brand: string;
@@ -200,6 +227,9 @@ const pt: AppMessages = {
     journalTitle: "HJ Journal",
     journalSubtitle: (firstName) =>
       `Olá, ${firstName}. Registre a reflexão e o objetivo do dia.`,
+    hdhTitle: "Hoon Dok Hae e Meditação",
+    hdhSubtitle: (firstName) =>
+      `Olá, ${firstName}. Leia a palavra, reflita e registre sua inspiração.`,
   },
   dashboard: {
     heading: "Sua biblioteca pastoral",
@@ -307,6 +337,35 @@ const pt: AppMessages = {
     hjJournalName: "HJ Journal",
     hjJournalDescription:
       "Diário Hyo Jeong para a reflexão da palavra, anotações do ahá e análise de cada dia da jornada.",
+    hdhName: "Hoon Dok Hae e Meditação",
+    hdhDescription:
+      "Livro de Hoon Dok Hae e meditação das Palavras dos Verdadeiros Pais. Cada dia um tema, com leitura, perguntas de reflexão e espaço para a inspiração.",
+  },
+  hdh: {
+    brand: "Palavras dos Verdadeiros Pais",
+    day: (n) => `Dia ${n}`,
+    daysHeading: "Hoon Dok Hae e Meditação",
+    daysDescription:
+      "Escolha um dia para ler o tema, responder às perguntas de reflexão e guardar a inspiração recebida.",
+    questionsCount: (n) =>
+      n === 1 ? "1 pergunta de reflexão" : `${n} perguntas de reflexão`,
+    openDay: "Abrir leitura",
+    completed: "Salvo",
+    backToDays: "Todos os dias",
+    previousDay: "Dia anterior",
+    nextDay: "Próximo dia",
+    readingTitle: "Leitura",
+    questionsTitle: "Perguntas de reflexão",
+    inspirationTitle: "Inspiração",
+    inspirationHint:
+      "Escreva o que o Céu falou ao seu coração enquanto lia e meditava.",
+    inspirationPlaceholder: "Registre aqui a sua inspiração...",
+    answerPlaceholder: "Escreva a sua reflexão...",
+    save: "Salvar reflexão",
+    saving: "Salvando...",
+    saved: "Reflexão salva.",
+    saveFailed: "Não foi possível salvar a reflexão.",
+    loadFailed: "Não foi possível carregar a reflexão.",
   },
   journal: {
     brand: "Hyo Jeong Journal",
@@ -389,6 +448,9 @@ const en: AppMessages = {
     journalTitle: "HJ Journal",
     journalSubtitle: (firstName) =>
       `Hello, ${firstName}. Record today's reflection and goal.`,
+    hdhTitle: "Hoon Dok Hae and Meditation",
+    hdhSubtitle: (firstName) =>
+      `Hello, ${firstName}. Read the Word, reflect, and record your inspiration.`,
   },
   dashboard: {
     heading: "Your pastoral library",
@@ -493,6 +555,35 @@ const en: AppMessages = {
     hjJournalName: "HJ Journal",
     hjJournalDescription:
       "Hyo Jeong journal for reflection on the Word, aha notes, and analysis of each day of the journey.",
+    hdhName: "Hoon Dok Hae and Meditation",
+    hdhDescription:
+      "Hoon Dok Hae and meditation book of the Words of the True Parents. Each day has a theme, with reading, reflection questions, and space for inspiration.",
+  },
+  hdh: {
+    brand: "Words of the True Parents",
+    day: (n) => `Day ${n}`,
+    daysHeading: "Hoon Dok Hae and Meditation",
+    daysDescription:
+      "Choose a day to read the theme, answer the reflection questions, and save the inspiration you received.",
+    questionsCount: (n) =>
+      n === 1 ? "1 reflection question" : `${n} reflection questions`,
+    openDay: "Open reading",
+    completed: "Saved",
+    backToDays: "All days",
+    previousDay: "Previous day",
+    nextDay: "Next day",
+    readingTitle: "Reading",
+    questionsTitle: "Reflection questions",
+    inspirationTitle: "Inspiration",
+    inspirationHint:
+      "Write what Heaven spoke to your heart as you read and meditated.",
+    inspirationPlaceholder: "Record your inspiration here...",
+    answerPlaceholder: "Write your reflection...",
+    save: "Save reflection",
+    saving: "Saving...",
+    saved: "Reflection saved.",
+    saveFailed: "Could not save the reflection.",
+    loadFailed: "Could not load the reflection.",
   },
   journal: {
     brand: "Hyo Jeong Journal",
@@ -575,6 +666,9 @@ const es: AppMessages = {
     journalTitle: "HJ Journal",
     journalSubtitle: (firstName) =>
       `Hola, ${firstName}. Registra la reflexión y el objetivo del día.`,
+    hdhTitle: "Hoon Dok Hae y Meditación",
+    hdhSubtitle: (firstName) =>
+      `Hola, ${firstName}. Lee la Palabra, reflexiona y registra tu inspiración.`,
   },
   dashboard: {
     heading: "Tu biblioteca pastoral",
@@ -684,6 +778,35 @@ const es: AppMessages = {
     hjJournalName: "HJ Journal",
     hjJournalDescription:
       "Diario Hyo Jeong para la reflexión de la Palabra, las anotaciones del ahá y el análisis de cada día de la jornada.",
+    hdhName: "Hoon Dok Hae y Meditación",
+    hdhDescription:
+      "Libro de Hoon Dok Hae y meditación de las Palabras de los Verdaderos Padres. Cada día un tema, con lectura, preguntas de reflexión y espacio para la inspiración.",
+  },
+  hdh: {
+    brand: "Palabras de los Verdaderos Padres",
+    day: (n) => `Día ${n}`,
+    daysHeading: "Hoon Dok Hae y Meditación",
+    daysDescription:
+      "Elige un día para leer el tema, responder las preguntas de reflexión y guardar la inspiración recibida.",
+    questionsCount: (n) =>
+      n === 1 ? "1 pregunta de reflexión" : `${n} preguntas de reflexión`,
+    openDay: "Abrir lectura",
+    completed: "Guardado",
+    backToDays: "Todos los días",
+    previousDay: "Día anterior",
+    nextDay: "Siguiente día",
+    readingTitle: "Lectura",
+    questionsTitle: "Preguntas de reflexión",
+    inspirationTitle: "Inspiración",
+    inspirationHint:
+      "Escribe lo que el Cielo habló a tu corazón mientras leías y meditabas.",
+    inspirationPlaceholder: "Registra aquí tu inspiración...",
+    answerPlaceholder: "Escribe tu reflexión...",
+    save: "Guardar reflexión",
+    saving: "Guardando...",
+    saved: "Reflexión guardada.",
+    saveFailed: "No fue posible guardar la reflexión.",
+    loadFailed: "No fue posible cargar la reflexión.",
   },
   journal: {
     brand: "Hyo Jeong Journal",
