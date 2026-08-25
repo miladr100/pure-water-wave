@@ -36,6 +36,8 @@ import { cn } from "@/lib/utils";
 type LibrarySettingsMenuProps = {
   fullName: string;
   logoClassName?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 function PasswordField({
@@ -91,11 +93,22 @@ function PasswordField({
 export function LibrarySettingsMenu({
   fullName,
   logoClassName = "h-10 w-10",
+  open,
+  onOpenChange,
 }: LibrarySettingsMenuProps) {
   const router = useRouter();
   const { language, t } = useLocale();
   const { theme, setTheme } = useTheme();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isOpen = open ?? internalOpen;
+
+  function setIsOpen(nextOpen: boolean) {
+    if (open === undefined) {
+      setInternalOpen(nextOpen);
+    }
+    onOpenChange?.(nextOpen);
+  }
+
   const [name, setName] = useState(fullName);
   const [nameMessage, setNameMessage] = useState<string | null>(null);
   const [nameError, setNameError] = useState<string | null>(null);
@@ -207,7 +220,7 @@ export function LibrarySettingsMenu({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <button
           type="button"

@@ -6,6 +6,7 @@ export type AppMessages = {
     supportMaterials: string;
     videos: string;
     tools: string;
+    menu: string;
     logout: string;
     loggingOut: string;
     language: string;
@@ -195,6 +196,25 @@ export type AppMessages = {
     light: string;
     dark: string;
   };
+  feedback: {
+    button: string;
+    title: string;
+    description: string;
+    typeLabel: string;
+    typeError: string;
+    typeSuggestion: string;
+    messageLabel: string;
+    messagePlaceholder: string;
+    linkLabel: string;
+    linkPlaceholder: string;
+    imagesLabel: string;
+    imagesHint: string;
+    removeImage: string;
+    send: string;
+    sending: string;
+    sent: string;
+    sendFailed: string;
+  };
 };
 
 const pt: AppMessages = {
@@ -203,6 +223,7 @@ const pt: AppMessages = {
     supportMaterials: "Material de apoio",
     videos: "Vídeos",
     tools: "Ferramentas",
+    menu: "Menu",
     logout: "Sair",
     loggingOut: "Saindo...",
     language: "Idioma",
@@ -416,6 +437,26 @@ const pt: AppMessages = {
     light: "Claro",
     dark: "Escuro",
   },
+  feedback: {
+    button: "Erros e sugestões",
+    title: "Reportar erros e sugestões",
+    description:
+      "Conte o que não está funcionando ou o que podemos melhorar. Enviaremos sua mensagem para a equipe.",
+    typeLabel: "Tipo",
+    typeError: "Reportar um erro",
+    typeSuggestion: "Enviar uma sugestão",
+    messageLabel: "Mensagem",
+    messagePlaceholder: "Descreva o erro ou a sugestão com o máximo de detalhes possível...",
+    linkLabel: "Link (opcional)",
+    linkPlaceholder: "https://...",
+    imagesLabel: "Imagens (opcional)",
+    imagesHint: "Até 3 imagens (JPG, PNG, WEBP ou GIF), no máximo 4 MB cada.",
+    removeImage: "Remover imagem",
+    send: "Enviar",
+    sending: "Enviando...",
+    sent: "Mensagem enviada. Obrigado!",
+    sendFailed: "Não foi possível enviar a mensagem.",
+  },
 };
 
 const en: AppMessages = {
@@ -424,6 +465,7 @@ const en: AppMessages = {
     supportMaterials: "Support materials",
     videos: "Videos",
     tools: "Tools",
+    menu: "Menu",
     logout: "Log out",
     loggingOut: "Logging out...",
     language: "Language",
@@ -634,6 +676,26 @@ const en: AppMessages = {
     light: "Light",
     dark: "Dark",
   },
+  feedback: {
+    button: "Errors & suggestions",
+    title: "Report errors and suggestions",
+    description:
+      "Tell us what is not working or what we can improve. We will send your message to the team.",
+    typeLabel: "Type",
+    typeError: "Report an error",
+    typeSuggestion: "Send a suggestion",
+    messageLabel: "Message",
+    messagePlaceholder: "Describe the error or suggestion with as much detail as possible...",
+    linkLabel: "Link (optional)",
+    linkPlaceholder: "https://...",
+    imagesLabel: "Images (optional)",
+    imagesHint: "Up to 3 images (JPG, PNG, WEBP, or GIF), 4 MB each.",
+    removeImage: "Remove image",
+    send: "Send",
+    sending: "Sending...",
+    sent: "Message sent. Thank you!",
+    sendFailed: "Could not send the message.",
+  },
 };
 
 const es: AppMessages = {
@@ -642,6 +704,7 @@ const es: AppMessages = {
     supportMaterials: "Material de apoyo",
     videos: "Videos",
     tools: "Herramientas",
+    menu: "Menú",
     logout: "Salir",
     loggingOut: "Saliendo...",
     language: "Idioma",
@@ -856,6 +919,26 @@ const es: AppMessages = {
     appearance: "Apariencia",
     light: "Claro",
     dark: "Oscuro",
+  },
+  feedback: {
+    button: "Errores y sugerencias",
+    title: "Reportar errores y sugerencias",
+    description:
+      "Cuéntanos qué no está funcionando o qué podemos mejorar. Enviaremos tu mensaje al equipo.",
+    typeLabel: "Tipo",
+    typeError: "Reportar un error",
+    typeSuggestion: "Enviar una sugerencia",
+    messageLabel: "Mensaje",
+    messagePlaceholder: "Describe el error o la sugerencia con el mayor detalle posible...",
+    linkLabel: "Enlace (opcional)",
+    linkPlaceholder: "https://...",
+    imagesLabel: "Imágenes (opcional)",
+    imagesHint: "Hasta 3 imágenes (JPG, PNG, WEBP o GIF), máximo 4 MB cada una.",
+    removeImage: "Quitar imagen",
+    send: "Enviar",
+    sending: "Enviando...",
+    sent: "Mensaje enviado. ¡Gracias!",
+    sendFailed: "No fue posible enviar el mensaje.",
   },
 };
 

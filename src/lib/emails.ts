@@ -2,6 +2,7 @@ import { Resend } from "resend";
 
 import { PasswordChangedEmail } from "@/app/emails/PasswordChangedEmail";
 import { PasswordResetEmail } from "@/app/emails/PasswordResetEmail";
+import { FeedbackEmail } from "@/app/emails/FeedbackEmail";
 import { FailureDonationEmail } from "@/app/emails/FailureDonationEmail";
 import { RemarketingDonationEmail } from "@/app/emails/RemarketingDonationEmail";
 import { SuccessDonationEmail } from "@/app/emails/SuccessDonationEmail";
@@ -153,4 +154,82 @@ export async function sendEmailRemarketingDonation({
   }
 
   console.info("E-mail de remarketing enviado para:", email);
+}
+
+const FEEDBACK_INBOX = "pure.water.2027@gmail.com";
+
+type FeedbackEmailParams = {
+  type: "error" | "suggestion";
+  message: string;
+  page: string;
+  link: string;
+  imageNames: string[];
+  images: {
+    filename: string;
+    content: string;
+    contentType: string;
+  }[];
+  fullName: string;
+  email: string;
+  login: string;
+  phone: string;
+  churchName: string;
+  country: string;
+  language: string;
+  role: string;
+};
+
+export async function sendEmailFeedback({
+  type,
+  message,
+  page,
+  link,
+  imageNames,
+  images,
+  fullName,
+  email,
+  login,
+  phone,
+  churchName,
+  country,
+  language,
+  role,
+}: FeedbackEmailParams) {
+  const typeLabel = type === "error" ? "Erro" : "Sugestão";
+  const { error } = await resend.emails.send({
+    from: "Pure Water Wave <contact@purewaterwave.org>",
+    to: [FEEDBACK_INBOX],
+    replyTo: email,
+    subject: `[Água Pura] ${typeLabel} de ${fullName}`,
+    react: FeedbackEmail({
+      typeLabel,
+      message,
+      page,
+      link,
+      imageNames,
+      fullName,
+      email,
+      login,
+      phone,
+      churchName,
+      country,
+      language,
+      role,
+    }),
+    attachments: [
+      getEmailLogoAttachment(),
+      ...images.map((image) => ({
+        filename: image.filename,
+        content: image.content,
+        contentType: image.contentType,
+      })),
+    ],
+  });
+
+  if (error) {
+    console.error("Error sending feedback email:", error);
+    throw new Error("Error sending feedback email");
+  }
+
+  console.info("E-mail de feedback enviado para:", FEEDBACK_INBOX);
 }
