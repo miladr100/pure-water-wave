@@ -8,6 +8,7 @@ type LibraryHeaderProps = {
   fullName: string;
   showSupportMaterialsLink?: boolean;
   showVideosLink?: boolean;
+  showToolsLink?: boolean;
   showBackToLibrary?: boolean;
 };
 
@@ -17,6 +18,7 @@ export function LibraryHeader({
   fullName,
   showSupportMaterialsLink = true,
   showVideosLink = true,
+  showToolsLink = true,
   showBackToLibrary = false,
 }: LibraryHeaderProps) {
   return (
@@ -36,6 +38,7 @@ export function LibraryHeader({
           <LibraryHeaderNav
             showSupportMaterialsLink={showSupportMaterialsLink}
             showVideosLink={showVideosLink}
+            showToolsLink={showToolsLink}
             showBackToLibrary={showBackToLibrary}
           />
           <LogoutButton />

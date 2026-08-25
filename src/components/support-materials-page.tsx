@@ -3,12 +3,7 @@
 import { SupportDownloadCard } from "@/components/support-download-card";
 import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
-import {
-  SupportMaterialsCarousel,
-  SupportMaterialsCarouselItem,
-  SupportMaterialsCarouselNavHint,
-  SupportMaterialsEmpty,
-} from "@/components/support-materials-carousel";
+import { SupportMaterialsEmpty } from "@/components/support-materials-carousel";
 import { getSupportDownloadsByLanguage } from "@/lib/support-materials";
 import type { SessionPayload } from "@/lib/auth";
 
@@ -52,16 +47,11 @@ export function SupportMaterialsPage({ session }: SupportMaterialsPageProps) {
           </div>
 
           {downloads.length > 0 ? (
-            <>
-              <SupportMaterialsCarousel>
-                {downloads.map((item) => (
-                  <SupportMaterialsCarouselItem key={item.id}>
-                    <SupportDownloadCard item={item} />
-                  </SupportMaterialsCarouselItem>
-                ))}
-              </SupportMaterialsCarousel>
-              <SupportMaterialsCarouselNavHint />
-            </>
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              {downloads.map((item) => (
+                <SupportDownloadCard key={item.id} item={item} />
+              ))}
+            </div>
           ) : (
             <SupportMaterialsEmpty message={t.support.emptyDownloads} />
           )}

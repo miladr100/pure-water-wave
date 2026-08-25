@@ -5,6 +5,7 @@ export type AppMessages = {
     library: string;
     supportMaterials: string;
     videos: string;
+    tools: string;
     logout: string;
     loggingOut: string;
     language: string;
@@ -20,6 +21,10 @@ export type AppMessages = {
     supportSubtitle: (firstName: string) => string;
     videosTitle: string;
     videosSubtitle: (firstName: string) => string;
+    toolsTitle: string;
+    toolsSubtitle: (firstName: string) => string;
+    journalTitle: string;
+    journalSubtitle: (firstName: string) => string;
   };
   dashboard: {
     heading: string;
@@ -107,6 +112,40 @@ export type AppMessages = {
     noAnswer: string;
     errorReply: (message: string) => string;
   };
+  tools: {
+    heading: string;
+    description: string;
+    open: string;
+    hjJournalName: string;
+    hjJournalDescription: string;
+  };
+  journal: {
+    brand: string;
+    day: (n: number) => string;
+    date: string;
+    hoonDokTitle: string;
+    hoonDokWords: string;
+    hoonDokAha: string;
+    goalTitle: string;
+    goal: string;
+    actionPlan: string;
+    analysisTitle: string;
+    analysisPlaceholder: string;
+    ratingLabel: string;
+    save: string;
+    saving: string;
+    saved: string;
+    saveFailed: string;
+    loadFailed: string;
+    previousDays: string;
+    emptyDays: string;
+    newDay: string;
+    dateInUse: string;
+    jumpToDay: string;
+    previousDay: string;
+    nextDay: string;
+    dayWithDate: (n: number, date: string) => string;
+  };
   settings: {
     open: string;
     title: string;
@@ -136,6 +175,7 @@ const pt: AppMessages = {
     library: "Biblioteca",
     supportMaterials: "Material de apoio",
     videos: "Vídeos",
+    tools: "Ferramentas",
     logout: "Sair",
     loggingOut: "Saindo...",
     language: "Idioma",
@@ -154,6 +194,12 @@ const pt: AppMessages = {
     videosTitle: "Vídeos",
     videosSubtitle: (firstName) =>
       `Olá, ${firstName}. Assista às trilhas de formação.`,
+    toolsTitle: "Ferramentas",
+    toolsSubtitle: (firstName) =>
+      `Olá, ${firstName}. Acesse ferramentas para o seu dia a dia.`,
+    journalTitle: "HJ Journal",
+    journalSubtitle: (firstName) =>
+      `Olá, ${firstName}. Registre a reflexão e o objetivo do dia.`,
   },
   dashboard: {
     heading: "Sua biblioteca pastoral",
@@ -253,6 +299,42 @@ const pt: AppMessages = {
     noAnswer: "Não encontrei uma resposta nos livros.",
     errorReply: (message) => `Não consegui responder agora: ${message}`,
   },
+  tools: {
+    heading: "Ferramentas",
+    description:
+      "Aplicativos para apoiar sua rotina de estudo, reflexão e prática.",
+    open: "Abrir",
+    hjJournalName: "HJ Journal",
+    hjJournalDescription:
+      "Diário Hyo Jeong para a reflexão da palavra, anotações do ahá e análise de cada dia da jornada.",
+  },
+  journal: {
+    brand: "Hyo Jeong Journal",
+    day: (n) => `Dia ${n}`,
+    date: "Data",
+    hoonDokTitle: "Leitura do Hoon Dok do dia",
+    hoonDokWords: "Palavras do HD",
+    hoonDokAha: "“Aha”",
+    goalTitle: "Objetivo do dia",
+    goal: "Objetivo",
+    actionPlan: "Plano de ação para alcançar o objetivo",
+    analysisTitle: "Análise das atividades de hoje",
+    analysisPlaceholder: "Escreva como foi o seu dia e o que aprendeu...",
+    ratingLabel: "Como foi o seu dia?",
+    save: "Salvar dia",
+    saving: "Salvando...",
+    saved: "Dia salvo.",
+    saveFailed: "Não foi possível salvar o diário.",
+    loadFailed: "Não foi possível carregar o diário.",
+    previousDays: "Dias anteriores",
+    emptyDays: "Nenhum dia salvo ainda. Preencha e salve o primeiro registro.",
+    newDay: "Novo dia",
+    dateInUse: "Já existe um dia salvo nesta data.",
+    jumpToDay: "Ir para o dia",
+    previousDay: "Dia anterior",
+    nextDay: "Próximo dia",
+    dayWithDate: (n, date) => `Dia ${n} · ${date}`,
+  },
   settings: {
     open: "Abrir configurações",
     title: "Configurações",
@@ -282,6 +364,7 @@ const en: AppMessages = {
     library: "Library",
     supportMaterials: "Support materials",
     videos: "Videos",
+    tools: "Tools",
     logout: "Log out",
     loggingOut: "Logging out...",
     language: "Language",
@@ -300,6 +383,12 @@ const en: AppMessages = {
     videosTitle: "Videos",
     videosSubtitle: (firstName) =>
       `Hello, ${firstName}. Watch the training video tracks.`,
+    toolsTitle: "Tools",
+    toolsSubtitle: (firstName) =>
+      `Hello, ${firstName}. Open tools for your daily practice.`,
+    journalTitle: "HJ Journal",
+    journalSubtitle: (firstName) =>
+      `Hello, ${firstName}. Record today's reflection and goal.`,
   },
   dashboard: {
     heading: "Your pastoral library",
@@ -396,6 +485,42 @@ const en: AppMessages = {
     noAnswer: "I could not find an answer in the books.",
     errorReply: (message) => `I could not answer right now: ${message}`,
   },
+  tools: {
+    heading: "Tools",
+    description:
+      "Apps to support your study, reflection, and daily practice.",
+    open: "Open",
+    hjJournalName: "HJ Journal",
+    hjJournalDescription:
+      "Hyo Jeong journal for reflection on the Word, aha notes, and analysis of each day of the journey.",
+  },
+  journal: {
+    brand: "Hyo Jeong Journal",
+    day: (n) => `Day ${n}`,
+    date: "Date",
+    hoonDokTitle: "Today's Hoon Dok reading",
+    hoonDokWords: "HD words",
+    hoonDokAha: "“Aha”",
+    goalTitle: "Goal of the day",
+    goal: "Goal",
+    actionPlan: "Action plan to reach the goal",
+    analysisTitle: "Analysis of today's activities",
+    analysisPlaceholder: "Write how your day went and what you learned...",
+    ratingLabel: "How was your day?",
+    save: "Save day",
+    saving: "Saving...",
+    saved: "Day saved.",
+    saveFailed: "Could not save the journal.",
+    loadFailed: "Could not load the journal.",
+    previousDays: "Previous days",
+    emptyDays: "No days saved yet. Fill in and save your first entry.",
+    newDay: "New day",
+    dateInUse: "A day is already saved on this date.",
+    jumpToDay: "Go to day",
+    previousDay: "Previous day",
+    nextDay: "Next day",
+    dayWithDate: (n, date) => `Day ${n} · ${date}`,
+  },
   settings: {
     open: "Open settings",
     title: "Settings",
@@ -425,6 +550,7 @@ const es: AppMessages = {
     library: "Biblioteca",
     supportMaterials: "Material de apoyo",
     videos: "Videos",
+    tools: "Herramientas",
     logout: "Salir",
     loggingOut: "Saliendo...",
     language: "Idioma",
@@ -443,6 +569,12 @@ const es: AppMessages = {
     videosTitle: "Videos",
     videosSubtitle: (firstName) =>
       `Hola, ${firstName}. Mira las pistas de formación.`,
+    toolsTitle: "Herramientas",
+    toolsSubtitle: (firstName) =>
+      `Hola, ${firstName}. Accede a herramientas para tu día a día.`,
+    journalTitle: "HJ Journal",
+    journalSubtitle: (firstName) =>
+      `Hola, ${firstName}. Registra la reflexión y el objetivo del día.`,
   },
   dashboard: {
     heading: "Tu biblioteca pastoral",
@@ -543,6 +675,42 @@ const es: AppMessages = {
     failed: "No fue posible obtener la respuesta",
     noAnswer: "No encontré una respuesta en los libros.",
     errorReply: (message) => `No pude responder ahora: ${message}`,
+  },
+  tools: {
+    heading: "Herramientas",
+    description:
+      "Aplicaciones para apoyar tu estudio, reflexión y práctica diaria.",
+    open: "Abrir",
+    hjJournalName: "HJ Journal",
+    hjJournalDescription:
+      "Diario Hyo Jeong para la reflexión de la Palabra, las anotaciones del ahá y el análisis de cada día de la jornada.",
+  },
+  journal: {
+    brand: "Hyo Jeong Journal",
+    day: (n) => `Día ${n}`,
+    date: "Fecha",
+    hoonDokTitle: "Lectura del Hoon Dok del día",
+    hoonDokWords: "Palabras del HD",
+    hoonDokAha: "“Aha”",
+    goalTitle: "Objetivo del día",
+    goal: "Objetivo",
+    actionPlan: "Plan de acción para alcanzar el objetivo",
+    analysisTitle: "Análisis de las actividades de hoy",
+    analysisPlaceholder: "Escribe cómo fue tu día y lo que aprendiste...",
+    ratingLabel: "¿Cómo fue tu día?",
+    save: "Guardar día",
+    saving: "Guardando...",
+    saved: "Día guardado.",
+    saveFailed: "No fue posible guardar el diario.",
+    loadFailed: "No fue posible cargar el diario.",
+    previousDays: "Días anteriores",
+    emptyDays: "Aún no hay días guardados. Completa y guarda el primer registro.",
+    newDay: "Nuevo día",
+    dateInUse: "Ya hay un día guardado en esta fecha.",
+    jumpToDay: "Ir al día",
+    previousDay: "Día anterior",
+    nextDay: "Siguiente día",
+    dayWithDate: (n, date) => `Día ${n} · ${date}`,
   },
   settings: {
     open: "Abrir configuración",
