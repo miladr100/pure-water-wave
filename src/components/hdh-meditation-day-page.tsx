@@ -93,6 +93,10 @@ export function HdhMeditationDayPage({
 
   async function handleSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!day) {
+      return;
+    }
+
     setIsSaving(true);
     setError("");
     setInfo("");
