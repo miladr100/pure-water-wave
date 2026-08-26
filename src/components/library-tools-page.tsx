@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BookOpen, NotebookPen } from "lucide-react";
+import { ArrowRight, BookOpen, Clapperboard, NotebookPen } from "lucide-react";
 
 import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
@@ -38,6 +38,13 @@ function toolCopy(
     };
   }
 
+  if (tool.id === "video-support-manual") {
+    return {
+      name: t.tools.videoManualName,
+      description: t.tools.videoManualDescription,
+    };
+  }
+
   return { name: tool.id, description: "" };
 }
 
@@ -48,6 +55,10 @@ function ToolIcon({ icon }: { icon: LibraryTool["icon"] }) {
 
   if (icon === "hdh") {
     return <BookOpen className="h-8 w-8" />;
+  }
+
+  if (icon === "videos") {
+    return <Clapperboard className="h-8 w-8" />;
   }
 
   return null;

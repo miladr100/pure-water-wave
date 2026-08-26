@@ -28,6 +28,8 @@ export type AppMessages = {
     journalSubtitle: (firstName: string) => string;
     hdhTitle: string;
     hdhSubtitle: (firstName: string) => string;
+    videoManualTitle: string;
+    videoManualSubtitle: (firstName: string) => string;
   };
   dashboard: {
     heading: string;
@@ -123,6 +125,27 @@ export type AppMessages = {
     hjJournalDescription: string;
     hdhName: string;
     hdhDescription: string;
+    videoManualName: string;
+    videoManualDescription: string;
+  };
+  videoManual: {
+    brand: string;
+    heading: string;
+    description: string;
+    video: (n: number) => string;
+    questionsCount: (n: number) => string;
+    openVideo: string;
+    backToVideos: string;
+    previousVideo: string;
+    nextVideo: string;
+    watchVideo: string;
+    questionsTitle: string;
+    questionsHint: string;
+    answer: string;
+    complement: string;
+    tip: string;
+    bonus: string;
+    conclusion: string;
   };
   hdh: {
     brand: string;
@@ -251,6 +274,9 @@ const pt: AppMessages = {
     hdhTitle: "Hoon Dok Hae e Meditação",
     hdhSubtitle: (firstName) =>
       `Olá, ${firstName}. Leia a palavra, reflita e registre sua inspiração.`,
+    videoManualTitle: "Manual de Apoio aos Vídeos",
+    videoManualSubtitle: (firstName) =>
+      `Olá, ${firstName}. Navegue pelas perguntas e respostas de cada vídeo.`,
   },
   dashboard: {
     heading: "Sua biblioteca pastoral",
@@ -361,6 +387,30 @@ const pt: AppMessages = {
     hdhName: "Hoon Dok Hae e Meditação",
     hdhDescription:
       "Livro de Hoon Dok Hae e meditação das Palavras dos Verdadeiros Pais. Cada dia um tema, com leitura, perguntas de reflexão e espaço para a inspiração.",
+    videoManualName: "Manual de Apoio aos Vídeos",
+    videoManualDescription:
+      "Perguntas e respostas do Kit 1, organizadas por vídeo do seminário de 7 dias, para facilitar o estudo e a condução.",
+  },
+  videoManual: {
+    brand: "Kit 1 — Princípio Divino",
+    heading: "Manual de Apoio aos Vídeos",
+    description:
+      "Escolha um vídeo para ver as perguntas, respostas, complementos e dicas de condução.",
+    video: (n) => `Vídeo ${n}`,
+    questionsCount: (n) =>
+      n === 1 ? "1 pergunta e resposta" : `${n} perguntas e respostas`,
+    openVideo: "Abrir perguntas",
+    backToVideos: "Todos os vídeos",
+    previousVideo: "Vídeo anterior",
+    nextVideo: "Próximo vídeo",
+    watchVideo: "Assistir vídeo",
+    questionsTitle: "Perguntas e respostas",
+    questionsHint: "Toque em uma pergunta para ver a resposta, o complemento e a dica.",
+    answer: "Resposta",
+    complement: "Complemento",
+    tip: "Dica",
+    bonus: "Bônus",
+    conclusion: "Conclusão",
   },
   hdh: {
     brand: "Palavras dos Verdadeiros Pais",
@@ -493,6 +543,9 @@ const en: AppMessages = {
     hdhTitle: "Hoon Dok Hae and Meditation",
     hdhSubtitle: (firstName) =>
       `Hello, ${firstName}. Read the Word, reflect, and record your inspiration.`,
+    videoManualTitle: "Video Support Manual",
+    videoManualSubtitle: (firstName) =>
+      `Hello, ${firstName}. Browse the questions and answers for each video.`,
   },
   dashboard: {
     heading: "Your pastoral library",
@@ -600,6 +653,30 @@ const en: AppMessages = {
     hdhName: "Hoon Dok Hae and Meditation",
     hdhDescription:
       "Hoon Dok Hae and meditation book of the Words of the True Parents. Each day has a theme, with reading, reflection questions, and space for inspiration.",
+    videoManualName: "Video Support Manual",
+    videoManualDescription:
+      "Kit 1 questions and answers, organized by each 7-day seminar video, to make study and guidance easier.",
+  },
+  videoManual: {
+    brand: "Kit 1 — Divine Principle",
+    heading: "Video Support Manual",
+    description:
+      "Choose a video to see the questions, answers, complements, and guidance tips.",
+    video: (n) => `Video ${n}`,
+    questionsCount: (n) =>
+      n === 1 ? "1 question and answer" : `${n} questions and answers`,
+    openVideo: "Open questions",
+    backToVideos: "All videos",
+    previousVideo: "Previous video",
+    nextVideo: "Next video",
+    watchVideo: "Watch video",
+    questionsTitle: "Questions and answers",
+    questionsHint: "Tap a question to see the answer, complement, and tip.",
+    answer: "Answer",
+    complement: "Complement",
+    tip: "Tip",
+    bonus: "Bonus",
+    conclusion: "Conclusion",
   },
   hdh: {
     brand: "Words of the True Parents",
@@ -732,6 +809,9 @@ const es: AppMessages = {
     hdhTitle: "Hoon Dok Hae y Meditación",
     hdhSubtitle: (firstName) =>
       `Hola, ${firstName}. Lee la Palabra, reflexiona y registra tu inspiración.`,
+    videoManualTitle: "Manual de Apoyo a los Videos",
+    videoManualSubtitle: (firstName) =>
+      `Hola, ${firstName}. Navega por las preguntas y respuestas de cada video.`,
   },
   dashboard: {
     heading: "Tu biblioteca pastoral",
@@ -844,6 +924,30 @@ const es: AppMessages = {
     hdhName: "Hoon Dok Hae y Meditación",
     hdhDescription:
       "Libro de Hoon Dok Hae y meditación de las Palabras de los Verdaderos Padres. Cada día un tema, con lectura, preguntas de reflexión y espacio para la inspiración.",
+    videoManualName: "Manual de Apoyo a los Videos",
+    videoManualDescription:
+      "Preguntas y respuestas del Kit 1, organizadas por cada video del seminario de 7 días, para facilitar el estudio y la conducción.",
+  },
+  videoManual: {
+    brand: "Kit 1 — Principio Divino",
+    heading: "Manual de Apoyo a los Videos",
+    description:
+      "Elige un video para ver las preguntas, respuestas, complementos y consejos de conducción.",
+    video: (n) => `Video ${n}`,
+    questionsCount: (n) =>
+      n === 1 ? "1 pregunta y respuesta" : `${n} preguntas y respuestas`,
+    openVideo: "Abrir preguntas",
+    backToVideos: "Todos los videos",
+    previousVideo: "Video anterior",
+    nextVideo: "Siguiente video",
+    watchVideo: "Ver video",
+    questionsTitle: "Preguntas y respuestas",
+    questionsHint: "Toca una pregunta para ver la respuesta, el complemento y el consejo.",
+    answer: "Respuesta",
+    complement: "Complemento",
+    tip: "Consejo",
+    bonus: "Bono",
+    conclusion: "Conclusión",
   },
   hdh: {
     brand: "Palabras de los Verdaderos Padres",
