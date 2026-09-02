@@ -30,6 +30,8 @@ export type AppMessages = {
     hdhSubtitle: (firstName: string) => string;
     videoManualTitle: string;
     videoManualSubtitle: (firstName: string) => string;
+    dpIndexTitle: string;
+    dpIndexSubtitle: (firstName: string) => string;
   };
   dashboard: {
     heading: string;
@@ -129,6 +131,21 @@ export type AppMessages = {
     hdhDescription: string;
     videoManualName: string;
     videoManualDescription: string;
+    dpIndexName: string;
+    dpIndexDescription: string;
+  };
+  dpIndex: {
+    brand: string;
+    heading: string;
+    description: string;
+    subindex: string;
+    openSubindex: string;
+    readText: string;
+    backToTools: string;
+    backToIndex: string;
+    previous: string;
+    next: string;
+    openPdf: string;
   };
   videoManual: {
     brand: string;
@@ -279,6 +296,9 @@ const pt: AppMessages = {
     videoManualTitle: "Manual de Apoio aos Vídeos",
     videoManualSubtitle: (firstName) =>
       `Olá, ${firstName}. Navegue pelas perguntas e respostas de cada vídeo.`,
+    dpIndexTitle: "Princípio Divino Indexado",
+    dpIndexSubtitle: (firstName) =>
+      `Olá, ${firstName}. Navegue pelo sumário e abra o texto de cada seção.`,
   },
   dashboard: {
     heading: "Sua biblioteca pastoral",
@@ -394,6 +414,23 @@ const pt: AppMessages = {
     videoManualName: "Manual de Apoio aos Vídeos",
     videoManualDescription:
       "Perguntas e respostas do Kit 1, organizadas por vídeo do seminário de 7 dias, para facilitar o estudo e a condução.",
+    dpIndexName: "Princípio Divino Indexado",
+    dpIndexDescription:
+      "O livro do Princípio Divino com sumário navegável: toque no título para abrir os subíndices ou o texto.",
+  },
+  dpIndex: {
+    brand: "Exposição do Princípio Divino",
+    heading: "Princípio Divino Indexado",
+    description:
+      "Escolha um título do índice. Cada item abre os subcapítulos ou o texto correspondente, como na leitura por capítulos e versículos.",
+    subindex: "Índice desta seção",
+    openSubindex: "Abrir subíndice",
+    readText: "Abrir texto",
+    backToTools: "Todas as ferramentas",
+    backToIndex: "Voltar ao índice",
+    previous: "Anterior",
+    next: "Próximo",
+    openPdf: "Abrir o livro em PDF",
   },
   videoManual: {
     brand: "Kit 1 — Princípio Divino",
@@ -550,6 +587,9 @@ const en: AppMessages = {
     videoManualTitle: "Video Support Manual",
     videoManualSubtitle: (firstName) =>
       `Hello, ${firstName}. Browse the questions and answers for each video.`,
+    dpIndexTitle: "Indexed Divine Principle",
+    dpIndexSubtitle: (firstName) =>
+      `Hello, ${firstName}. Browse the table of contents and open each section.`,
   },
   dashboard: {
     heading: "Your pastoral library",
@@ -662,6 +702,23 @@ const en: AppMessages = {
     videoManualName: "Video Support Manual",
     videoManualDescription:
       "Kit 1 questions and answers, organized by each 7-day seminar video, to make study and guidance easier.",
+    dpIndexName: "Indexed Divine Principle",
+    dpIndexDescription:
+      "The Divine Principle book with a navigable table of contents: tap a title to open subentries or the text itself.",
+  },
+  dpIndex: {
+    brand: "Exposition of the Divine Principle",
+    heading: "Indexed Divine Principle",
+    description:
+      "Choose a title from the index. Each item opens its subchapters or the corresponding text, like reading by chapter and verse.",
+    subindex: "Index of this section",
+    openSubindex: "Open subindex",
+    readText: "Open text",
+    backToTools: "All tools",
+    backToIndex: "Back to the index",
+    previous: "Previous",
+    next: "Next",
+    openPdf: "Open the PDF book",
   },
   videoManual: {
     brand: "Kit 1 — Divine Principle",
@@ -818,6 +875,9 @@ const es: AppMessages = {
     videoManualTitle: "Manual de Apoyo a los Videos",
     videoManualSubtitle: (firstName) =>
       `Hola, ${firstName}. Navega por las preguntas y respuestas de cada video.`,
+    dpIndexTitle: "Principio Divino Indexado",
+    dpIndexSubtitle: (firstName) =>
+      `Hola, ${firstName}. Navega por el índice y abre el texto de cada sección.`,
   },
   dashboard: {
     heading: "Tu biblioteca pastoral",
@@ -935,6 +995,23 @@ const es: AppMessages = {
     videoManualName: "Manual de Apoyo a los Videos",
     videoManualDescription:
       "Preguntas y respuestas del Kit 1, organizadas por cada video del seminario de 7 días, para facilitar el estudio y la conducción.",
+    dpIndexName: "Principio Divino Indexado",
+    dpIndexDescription:
+      "El libro del Principio Divino con índice navegable: toca el título para abrir los subíndices o el texto.",
+  },
+  dpIndex: {
+    brand: "El Principio Divino",
+    heading: "Principio Divino Indexado",
+    description:
+      "Elige un título del índice. Cada elemento abre los subcapítulos o el texto correspondiente, como en la lectura por capítulos y versículos.",
+    subindex: "Índice de esta sección",
+    openSubindex: "Abrir subíndice",
+    readText: "Abrir texto",
+    backToTools: "Todas las herramientas",
+    backToIndex: "Volver al índice",
+    previous: "Anterior",
+    next: "Siguiente",
+    openPdf: "Abrir el libro en PDF",
   },
   videoManual: {
     brand: "Kit 1 — Principio Divino",

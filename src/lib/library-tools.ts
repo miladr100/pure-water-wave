@@ -1,7 +1,7 @@
 export type LibraryTool = {
   id: string;
   href: string;
-  icon: "journal" | "hdh" | "videos";
+  icon: "journal" | "hdh" | "videos" | "index";
 };
 
 export const LIBRARY_TOOLS: LibraryTool[] = [
@@ -19,5 +19,10 @@ export const LIBRARY_TOOLS: LibraryTool[] = [
     id: "video-support-manual",
     href: "/biblioteca/ferramentas/manual-videos",
     icon: "videos",
+  },
+  {
+    id: "divine-principle-index",
+    href: "/biblioteca/ferramentas/principio-divino-indexado",
+    icon: "index",
   },
 ];

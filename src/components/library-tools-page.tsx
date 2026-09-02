@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BookOpen, Clapperboard, NotebookPen } from "lucide-react";
+import { ArrowRight, BookOpen, Clapperboard, ListTree, NotebookPen } from "lucide-react";
 
 import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
@@ -45,6 +45,13 @@ function toolCopy(
     };
   }
 
+  if (tool.id === "divine-principle-index") {
+    return {
+      name: t.tools.dpIndexName,
+      description: t.tools.dpIndexDescription,
+    };
+  }
+
   return { name: tool.id, description: "" };
 }
 
@@ -59,6 +66,10 @@ function ToolIcon({ icon }: { icon: LibraryTool["icon"] }) {
 
   if (icon === "videos") {
     return <Clapperboard className="h-8 w-8" />;
+  }
+
+  if (icon === "index") {
+    return <ListTree className="h-8 w-8" />;
   }
 
   return null;
