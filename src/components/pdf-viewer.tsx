@@ -11,7 +11,7 @@ import {
   ZoomOut,
 } from "lucide-react";
 import type { PDFDocumentProxy } from "pdfjs-dist";
-import { Document, Page } from "react-pdf";
+import { Document, Page, pdfjs } from "react-pdf";
 
 import { LogoutButton } from "@/components/logout-button";
 import { LibrarySettingsMenu } from "@/components/library-settings-menu";
@@ -45,6 +45,19 @@ const MIN_SCALE = 0.7;
 const MAX_SCALE = 2;
 const SCALE_STEP = 0.15;
 
+pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs?v=${pdfjs.version}`;
+
+function isAppleTouchDevice() {
+  if (typeof navigator === "undefined") {
+    return false;
+  }
+
+  return (
+    /iP(hone|od|ad)/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+  );
+}
+
 export function PdfViewer({
   pdf,
   session,
@@ -65,15 +78,30 @@ export function PdfViewer({
   const [pageHighlightLayout, setPageHighlightLayout] =
     useState<PageHighlightLayout | null>(null);
   const [pageInput, setPageInput] = useState("1");
+  const [pdfData, setPdfData] = useState<Uint8Array | null>(null);
   const pendingInitialSearch = useRef(initialQuery?.trim() || "");
+  const preferFullFetch = isAppleTouchDevice();
 
-  const fileSource = useMemo(
+  const documentOptions = useMemo(
     () => ({
+      withCredentials: true,
+      ...(preferFullFetch
+        ? { disableRange: true, disableStream: true }
+        : {}),
+    }),
+    [preferFullFetch],
+  );
+
+  const fileSource = useMemo(() => {
+    if (preferFullFetch) {
+      return pdfData ? { data: pdfData } : null;
+    }
+
+    return {
       url: getProtectedPdfApiUrl(pdf.id),
       withCredentials: true,
-    }),
-    [pdf.id],
-  );
+    };
+  }, [pdf.id, pdfData, preferFullFetch]);
 
   useEffect(() => {
     setPageNumber(initialPage && initialPage > 0 ? initialPage : 1);
@@ -88,6 +116,45 @@ export function PdfViewer({
     pendingInitialSearch.current = initialQuery?.trim() || "";
     pdfRef.current = null;
   }, [pdf.id, initialPage, initialQuery]);
+
+  useEffect(() => {
+    if (!preferFullFetch) {
+      return;
+    }
+
+    const controller = new AbortController();
+    setPdfData(null);
+
+    void (async () => {
+      try {
+        const response = await fetch(getProtectedPdfApiUrl(pdf.id), {
+          credentials: "include",
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const buffer = await response.arrayBuffer();
+
+        if (!controller.signal.aborted) {
+          setPdfData(new Uint8Array(buffer));
+        }
+      } catch (error) {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        console.error("Erro ao baixar PDF no iOS:", error);
+        setLoadError(t.reader.loadError);
+      }
+    })();
+
+    return () => {
+      controller.abort();
+    };
+  }, [pdf.id, preferFullFetch, t.reader.loadError]);
 
   async function runDocumentSearch(
     loadedPdf: PDFDocumentProxy,
@@ -428,9 +495,13 @@ export function PdfViewer({
             <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center text-sm text-destructive">
               {loadError}
             </div>
+          ) : preferFullFetch && !fileSource ? (
+            <div className="rounded-xl border border-border/60 bg-card p-10 text-center text-sm text-muted-foreground">
+              {t.reader.loading}
+            </div>
           ) : (
             <Document
-              file={fileSource}
+              file={fileSource ?? undefined}
               loading={
                 <div className="rounded-xl border border-border/60 bg-card p-10 text-center text-sm text-muted-foreground">
                   {t.reader.loading}
@@ -450,9 +521,11 @@ export function PdfViewer({
                   setPageNumber(initialPage);
                 }
               }}
-              onLoadError={() => {
+              onLoadError={(error) => {
+                console.error("Erro ao abrir PDF:", error);
                 setLoadError(t.reader.loadError);
               }}
+              options={documentOptions}
               error={null}
               className="flex justify-center"
             >

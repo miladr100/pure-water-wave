@@ -11,6 +11,20 @@ declare global {
 
 declare const self: ServiceWorkerGlobalScope;
 
+// Safari iOS corrupts Range requests that go through a service worker.
+// Let the browser fetch library PDFs natively.
+self.addEventListener(
+  "fetch",
+  (event) => {
+    const url = new URL(event.request.url);
+
+    if (url.pathname.startsWith("/api/biblioteca/pdf/")) {
+      event.stopImmediatePropagation();
+    }
+  },
+  { capture: true },
+);
+
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   skipWaiting: true,
@@ -19,7 +33,9 @@ const serwist = new Serwist({
   runtimeCaching: [
     {
       matcher: ({ url, request }) =>
-        request.method === "GET" && url.pathname.startsWith("/api/biblioteca/"),
+        request.method === "GET" &&
+        url.pathname.startsWith("/api/biblioteca/") &&
+        !url.pathname.startsWith("/api/biblioteca/pdf/"),
       handler: new NetworkOnly(),
     },
     ...defaultCache,
