@@ -10,6 +10,7 @@ import {
   SupportMaterialsEmpty,
 } from "@/components/support-materials-carousel";
 import {
+  getKit1SupportVideos,
   getSupportAhaTestimonialVideos,
   getSupportFaithTestimonialVideos,
   getSupportSubregion2Videos,
@@ -65,6 +66,7 @@ export function SupportVideosPage({ session }: SupportVideosPageProps) {
   const { language, t } = useLocale();
   const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const studyVideos = getSupportVideosByLanguage(language);
+  const kit1SupportVideos = getKit1SupportVideos(language);
   const subregion2Videos = getSupportSubregion2Videos(language);
   const testimonials = getSupportTestimonialVideos(language);
   const faithTestimonials = getSupportFaithTestimonialVideos(language);
@@ -94,6 +96,12 @@ export function SupportVideosPage({ session }: SupportVideosPageProps) {
           title={t.support.videosTitle}
           hint={t.support.videosHint}
           videos={studyVideos}
+          emptyMessage={t.support.emptyVideos}
+        />
+        <VideoTrackSection
+          title={t.support.kit1SupportVideosTitle}
+          hint={t.support.kit1SupportVideosHint}
+          videos={kit1SupportVideos}
           emptyMessage={t.support.emptyVideos}
         />
         {subregion2Videos.length > 0 ? (

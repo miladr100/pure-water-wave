@@ -13,7 +13,8 @@ export type SupportVideo = {
   id: string;
   title: string;
   subtitle: string;
-  youtubeId: string;
+  youtubeId?: string;
+  url?: string;
 };
 
 const SUPPORT_DOWNLOADS_PT: SupportDownload[] = [
@@ -495,7 +496,8 @@ const SUPPORT_VIDEOS_ES_SUBREGION_2: SupportVideo[] = [
 
 type LocalizedSupportVideo = {
   id: string;
-  youtubeId: string;
+  youtubeId?: string;
+  url?: string;
   titles: Record<UserLanguage, string>;
 };
 
@@ -985,9 +987,90 @@ function localizeSupportVideos(
   return videos.map((video) => ({
     id: video.id,
     youtubeId: video.youtubeId,
+    url: video.url,
     title: video.titles[language],
     subtitle,
   }));
+}
+
+const KIT1_SUPPORT_SUBTITLES: Record<UserLanguage, string> = {
+  pt: "Vídeos de Apoio ao Kit 1",
+  es: "Videos de Apoyo al Kit 1",
+  en: "Kit 1 Support Videos",
+};
+
+const KIT1_SUPPORT_VIDEOS: LocalizedSupportVideo[] = [
+  {
+    id: "kit1-apoio-01-verdadeiros-pais",
+    youtubeId: "bugld8eDmtk",
+    titles: {
+      pt: "01 — Quem são os Verdadeiros Pais?",
+      es: "01 — ¿Quiénes son los Verdaderos Padres?",
+      en: "01 — Who are the True Parents?",
+    },
+  },
+  {
+    id: "kit1-apoio-02-verdadeiro-pai",
+    youtubeId: "s5q3S-RpXvE",
+    titles: {
+      pt: "02 — Quem é o Verdadeiro Pai?",
+      es: "02 — ¿Quién es el Verdadero Padre?",
+      en: "02 — Who is the True Father?",
+    },
+  },
+  {
+    id: "kit1-apoio-03-bencao-sagrado-matrimonio",
+    youtubeId: "Yv0lRTRqCgc",
+    titles: {
+      pt: "03 — Bênção do Sagrado Matrimônio",
+      es: "03 — Bendición del Sagrado Matrimonio",
+      en: "03 — Blessing of Holy Marriage",
+    },
+  },
+  {
+    id: "kit1-apoio-04-terra-sagrada",
+    youtubeId: "p_a06Q2bfEE",
+    titles: {
+      pt: "04 — Terra Sagrada e a Casa dos Pais Celestiais",
+      es: "04 — Tierra Sagrada y la Casa de los Padres Celestiales",
+      en: "04 — Holy Ground and the House of Heavenly Parents",
+    },
+  },
+  {
+    id: "kit1-apoio-05-cidadao-global",
+    url: "https://www.ipeacetv.com/vod_view/6382",
+    titles: {
+      pt: "05 — Um Cidadão Global que Ama a Paz",
+      es: "05 — Un Ciudadano Global que Ama la Paz",
+      en: "05 — A Global Citizen Who Loves Peace",
+    },
+  },
+  {
+    id: "kit1-apoio-06-familia-sob-deus",
+    url: "https://www.ipeacetv.com/vod_view/6363",
+    titles: {
+      pt: "06 — O Sonho de Uma Família Sob Deus",
+      es: "06 — El Sueño de Una Familia Bajo Dios",
+      en: "06 — The Dream of One Family Under God",
+    },
+  },
+  {
+    id: "kit1-apoio-07-mae-da-paz",
+    url: "https://www.ipeacetv.com/vod_view/14275",
+    titles: {
+      pt: "07 — Dra. Hak Ja Han Moon, a Mãe da Paz",
+      es: "07 — Dra. Hak Ja Han Moon, la Madre de la Paz",
+      en: "07 — Dr. Hak Ja Han Moon, the Mother of Peace",
+    },
+  },
+];
+
+export function getKit1SupportVideos(language: UserLanguage): SupportVideo[] {
+  return localizeSupportVideos(
+    KIT1_SUPPORT_VIDEOS,
+    language,
+    KIT1_SUPPORT_SUBTITLES[language],
+  );
 }
 
 export function getSupportFaithTestimonialVideos(
@@ -1028,4 +1111,24 @@ export function getYoutubeThumbnailUrl(youtubeId: string) {
 
 export function getYoutubeWatchUrl(youtubeId: string) {
   return `https://www.youtube.com/watch?v=${youtubeId}`;
+}
+
+export function getSupportVideoWatchUrl(video: SupportVideo) {
+  if (video.url) {
+    return video.url;
+  }
+
+  if (video.youtubeId) {
+    return getYoutubeWatchUrl(video.youtubeId);
+  }
+
+  return "#";
+}
+
+export function getSupportVideoThumbnailUrl(video: SupportVideo) {
+  if (!video.youtubeId) {
+    return null;
+  }
+
+  return getYoutubeThumbnailUrl(video.youtubeId);
 }

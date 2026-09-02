@@ -10,8 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  getYoutubeThumbnailUrl,
-  getYoutubeWatchUrl,
+  getSupportVideoThumbnailUrl,
+  getSupportVideoWatchUrl,
   type SupportVideo,
 } from "@/lib/support-materials";
 
@@ -20,20 +20,21 @@ type SupportVideoCardProps = {
 };
 
 export function SupportVideoCard({ item }: SupportVideoCardProps) {
-  const [previewFailed, setPreviewFailed] = useState(false);
+  const thumbnailUrl = getSupportVideoThumbnailUrl(item);
+  const [previewFailed, setPreviewFailed] = useState(!thumbnailUrl);
 
   return (
     <a
-      href={getYoutubeWatchUrl(item.youtubeId)}
+      href={getSupportVideoWatchUrl(item)}
       target="_blank"
       rel="noreferrer"
       className="group block h-full"
     >
       <Card className="flex h-full flex-col overflow-hidden border-border/60 shadow-card transition group-hover:-translate-y-0.5 group-hover:shadow-glow">
         <div className="relative flex h-48 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-deep to-primary">
-          {!previewFailed ? (
+          {thumbnailUrl && !previewFailed ? (
             <img
-              src={getYoutubeThumbnailUrl(item.youtubeId)}
+              src={thumbnailUrl}
               alt={`Miniatura do vídeo ${item.title}`}
               width={480}
               height={360}
