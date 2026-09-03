@@ -103,6 +103,8 @@ export type AppMessages = {
     loadError: string;
     openingTitle: string;
     openingDescription: string;
+    nativeHint: string;
+    openInBrowser: string;
   };
   aiChat: {
     title: string;
@@ -379,6 +381,9 @@ const pt: AppMessages = {
     loadError: "Não foi possível carregar este material.",
     openingTitle: "Abrindo livro...",
     openingDescription: "Preparando o leitor. Isso pode levar alguns segundos.",
+    nativeHint:
+      "Neste iPhone o livro abre com o leitor nativo do Safari, mais estável em aparelhos antigos.",
+    openInBrowser: "Abrir o livro",
   },
   aiChat: {
     title: "Fale com a IA",
@@ -668,6 +673,9 @@ const en: AppMessages = {
     loadError: "Could not load this material.",
     openingTitle: "Opening book...",
     openingDescription: "Preparing the reader. This may take a few seconds.",
+    nativeHint:
+      "On this iPhone the book opens in Safari’s built-in reader, which is more reliable on older devices.",
+    openInBrowser: "Open the book",
   },
   aiChat: {
     title: "Talk to the AI",
@@ -960,6 +968,9 @@ const es: AppMessages = {
     openingTitle: "Abriendo libro...",
     openingDescription:
       "Preparando el lector. Esto puede tardar unos segundos.",
+    nativeHint:
+      "En este iPhone el libro se abre con el lector nativo de Safari, más estable en aparatos antiguos.",
+    openInBrowser: "Abrir el libro",
   },
   aiChat: {
     title: "Habla con la IA",

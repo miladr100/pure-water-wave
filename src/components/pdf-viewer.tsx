@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/promise-with-resolvers-polyfill";
+
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -30,6 +32,7 @@ import {
   type PdfSearchMatch,
 } from "@/lib/pdf-search";
 import type { SessionPayload } from "@/lib/auth";
+import { isAppleTouchDevice } from "@/lib/pdf-ios";
 import "@/lib/pdf-worker";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -39,6 +42,7 @@ type PdfViewerProps = {
   session: SessionPayload;
   initialPage?: number;
   initialQuery?: string;
+  onUnrecoverableError?: () => void;
 };
 
 const MIN_SCALE = 0.7;
@@ -47,22 +51,12 @@ const SCALE_STEP = 0.15;
 
 pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs?v=${pdfjs.version}`;
 
-function isAppleTouchDevice() {
-  if (typeof navigator === "undefined") {
-    return false;
-  }
-
-  return (
-    /iP(hone|od|ad)/.test(navigator.userAgent) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
-  );
-}
-
 export function PdfViewer({
   pdf,
   session,
   initialPage,
   initialQuery,
+  onUnrecoverableError,
 }: PdfViewerProps) {
   const { t } = useLocale();
   const pdfRef = useRef<PDFDocumentProxy | null>(null);
@@ -80,7 +74,10 @@ export function PdfViewer({
   const [pageInput, setPageInput] = useState("1");
   const [pdfData, setPdfData] = useState<Uint8Array | null>(null);
   const pendingInitialSearch = useRef(initialQuery?.trim() || "");
+  const onUnrecoverableErrorRef = useRef(onUnrecoverableError);
   const preferFullFetch = isAppleTouchDevice();
+
+  onUnrecoverableErrorRef.current = onUnrecoverableError;
 
   const documentOptions = useMemo(
     () => ({
@@ -148,6 +145,7 @@ export function PdfViewer({
 
         console.error("Erro ao baixar PDF no iOS:", error);
         setLoadError(t.reader.loadError);
+        onUnrecoverableErrorRef.current?.();
       }
     })();
 
@@ -524,6 +522,7 @@ export function PdfViewer({
               onLoadError={(error) => {
                 console.error("Erro ao abrir PDF:", error);
                 setLoadError(t.reader.loadError);
+                onUnrecoverableErrorRef.current?.();
               }}
               options={documentOptions}
               error={null}

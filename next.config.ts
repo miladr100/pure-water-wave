@@ -1,4 +1,4 @@
-import { copyFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 
@@ -7,11 +7,23 @@ import { withSerwist } from "@serwist/turbopack";
 
 const require = createRequire(import.meta.url);
 
+const PROMISE_WITH_RESOLVERS_POLYFILL =
+  'if(typeof Promise.withResolvers!=="function"){Promise.withResolvers=function(){let resolve,reject;const promise=new Promise((res,rej)=>{resolve=res;reject=rej});return{promise,resolve,reject}}}';
+
 function copyPdfWorkerToPublic() {
   const pdfjsDistPath = path.dirname(require.resolve("pdfjs-dist/package.json"));
-  copyFileSync(
-    path.join(pdfjsDistPath, "build", "pdf.worker.min.mjs"),
-    path.join(process.cwd(), "public", "pdf.worker.min.mjs"),
+  const legacyWorker = path.join(
+    pdfjsDistPath,
+    "legacy",
+    "build",
+    "pdf.worker.min.mjs",
+  );
+  const modernWorker = path.join(pdfjsDistPath, "build", "pdf.worker.min.mjs");
+  const source = existsSync(legacyWorker) ? legacyWorker : modernWorker;
+  const dest = path.join(process.cwd(), "public", "pdf.worker.min.mjs");
+  writeFileSync(
+    dest,
+    `${PROMISE_WITH_RESOLVERS_POLYFILL}\n${readFileSync(source, "utf8")}`,
   );
 }
 
