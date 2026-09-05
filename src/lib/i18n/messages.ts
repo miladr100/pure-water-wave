@@ -148,6 +148,12 @@ export type AppMessages = {
     previous: string;
     next: string;
     openPdf: string;
+    listen: string;
+    pauseSpeech: string;
+    resumeSpeech: string;
+    stopSpeech: string;
+    speechPlaying: string;
+    speechPaused: string;
   };
   videoManual: {
     brand: string;
@@ -421,13 +427,13 @@ const pt: AppMessages = {
       "Perguntas e respostas do Kit 1, organizadas por vídeo do seminário de 7 dias, para facilitar o estudo e a condução.",
     dpIndexName: "Princípio Divino Indexado",
     dpIndexDescription:
-      "O livro do Princípio Divino com sumário navegável: toque no título para abrir os subíndices ou o texto.",
+      "O livro do Princípio Divino com sumário navegável: toque no título para abrir os subíndices ou o texto, e ouça o áudio da seção.",
   },
   dpIndex: {
     brand: "Exposição do Princípio Divino",
     heading: "Princípio Divino Indexado",
     description:
-      "Escolha um título do índice. Cada item abre os subcapítulos ou o texto correspondente, como na leitura por capítulos e versículos.",
+      "Escolha um título do índice. Cada item abre os subcapítulos ou o texto correspondente, e você também pode ouvir o áudio da seção.",
     subindex: "Índice desta seção",
     openSubindex: "Abrir subíndice",
     readText: "Abrir texto",
@@ -436,6 +442,12 @@ const pt: AppMessages = {
     previous: "Anterior",
     next: "Próximo",
     openPdf: "Abrir o livro em PDF",
+    listen: "Ouvir esta seção",
+    pauseSpeech: "Pausar",
+    resumeSpeech: "Continuar",
+    stopSpeech: "Parar",
+    speechPlaying: "Lendo com a voz do aparelho",
+    speechPaused: "Leitura pausada",
   },
   videoManual: {
     brand: "Kit 1 — Princípio Divino",
@@ -712,13 +724,13 @@ const en: AppMessages = {
       "Kit 1 questions and answers, organized by each 7-day seminar video, to make study and guidance easier.",
     dpIndexName: "Indexed Divine Principle",
     dpIndexDescription:
-      "The Divine Principle book with a navigable table of contents: tap a title to open subentries or the text itself.",
+      "The Divine Principle book with a navigable table of contents: tap a title to open subentries or the text, and listen to the section’s audio.",
   },
   dpIndex: {
     brand: "Exposition of the Divine Principle",
     heading: "Indexed Divine Principle",
     description:
-      "Choose a title from the index. Each item opens its subchapters or the corresponding text, like reading by chapter and verse.",
+      "Choose a title from the index. Each item opens its subchapters or the corresponding text, and you can also listen to the section’s audio.",
     subindex: "Index of this section",
     openSubindex: "Open subindex",
     readText: "Open text",
@@ -727,6 +739,12 @@ const en: AppMessages = {
     previous: "Previous",
     next: "Next",
     openPdf: "Open the PDF book",
+    listen: "Listen to this section",
+    pauseSpeech: "Pause",
+    resumeSpeech: "Resume",
+    stopSpeech: "Stop",
+    speechPlaying: "Reading with the device voice",
+    speechPaused: "Reading paused",
   },
   videoManual: {
     brand: "Kit 1 — Divine Principle",
@@ -1008,13 +1026,13 @@ const es: AppMessages = {
       "Preguntas y respuestas del Kit 1, organizadas por cada video del seminario de 7 días, para facilitar el estudio y la conducción.",
     dpIndexName: "Principio Divino Indexado",
     dpIndexDescription:
-      "El libro del Principio Divino con índice navegable: toca el título para abrir los subíndices o el texto.",
+      "El libro del Principio Divino con índice navegable: toca el título para abrir los subíndices o el texto, y escucha el audio de la sección.",
   },
   dpIndex: {
     brand: "El Principio Divino",
     heading: "Principio Divino Indexado",
     description:
-      "Elige un título del índice. Cada elemento abre los subcapítulos o el texto correspondiente, como en la lectura por capítulos y versículos.",
+      "Elige un título del índice. Cada elemento abre los subcapítulos o el texto correspondiente, y también puedes escuchar el audio de la sección.",
     subindex: "Índice de esta sección",
     openSubindex: "Abrir subíndice",
     readText: "Abrir texto",
@@ -1023,6 +1041,12 @@ const es: AppMessages = {
     previous: "Anterior",
     next: "Siguiente",
     openPdf: "Abrir el libro en PDF",
+    listen: "Escuchar esta sección",
+    pauseSpeech: "Pausar",
+    resumeSpeech: "Continuar",
+    stopSpeech: "Detener",
+    speechPlaying: "Leyendo con la voz del aparato",
+    speechPaused: "Lectura en pausa",
   },
   videoManual: {
     brand: "Kit 1 — Principio Divino",

@@ -11,7 +11,9 @@ import {
 
 import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
+import { TextSpeechControls } from "@/components/text-speech-controls";
 import { Button } from "@/components/ui/button";
+import { useDeviceSpeech } from "@/hooks/use-device-speech";
 import type { SessionPayload } from "@/lib/auth";
 import {
   divinePrincipleHref,
@@ -28,9 +30,15 @@ export function DivinePrincipleIndexPage({
   session,
   view,
 }: DivinePrincipleIndexPageProps) {
-  const { t } = useLocale();
+  const { language, t } = useLocale();
   const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const isRoot = view.id === "";
+  const speech = useDeviceSpeech({
+    title: view.title,
+    paragraphs: view.paragraphs,
+    language,
+    resetKey: view.id,
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">
@@ -103,8 +111,18 @@ export function DivinePrincipleIndexPage({
 
         {view.paragraphs.length > 0 ? (
           <article className="mb-10 space-y-5 text-base leading-relaxed text-foreground">
+            <TextSpeechControls speech={speech} />
             {view.paragraphs.map((paragraph, index) => (
-              <p key={`${view.id}-${index}`}>{paragraph}</p>
+              <p
+                key={`${view.id}-${index}`}
+                className={
+                  speech.activeParagraph === index
+                    ? "rounded-lg bg-primary/10 px-3 py-2 transition-colors"
+                    : "transition-colors"
+                }
+              >
+                {paragraph}
+              </p>
             ))}
           </article>
         ) : null}
