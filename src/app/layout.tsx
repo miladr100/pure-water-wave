@@ -4,7 +4,7 @@ import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 
 import { Providers } from "@/components/providers";
 import { PwaProvider } from "@/components/pwa-provider";
-import { THEME_STORAGE_KEY } from "@/lib/theme";
+import { getThemeInitScript } from "@/lib/theme";
 
 import "./globals.css";
 
@@ -85,7 +85,7 @@ export default function RootLayout({
           id="theme-init"
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{if(localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)})==='dark'){document.documentElement.classList.add('dark')}}catch(e){}})();`,
+            __html: getThemeInitScript(),
           }}
         />
         <PwaProvider>

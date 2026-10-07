@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BookOpen, Clapperboard, ListTree, NotebookPen } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  Clapperboard,
+  HeartHandshake,
+  ListTree,
+  NotebookPen,
+} from "lucide-react";
 
 import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
@@ -52,6 +59,13 @@ function toolCopy(
     };
   }
 
+  if (tool.id === "family-pledge") {
+    return {
+      name: t.tools.familyPledgeName,
+      description: t.tools.familyPledgeDescription,
+    };
+  }
+
   return { name: tool.id, description: "" };
 }
 
@@ -70,6 +84,10 @@ function ToolIcon({ icon }: { icon: LibraryTool["icon"] }) {
 
   if (icon === "index") {
     return <ListTree className="h-8 w-8" />;
+  }
+
+  if (icon === "pledge") {
+    return <HeartHandshake className="h-8 w-8" />;
   }
 
   return null;

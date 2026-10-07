@@ -32,6 +32,8 @@ export type AppMessages = {
     videoManualSubtitle: (firstName: string) => string;
     dpIndexTitle: string;
     dpIndexSubtitle: (firstName: string) => string;
+    familyPledgeTitle: string;
+    familyPledgeSubtitle: (firstName: string) => string;
   };
   dashboard: {
     heading: string;
@@ -135,6 +137,8 @@ export type AppMessages = {
     videoManualDescription: string;
     dpIndexName: string;
     dpIndexDescription: string;
+    familyPledgeName: string;
+    familyPledgeDescription: string;
   };
   dpIndex: {
     brand: string;
@@ -154,6 +158,19 @@ export type AppMessages = {
     stopSpeech: string;
     speechPlaying: string;
     speechPaused: string;
+  };
+  familyPledge: {
+    brand: string;
+    heading: string;
+    description: string;
+    backToTools: string;
+    localeLabel: string;
+    romanizedLabel: string;
+    hangulLabel: string;
+    item: (n: number) => string;
+    playAll: string;
+    stopAudio: string;
+    playingItem: string;
   };
   videoManual: {
     brand: string;
@@ -307,6 +324,9 @@ const pt: AppMessages = {
     dpIndexTitle: "Princípio Divino Indexado",
     dpIndexSubtitle: (firstName) =>
       `Olá, ${firstName}. Navegue pelo sumário e abra o texto de cada seção.`,
+    familyPledgeTitle: "Juramento da Família",
+    familyPledgeSubtitle: (firstName) =>
+      `Olá, ${firstName}. Leia os oito itens do Juramento da Família.`,
   },
   dashboard: {
     heading: "Sua biblioteca pastoral",
@@ -428,6 +448,9 @@ const pt: AppMessages = {
     dpIndexName: "Princípio Divino Indexado",
     dpIndexDescription:
       "O livro do Princípio Divino com sumário navegável: toque no título para abrir os subíndices ou o texto, e ouça o áudio da seção.",
+    familyPledgeName: "Juramento da Família",
+    familyPledgeDescription:
+      "Os oito itens do Juramento da Família. Leia na língua da conta, em coreano romanizado ou em hangul.",
   },
   dpIndex: {
     brand: "Exposição do Princípio Divino",
@@ -448,6 +471,20 @@ const pt: AppMessages = {
     stopSpeech: "Parar",
     speechPlaying: "Lendo com a voz do aparelho",
     speechPaused: "Leitura pausada",
+  },
+  familyPledge: {
+    brand: "가정의 맹세",
+    heading: "Juramento da Família",
+    description:
+      "Escolha como deseja ler: na sua língua, em coreano romanizado ou em hangul.",
+    backToTools: "Todas as ferramentas",
+    localeLabel: "Sua língua",
+    romanizedLabel: "Coreano romanizado",
+    hangulLabel: "Coreano hangul",
+    item: (n) => `Item ${n}`,
+    playAll: "Tocar tudo",
+    stopAudio: "Parar",
+    playingItem: "Reproduzindo",
   },
   videoManual: {
     brand: "Kit 1 — Princípio Divino",
@@ -607,6 +644,9 @@ const en: AppMessages = {
     dpIndexTitle: "Indexed Divine Principle",
     dpIndexSubtitle: (firstName) =>
       `Hello, ${firstName}. Browse the table of contents and open each section.`,
+    familyPledgeTitle: "Family Pledge",
+    familyPledgeSubtitle: (firstName) =>
+      `Hello, ${firstName}. Read the eight items of the Family Pledge.`,
   },
   dashboard: {
     heading: "Your pastoral library",
@@ -725,6 +765,9 @@ const en: AppMessages = {
     dpIndexName: "Indexed Divine Principle",
     dpIndexDescription:
       "The Divine Principle book with a navigable table of contents: tap a title to open subentries or the text, and listen to the section’s audio.",
+    familyPledgeName: "Family Pledge",
+    familyPledgeDescription:
+      "The eight items of the Family Pledge. Read them in your account language, in romanized Korean, or in Hangul.",
   },
   dpIndex: {
     brand: "Exposition of the Divine Principle",
@@ -745,6 +788,20 @@ const en: AppMessages = {
     stopSpeech: "Stop",
     speechPlaying: "Reading with the device voice",
     speechPaused: "Reading paused",
+  },
+  familyPledge: {
+    brand: "가정의 맹세",
+    heading: "Family Pledge",
+    description:
+      "Choose how you want to read: in your language, in romanized Korean, or in Hangul.",
+    backToTools: "All tools",
+    localeLabel: "Your language",
+    romanizedLabel: "Romanized Korean",
+    hangulLabel: "Korean Hangul",
+    item: (n) => `Item ${n}`,
+    playAll: "Play all",
+    stopAudio: "Stop",
+    playingItem: "Playing",
   },
   videoManual: {
     brand: "Kit 1 — Divine Principle",
@@ -904,6 +961,9 @@ const es: AppMessages = {
     dpIndexTitle: "Principio Divino Indexado",
     dpIndexSubtitle: (firstName) =>
       `Hola, ${firstName}. Navega por el índice y abre el texto de cada sección.`,
+    familyPledgeTitle: "Juramento de la Familia",
+    familyPledgeSubtitle: (firstName) =>
+      `Hola, ${firstName}. Lee los ocho ítems del Juramento de la Familia.`,
   },
   dashboard: {
     heading: "Tu biblioteca pastoral",
@@ -1027,6 +1087,9 @@ const es: AppMessages = {
     dpIndexName: "Principio Divino Indexado",
     dpIndexDescription:
       "El libro del Principio Divino con índice navegable: toca el título para abrir los subíndices o el texto, y escucha el audio de la sección.",
+    familyPledgeName: "Juramento de la Familia",
+    familyPledgeDescription:
+      "Los ocho ítems del Juramento de la Familia. Léelos en el idioma de la cuenta, en coreano romanizado o en hangul.",
   },
   dpIndex: {
     brand: "El Principio Divino",
@@ -1047,6 +1110,20 @@ const es: AppMessages = {
     stopSpeech: "Detener",
     speechPlaying: "Leyendo con la voz del aparato",
     speechPaused: "Lectura en pausa",
+  },
+  familyPledge: {
+    brand: "가정의 맹세",
+    heading: "Juramento de la Familia",
+    description:
+      "Elige cómo quieres leer: en tu idioma, en coreano romanizado o en hangul.",
+    backToTools: "Todas las herramientas",
+    localeLabel: "Tu idioma",
+    romanizedLabel: "Coreano romanizado",
+    hangulLabel: "Coreano hangul",
+    item: (n) => `Ítem ${n}`,
+    playAll: "Reproducir todo",
+    stopAudio: "Detener",
+    playingItem: "Reproduciendo",
   },
   videoManual: {
     brand: "Kit 1 — Principio Divino",
