@@ -5,7 +5,6 @@ import {
   BookOpen,
   ClipboardCheck,
   MessageCircleQuestion,
-  PhoneCall,
   UserCheck,
   Users,
   type LucideIcon,
@@ -53,7 +52,7 @@ export function Overview() {
 
       {!data ? (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, index) => (
+          {Array.from({ length: 5 }).map((_, index) => (
             <Skeleton key={index} className="h-24 rounded-xl" />
           ))}
         </div>
@@ -68,11 +67,6 @@ export function Overview() {
             label={t.admin.statOpenQuestions}
           />
           <StatCard icon={ClipboardCheck} value={data.pendingGrading} label={t.admin.statGrading} />
-          <StatCard
-            icon={PhoneCall}
-            value={data.pendingFirstContact}
-            label={t.admin.statFirstContact}
-          />
         </section>
       )}
 

@@ -28,7 +28,6 @@ export async function GET() {
       publishedCourses,
       openQuestions,
       pendingGrading,
-      pendingFirstContact,
       recentStudentDocs,
       recentQuestionDocs,
     ] = await Promise.all([
@@ -41,7 +40,6 @@ export async function GET() {
       ExamAttempt.countDocuments({
         textReviews: { $elemMatch: { reviewed: false, reflection: false } },
       }),
-      AcademyUser.countDocuments({ role: "student", firstContactAt: null }),
       AcademyUser.find({ role: "student" })
         .sort({ createdAt: -1 })
         .limit(8)
@@ -58,7 +56,6 @@ export async function GET() {
       publishedCourses,
       openQuestions,
       pendingGrading,
-      pendingFirstContact,
       recentStudents: await studentRows(recentStudentDocs),
       recentQuestions: await questionRows(recentQuestionDocs),
     };

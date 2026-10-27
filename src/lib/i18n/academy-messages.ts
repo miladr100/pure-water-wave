@@ -276,27 +276,18 @@ export type AppMessages = {
     statCourses: string;
     statOpenQuestions: string;
     statGrading: string;
-    statFirstContact: string;
     recentStudents: string;
     recentQuestions: string;
     studentsHeading: string;
     studentsDescription: string;
     searchStudents: string;
-    filterAll: string;
-    filterNoContact: string;
-    filterContacted: string;
     colName: string;
     colCountry: string;
     colTutor: string;
     colCourses: string;
     colSignedUp: string;
-    colFirstContact: string;
     colLastSeen: string;
     noStudents: string;
-    firstContactDone: string;
-    firstContactPending: string;
-    markFirstContact: string;
-    unmarkFirstContact: string;
     notes: string;
     notesPlaceholder: string;
     assignTutor: string;
@@ -668,27 +659,18 @@ const pt: AppMessages = {
     statCourses: "Cursos publicados",
     statOpenQuestions: "Perguntas abertas",
     statGrading: "Respostas a revisar",
-    statFirstContact: "Sem primeiro contato",
     recentStudents: "Últimos cadastros",
     recentQuestions: "Últimas perguntas",
     studentsHeading: "Alunos",
-    studentsDescription: "Todos os alunos cadastrados, com progresso e primeiro contato.",
+    studentsDescription: "Todos os alunos cadastrados, com progresso e tutor responsável.",
     searchStudents: "Buscar por nome ou e-mail",
-    filterAll: "Todos",
-    filterNoContact: "Sem primeiro contato",
-    filterContacted: "Já contatados",
     colName: "Nome",
     colCountry: "País",
     colTutor: "Tutor",
     colCourses: "Cursos",
     colSignedUp: "Cadastro",
-    colFirstContact: "Primeiro contato",
     colLastSeen: "Último acesso",
     noStudents: "Nenhum aluno encontrado.",
-    firstContactDone: "Feito",
-    firstContactPending: "Pendente",
-    markFirstContact: "Marcar primeiro contato",
-    unmarkFirstContact: "Desfazer primeiro contato",
     notes: "Anotações do tutor",
     notesPlaceholder: "Como foi o contato, o que o aluno precisa...",
     assignTutor: "Tutor responsável",
@@ -1066,27 +1048,18 @@ const en: AppMessages = {
     statCourses: "Published courses",
     statOpenQuestions: "Open questions",
     statGrading: "Answers to review",
-    statFirstContact: "No first contact",
     recentStudents: "Latest sign-ups",
     recentQuestions: "Latest questions",
     studentsHeading: "Students",
-    studentsDescription: "Every registered student, with progress and first contact.",
+    studentsDescription: "Every registered student, with progress and assigned tutor.",
     searchStudents: "Search by name or email",
-    filterAll: "All",
-    filterNoContact: "No first contact",
-    filterContacted: "Contacted",
     colName: "Name",
     colCountry: "Country",
     colTutor: "Tutor",
     colCourses: "Courses",
     colSignedUp: "Signed up",
-    colFirstContact: "First contact",
     colLastSeen: "Last seen",
     noStudents: "No students found.",
-    firstContactDone: "Done",
-    firstContactPending: "Pending",
-    markFirstContact: "Mark first contact",
-    unmarkFirstContact: "Undo first contact",
     notes: "Tutor notes",
     notesPlaceholder: "How the contact went, what the student needs...",
     assignTutor: "Assigned tutor",
@@ -1464,27 +1437,18 @@ const es: AppMessages = {
     statCourses: "Cursos publicados",
     statOpenQuestions: "Preguntas abiertas",
     statGrading: "Respuestas por revisar",
-    statFirstContact: "Sin primer contacto",
     recentStudents: "Últimos registros",
     recentQuestions: "Últimas preguntas",
     studentsHeading: "Estudiantes",
-    studentsDescription: "Todos los estudiantes registrados, con progreso y primer contacto.",
+    studentsDescription: "Todos los estudiantes registrados, con progreso y tutor responsable.",
     searchStudents: "Buscar por nombre o correo",
-    filterAll: "Todos",
-    filterNoContact: "Sin primer contacto",
-    filterContacted: "Ya contactados",
     colName: "Nombre",
     colCountry: "País",
     colTutor: "Tutor",
     colCourses: "Cursos",
     colSignedUp: "Registro",
-    colFirstContact: "Primer contacto",
     colLastSeen: "Último acceso",
     noStudents: "No se encontraron estudiantes.",
-    firstContactDone: "Hecho",
-    firstContactPending: "Pendiente",
-    markFirstContact: "Marcar primer contacto",
-    unmarkFirstContact: "Deshacer primer contacto",
     notes: "Notas del tutor",
     notesPlaceholder: "Cómo fue el contacto, qué necesita el estudiante...",
     assignTutor: "Tutor responsable",

@@ -22,8 +22,7 @@ quiserem vídeos privados, uma conta no Bunny Stream.
   idioma, tema claro/escuro/sistema, cursos em outros idiomas, escolha do
   tutor). A foto fica no próprio MongoDB, então não precisa de storage.
 - Painel dos tutores em `/admin` (tutores são os administradores): visão
-  geral, alunos (busca, filtro de "primeiro contato", anotações, tutor
-  responsável, converter em tutor), tutores, editor completo de cursos
+  geral, alunos (busca, anotações, tutor responsável, converter em tutor), tutores, editor completo de cursos
   (módulos, aulas com YouTube ou Bunny, materiais, atividades e perguntas em
   três idiomas), caixa de perguntas dos alunos, revisão de respostas escritas.
 - Um curso de exemplo (`npm run seed`) montado com o **Manual de apoio dos

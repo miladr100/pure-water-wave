@@ -10,7 +10,6 @@ import { studentDetail, USER_ROW_FIELDS, type UserDoc } from "../../_lib/seriali
 type Params = { params: Promise<{ id: string }> };
 
 type PatchBody = {
-  firstContact?: boolean;
   tutorNotes?: string;
   assignedTutorId?: string | null;
   role?: string;
@@ -63,10 +62,6 @@ export async function PATCH(request: Request, { params }: Params) {
 
     const body = (await request.json().catch(() => ({}))) as PatchBody;
     const update: Record<string, unknown> = {};
-
-    if (typeof body.firstContact === "boolean") {
-      update.firstContactAt = body.firstContact ? new Date() : null;
-    }
 
     if (typeof body.tutorNotes === "string") {
       update.tutorNotes = body.tutorNotes.trim().slice(0, 5000);

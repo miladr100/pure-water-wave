@@ -301,7 +301,6 @@ export type AdminOverview = {
   publishedCourses: number;
   openQuestions: number;
   pendingGrading: number;
-  pendingFirstContact: number;
   recentStudents: AdminStudentRow[];
   recentQuestions: AdminQuestionRow[];
 };
@@ -317,7 +316,6 @@ export type AdminStudentRow = {
   role: AcademyRole;
   createdAt: string;
   lastSeenAt: string | null;
-  firstContactAt: string | null;
   tutor: { id: string; fullName: string } | null;
   enrollmentCount: number;
   completedCount: number;

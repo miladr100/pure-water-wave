@@ -44,7 +44,6 @@ export type UserDoc = {
   photoUpdatedAt?: Date | null;
   language: UserLanguage;
   role: AcademyRole;
-  firstContactAt?: Date | null;
   tutorNotes?: string;
   assignedTutorId?: Types.ObjectId | null;
   lastSeenAt?: Date | null;
@@ -84,7 +83,7 @@ export type ExamFullDoc = {
 const iso = (value: Date | null | undefined) => (value ? value.toISOString() : null);
 
 export const USER_ROW_FIELDS =
-  "fullName email phone country city birthday photoUpdatedAt language role firstContactAt tutorNotes assignedTutorId lastSeenAt createdAt";
+  "fullName email phone country city birthday photoUpdatedAt language role tutorNotes assignedTutorId lastSeenAt createdAt";
 
 export async function studentRows(users: UserDoc[]): Promise<AdminStudentRow[]> {
   if (users.length === 0) {
@@ -133,7 +132,6 @@ export async function studentRows(users: UserDoc[]): Promise<AdminStudentRow[]> 
       role: user.role,
       createdAt: user.createdAt.toISOString(),
       lastSeenAt: iso(user.lastSeenAt),
-      firstContactAt: iso(user.firstContactAt),
       tutor: tutorId && name ? { id: tutorId, fullName: name } : null,
       enrollmentCount: count?.total ?? 0,
       completedCount: count?.completed ?? 0,

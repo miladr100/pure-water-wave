@@ -43,7 +43,6 @@ import { USER_LANGUAGE_LABELS } from "@/lib/user-languages";
 const NO_TUTOR = "none";
 
 type Patch = {
-  firstContact?: boolean;
   tutorNotes?: string;
   assignedTutorId?: string | null;
   role?: "student" | "tutor";
@@ -135,17 +134,7 @@ export function StudentDetail({ studentId, session }: { studentId: string; sessi
             />
           ) : null
         }
-        actions={
-          isTutor ? (
-            <Badge variant="secondary">{t.header.tutors}</Badge>
-          ) : student.firstContactAt ? (
-            <Badge variant="secondary">{t.admin.firstContactDone}</Badge>
-          ) : (
-            <Badge variant="outline" className="text-muted-foreground">
-              {t.admin.firstContactPending}
-            </Badge>
-          )
-        }
+        actions={isTutor ? <Badge variant="secondary">{t.header.tutors}</Badge> : null}
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -184,20 +173,13 @@ export function StudentDetail({ studentId, session }: { studentId: string; sessi
 
         <Card className="border-border/60 shadow-card">
           <CardHeader>
-            <CardTitle className="font-display text-xl">{t.admin.colFirstContact}</CardTitle>
+            <CardTitle className="font-display text-xl">{t.admin.notes}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button
-              type="button"
-              variant={student.firstContactAt ? "outline" : "default"}
-              className="w-full rounded-full"
-              disabled={busy}
-              onClick={() => void patch({ firstContact: !student.firstContactAt })}
-            >
-              {student.firstContactAt ? t.admin.unmarkFirstContact : t.admin.markFirstContact}
-            </Button>
             <div className="space-y-2">
-              <Label htmlFor="tutor-notes">{t.admin.notes}</Label>
+              <Label htmlFor="tutor-notes" className="sr-only">
+                {t.admin.notes}
+              </Label>
               <Textarea
                 id="tutor-notes"
                 value={notes}

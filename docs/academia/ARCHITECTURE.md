@@ -32,7 +32,7 @@ segue, peça por peça, o que o resto do repositório já faz.
 /academia/perguntas                         minhas perguntas e respostas
 /academia/perfil                            perfil: foto, dados, e-mail, senha, idioma, tema, outros idiomas, meu tutor
 /admin                                      visão geral (tutores)
-/admin/alunos, /admin/alunos/[id]           alunos, primeiro contato, notas, converter em tutor
+/admin/alunos, /admin/alunos/[id]           alunos, notas do tutor, converter em tutor
 /admin/tutores                              tutores
 /admin/cursos, /admin/cursos/[id]           editor de curso: módulos, aulas, atividades, perguntas
 /admin/perguntas                            caixa de perguntas dos alunos
@@ -52,7 +52,7 @@ biblioteca continua com o gate de sempre.
   `birthday`, `theme` (light/dark/system, adotado pelo navegador ao entrar),
   `showOtherLanguage` (ver cursos gravados em outros idiomas),
   `photo` (JPEG 512 px guardado no próprio documento, servido por
-  `/api/academia/foto/[id]`, sem conta de storage), `firstContactAt`,
+  `/api/academia/foto/[id]`, sem conta de storage),
   `tutorNotes`, `assignedTutorId` (o aluno escolhe o tutor no perfil; o
   painel também pode atribuir).
 - `Course` — `slug`, `title`/`description` localizados (`{pt,en,es}`),

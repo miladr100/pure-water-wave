@@ -50,9 +50,7 @@ const academyUserSchema = new Schema(
       default: "student",
       required: true,
     },
-    // Tutor-side follow-up (the FFPUM "primer contacto" column): when a tutor
-    // first reached out to this student and any note they left.
-    firstContactAt: { type: Date, default: null },
+    // Tutor-side follow-up: any note the tutor left about this student.
     tutorNotes: { type: String, default: "" },
     assignedTutorId: { type: Schema.Types.ObjectId, ref: "AcademyUser", default: null },
     lastSeenAt: { type: Date, default: null },

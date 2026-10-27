@@ -51,8 +51,7 @@ describe("GET /api/admin/overview", () => {
   it("counts students, tutors, published courses and the work waiting", async () => {
     const tutor = await tutorSession();
     await createUser({ role: "tutor" });
-    const contacted = await createUser({ fullName: "Contactada" });
-    await AcademyUser.updateOne({ _id: contacted._id }, { firstContactAt: new Date() });
+    await createUser({ fullName: "Primeira" });
     const fresh = await createUser({ fullName: "Nova" });
     const sample = await createSampleCourse();
     await createSampleCourse({ slug: "rascunho", published: false });
@@ -86,9 +85,8 @@ describe("GET /api/admin/overview", () => {
       publishedCourses: 1,
       openQuestions: 1,
       pendingGrading: 1,
-      pendingFirstContact: 1,
     });
-    expect(body.recentStudents.map((row) => row.fullName)).toEqual(["Nova", "Contactada"]);
+    expect(body.recentStudents.map((row) => row.fullName)).toEqual(["Nova", "Primeira"]);
     expect(body.recentStudents.some((row) => row.id === tutor._id.toString())).toBe(false);
     expect(body.recentQuestions.map((row) => row.text)).toEqual(["Aberta"]);
     expect(body.recentQuestions[0].studentName).toBe("Nova");
@@ -118,15 +116,13 @@ describe("GET /api/admin/alunos", () => {
     expect(await studentNames("?search=example.test&sort=name&dir=asc")).toEqual(["João Lima", "Maria Souza"]);
   });
 
-  it("filters by first contact and sorts by name both ways", async () => {
+  it("sorts by name both ways and ignores an unknown sort key", async () => {
     await tutorSession();
-    const contacted = await createUser({ fullName: "Bruna" });
-    await AcademyUser.updateOne({ _id: contacted._id }, { firstContactAt: new Date() });
+    await createUser({ fullName: "Bruna" });
     await createUser({ fullName: "Ana" });
     await createUser({ fullName: "Carla" });
 
-    expect(await studentNames("?filter=nocontact&sort=name&dir=asc")).toEqual(["Ana", "Carla"]);
-    expect(await studentNames("?filter=contacted")).toEqual(["Bruna"]);
+    expect(await studentNames("?sort=bogus")).toEqual(await studentNames());
     expect(await studentNames("?sort=name&dir=asc")).toEqual(["Ana", "Bruna", "Carla"]);
     expect(await studentNames("?sort=name&dir=desc")).toEqual(["Carla", "Bruna", "Ana"]);
   });
@@ -146,7 +142,6 @@ describe("GET /api/admin/alunos", () => {
       role: "student",
       enrollmentCount: 2,
       completedCount: 1,
-      firstContactAt: null,
       tutor: { id: tutor._id.toString(), fullName: "Tutora Chefe" },
     });
   });
@@ -216,18 +211,16 @@ describe("GET and PATCH /api/admin/alunos/[id]", () => {
     expect(body.student.enrollments[0].exams[0]).toMatchObject({ state: "aprovado", bestScorePct: 100 });
   });
 
-  it("stamps and clears the first contact and keeps tutor notes", async () => {
+  it("trims and keeps tutor notes", async () => {
     await tutorSession();
     const user = await createUser();
     const id = user._id.toString();
 
-    const stamped = await readJson<{ student: AdminStudentDetail }>(await patch(id, { firstContact: true, tutorNotes: "  Ligar na terça  " }));
-    expect(stamped.student.firstContactAt).toMatch(/^\d{4}-/);
-    expect(stamped.student.tutorNotes).toBe("Ligar na terça");
+    const saved = await readJson<{ student: AdminStudentDetail }>(await patch(id, { tutorNotes: "  Ligar na terça  " }));
+    expect(saved.student.tutorNotes).toBe("Ligar na terça");
 
-    const cleared = await readJson<{ student: AdminStudentDetail }>(await patch(id, { firstContact: false }));
-    expect(cleared.student.firstContactAt).toBeNull();
-    expect(cleared.student.tutorNotes).toBe("Ligar na terça");
+    const untouched = await readJson<{ student: AdminStudentDetail }>(await patch(id, { assignedTutorId: null }));
+    expect(untouched.student.tutorNotes).toBe("Ligar na terça");
   });
 
   it("assigns only a real tutor", async () => {

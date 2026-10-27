@@ -7,16 +7,8 @@ import { useEffect, useState } from "react";
 import { PageHeading } from "@/components/admin/admin-shell";
 import { toastError, useDateFormat } from "@/components/admin/helpers";
 import { useLocale } from "@/components/academy/locale-provider";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -30,8 +22,7 @@ import { api } from "@/lib/academy/api-client";
 import type { AdminStudentRow } from "@/lib/academy/types";
 import { cn } from "@/lib/utils";
 
-type Filter = "all" | "nocontact" | "contacted";
-type Sort = "name" | "createdAt" | "country" | "firstContact" | "lastSeen";
+type Sort = "name" | "createdAt" | "country" | "lastSeen";
 
 function SortHead({
   column,
@@ -71,7 +62,6 @@ export function StudentsTable() {
   const formatDate = useDateFormat();
   const [search, setSearch] = useState("");
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<Filter>("all");
   const [sort, setSort] = useState<Sort>("createdAt");
   const [dir, setDir] = useState<"asc" | "desc">("desc");
   const [students, setStudents] = useState<AdminStudentRow[] | null>(null);
@@ -83,7 +73,7 @@ export function StudentsTable() {
   }, [search]);
 
   useEffect(() => {
-    const params = new URLSearchParams({ search: query, filter, sort, dir });
+    const params = new URLSearchParams({ search: query, sort, dir });
     let cancelled = false;
 
     api<{ students: AdminStudentRow[] }>(`/api/admin/alunos?${params}`)
@@ -95,7 +85,7 @@ export function StudentsTable() {
     return () => {
       cancelled = true;
     };
-  }, [query, filter, sort, dir, t]);
+  }, [query, sort, dir, t]);
 
   function toggleSort(next: Sort) {
     if (next === sort) {
@@ -110,27 +100,15 @@ export function StudentsTable() {
     <>
       <PageHeading title={t.admin.studentsHeading} description={t.admin.studentsDescription} />
 
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-        <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder={t.admin.searchStudents}
-            className="pl-9"
-            aria-label={t.admin.searchStudents}
-          />
-        </div>
-        <Select value={filter} onValueChange={(value) => setFilter(value as Filter)}>
-          <SelectTrigger className="sm:w-56" aria-label={t.admin.colFirstContact}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t.admin.filterAll}</SelectItem>
-            <SelectItem value="nocontact">{t.admin.filterNoContact}</SelectItem>
-            <SelectItem value="contacted">{t.admin.filterContacted}</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="relative mb-4">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder={t.admin.searchStudents}
+          className="pl-9"
+          aria-label={t.admin.searchStudents}
+        />
       </div>
 
       <Card className="border-border/60 shadow-card">
@@ -153,7 +131,6 @@ export function StudentsTable() {
                     <TableHead>{t.admin.colTutor}</TableHead>
                     <TableHead>{t.admin.colCourses}</TableHead>
                     <SortHead column="createdAt" sort={sort} dir={dir} onToggle={toggleSort}>{t.admin.colSignedUp}</SortHead>
-                    <SortHead column="firstContact" sort={sort} dir={dir} onToggle={toggleSort}>{t.admin.colFirstContact}</SortHead>
                     <SortHead column="lastSeen" sort={sort} dir={dir} onToggle={toggleSort}>{t.admin.colLastSeen}</SortHead>
                   </TableRow>
                 </TableHeader>
@@ -179,15 +156,6 @@ export function StudentsTable() {
                         {student.enrollmentCount} · {student.completedCount}
                       </TableCell>
                       <TableCell className="whitespace-nowrap">{formatDate(student.createdAt)}</TableCell>
-                      <TableCell className="whitespace-nowrap">
-                        {student.firstContactAt ? (
-                          <Badge variant="secondary">{t.admin.firstContactDone}</Badge>
-                        ) : (
-                          <Badge variant="outline" className="text-muted-foreground">
-                            {t.admin.firstContactPending}
-                          </Badge>
-                        )}
-                      </TableCell>
                       <TableCell className="whitespace-nowrap">{formatDate(student.lastSeenAt)}</TableCell>
                     </TableRow>
                   ))}

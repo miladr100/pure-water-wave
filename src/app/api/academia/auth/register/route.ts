@@ -110,7 +110,7 @@ export async function POST(request: Request) {
     });
 
     // A new student is signed in straight away — the academy has no email
-    // verification step, the tutor's first contact is the welcome.
+    // verification step; the tutors are told by e-mail and welcome the student.
     const token = await createSessionToken({
       userId: user._id.toString(),
       login: user.login,

@@ -56,8 +56,7 @@ export const NewStudentEmail = ({
           </Section>
 
           <Text style={paragraph}>
-            Faça o primeiro contato e registre no painel para que a equipe saiba
-            que o aluno já foi acolhido.
+            Dê as boas-vindas e acompanhe o aluno pelo painel.
           </Text>
 
           <Section style={{ textAlign: "center" as const }}>
