@@ -41,7 +41,10 @@ segue, peça por peça, o que o resto do repositório já faz.
 
 `src/middleware.ts` exige a sessão da academia (cookie `pww_academy_session`)
 em `/academia`, `/admin`, `/api/academia`, `/api/admin`, e papel `tutor` em
-tudo que começa com `/admin`. A biblioteca continua com o gate de sempre.
+tudo que começa com `/admin`. Para quem não é tutor, `/admin/**` e
+`/api/admin/**` respondem **404** (nunca um redirect ou 403 que confirme que
+o painel existe); o layout de `/admin` repete a regra com `notFound()`. A
+biblioteca continua com o gate de sempre.
 
 ## Modelo de dados (`src/models`)
 

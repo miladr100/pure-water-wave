@@ -29,13 +29,25 @@ async function academyMiddleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const deny = (status: 401 | 403) => {
+  // The panel does not exist for anyone who is not a tutor: no redirect to a
+  // login, no 403, just the site's 404, so the URL reveals nothing. The
+  // rewrite targets a path no route matches, which renders not-found.tsx
+  // with a real 404 status.
+  const hide = () => {
     if (isApi) {
-      return NextResponse.json({ error: "Não autorizado" }, { status });
+      return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
     }
 
-    if (status === 403) {
-      return NextResponse.redirect(new URL("/academia", request.url));
+    return NextResponse.rewrite(new URL("/__nao-encontrado", request.url));
+  };
+
+  const deny = (status: 401 | 403) => {
+    if (isAdminArea) {
+      return hide();
+    }
+
+    if (isApi) {
+      return NextResponse.json({ error: "Não autorizado" }, { status });
     }
 
     const login = new URL("/academia/login", request.url);
