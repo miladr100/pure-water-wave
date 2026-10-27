@@ -2,12 +2,13 @@
 
 import { Bell } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { fmtDate } from "@/components/academy/format";
 import { useLocale } from "@/components/academy/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useMe } from "@/components/academy/use-api";
 import { api } from "@/lib/academy/api-client";
 import type { MeResponse } from "@/lib/academy/types";
 import { cn } from "@/lib/utils";
@@ -17,36 +18,19 @@ type Notification = MeResponse["notifications"][number];
 export function NotificationsBell() {
   const { t, language } = useLocale();
   const router = useRouter();
-  const [items, setItems] = useState<Notification[]>([]);
+  const me = useMe();
+  // Opened here before `/me` is fetched again.
+  const [seenHere, setSeenHere] = useState<ReadonlySet<string>>(() => new Set());
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    api<MeResponse>("/api/academia/me")
-      .then((me) => {
-        if (!cancelled) {
-          setItems(me.notifications);
-        }
-      })
-      .catch(() => {
-        // The bell is a convenience; the screen under it reports failures.
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const items: Notification[] = (me?.notifications ?? []).map((item) =>
+    seenHere.has(item.questionId) ? { ...item, seen: true } : item,
+  );
 
   const unread = items.filter((item) => !item.seen).length;
 
   function openNotification(item: Notification) {
     if (!item.seen) {
-      setItems((current) =>
-        current.map((entry) =>
-          entry.questionId === item.questionId ? { ...entry, seen: true } : entry,
-        ),
-      );
+      setSeenHere((current) => new Set(current).add(item.questionId));
       void api(`/api/academia/perguntas/${item.questionId}/vista`, { method: "POST" }).catch(
         () => {},
       );

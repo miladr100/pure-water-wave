@@ -18,7 +18,9 @@ quiserem vídeos privados, uma conta no Bunny Stream.
   progresso que continua de onde parou, atividades de revisão corrigidas na
   hora (múltipla escolha, V/F) e respostas escritas revisadas por um tutor,
   cursos que se desbloqueiam ao concluir outros, perguntas ao tutor dentro da
-  aula, notificações de resposta.
+  aula, notificações de resposta, e o perfil (foto, dados, e-mail, senha,
+  idioma, tema claro/escuro/sistema, cursos em outros idiomas, escolha do
+  tutor). A foto fica no próprio MongoDB, então não precisa de storage.
 - Painel dos tutores em `/admin` (tutores são os administradores): visão
   geral, alunos (busca, filtro de "primeiro contato", anotações, tutor
   responsável, converter em tutor), tutores, editor completo de cursos

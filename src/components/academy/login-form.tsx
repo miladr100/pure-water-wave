@@ -5,9 +5,11 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { useLocale } from "@/components/academy/locale-provider";
+import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { isAppTheme } from "@/lib/theme";
 
 type LoginErrorState =
   | { kind: "message"; text: string }
@@ -18,6 +20,7 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useLocale();
+  const { setTheme } = useTheme();
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<LoginErrorState>(null);
@@ -39,6 +42,7 @@ export function LoginForm() {
         error?: string;
         code?: string;
         redirectTo?: string;
+        user?: { theme?: unknown };
       };
 
       if (!response.ok) {
@@ -49,6 +53,12 @@ export function LoginForm() {
 
         setError({ kind: "message", text: data.error ?? t.auth.failed });
         return;
+      }
+
+      // The account remembers its theme; this device follows it from now on.
+      const theme = data.user?.theme;
+      if (isAppTheme(theme)) {
+        setTheme(theme);
       }
 
       // `next` is set by the middleware when a protected page bounced here.

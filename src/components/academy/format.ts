@@ -43,3 +43,27 @@ export function fmtDate(value: string | null | undefined, language: UserLanguage
 export function firstNameOf(fullName: string) {
   return fullName.trim().split(/\s+/)[0] ?? fullName;
 }
+
+export function initialsOf(fullName: string) {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  const first = parts[0]?.[0] ?? "";
+  const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? "") : "";
+  return `${first}${last}`.toUpperCase();
+}
+
+// Today as yyyy-mm-dd in the browser's own calendar (for a date input's max).
+export function todayIso() {
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${now.getFullYear()}-${month}-${day}`;
+}
+
+// A yyyy-mm-dd birthday has no time zone; parsing it as UTC would show the
+// day before in Brazil, so it is read as a local calendar date.
+export function fmtBirthday(value: string | null | undefined, language: UserLanguage) {
+  if (!value) {
+    return "";
+  }
+  return fmtDate(`${value}T00:00:00`, language);
+}

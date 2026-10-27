@@ -13,13 +13,16 @@ import {
   Shield,
   Users,
   UserCheck,
+  UserRound,
   type LucideIcon,
 } from "lucide-react";
 import { useState } from "react";
 
 import { useLocale } from "@/components/academy/locale-provider";
 import { LogoutButton } from "@/components/academy/logout-button";
-import { SettingsMenu } from "@/components/academy/settings-menu";
+import { useMe } from "@/components/academy/use-api";
+import { UserAvatar } from "@/components/academy/user-avatar";
+import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -32,9 +35,10 @@ import {
 import type { SessionPayload } from "@/lib/academy/auth";
 import { cn } from "@/lib/utils";
 
-// The library's header (logo-as-settings, title, nav buttons, logout, sheet
-// on phones), with the nav decided by the area. Tutors get a link across to
-// the other area in both.
+// The library's header (logo, title, nav buttons, logout, sheet on phones),
+// with the nav decided by the area. The logo is the person's photo once they
+// have one and opens their profile. Tutors get a link across to the other
+// area in both.
 type AppHeaderProps = {
   area: "academy" | "admin";
   session: SessionPayload;
@@ -50,11 +54,12 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
   const { t } = useLocale();
   const pathname = usePathname() ?? "";
   const router = useRouter();
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const me = useMe();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const isTutor = session.role === "tutor";
+  const photoUrl = me?.profile.photoUrl ?? null;
 
   const items: NavItem[] =
     area === "academy"
@@ -62,6 +67,7 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
           { href: "/academia", label: t.header.myCourses, icon: GraduationCap, exact: true },
           { href: "/academia/cursos", label: t.header.catalog, icon: BookOpen },
           { href: "/academia/perguntas", label: t.header.myQuestions, icon: MessageCircleQuestion },
+          { href: "/academia/perfil", label: t.header.profile, icon: UserRound },
           ...(isTutor ? [{ href: "/admin", label: t.header.viewAdmin, icon: Shield }] : []),
         ]
       : [
@@ -71,6 +77,7 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
           { href: "/admin/cursos", label: t.header.courses, icon: BookOpen },
           { href: "/admin/perguntas", label: t.header.inbox, icon: MessageCircleQuestion },
           { href: "/admin/correcoes", label: t.header.grading, icon: ClipboardCheck },
+          { href: "/academia/perfil", label: t.header.profile, icon: UserRound },
           { href: "/academia", label: t.header.viewAcademy, icon: GraduationCap },
         ];
 
@@ -98,12 +105,22 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
     <header className="sticky top-0 z-30 border-b border-border/60 bg-card/80 backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-3 gap-y-3 px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-          <SettingsMenu
-            fullName={session.fullName}
-            logoClassName="h-10 w-10"
-            open={settingsOpen}
-            onOpenChange={setSettingsOpen}
-          />
+          <Link
+            href="/academia/perfil"
+            className="shrink-0 rounded-full border-2 border-transparent p-0.5 transition hover:border-primary hover:shadow-[0_0_0_3px] hover:shadow-primary/25 focus-visible:border-primary focus-visible:outline-none focus-visible:shadow-[0_0_0_3px] focus-visible:shadow-primary/25"
+            aria-label={t.header.profile}
+          >
+            {photoUrl ? (
+              <UserAvatar
+                fullName={session.fullName}
+                photoUrl={photoUrl}
+                className="h-10 w-10"
+                textClassName="text-sm"
+              />
+            ) : (
+              <BrandLogo className="h-10 w-10 shrink-0" />
+            )}
+          </Link>
 
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>

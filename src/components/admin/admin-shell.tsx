@@ -18,16 +18,22 @@ export function PageHeading({
   title,
   description,
   actions,
+  leading,
 }: {
   title: string;
   description?: string;
   actions?: ReactNode;
+  // Drawn left of the title (a student's photo, for one).
+  leading?: ReactNode;
 }) {
   return (
     <section className="mb-8 flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 className="font-display text-3xl font-semibold text-primary-deep md:text-4xl">{title}</h1>
-        {description ? <p className="mt-3 max-w-2xl text-muted-foreground">{description}</p> : null}
+      <div className="flex items-center gap-4">
+        {leading}
+        <div>
+          <h1 className="font-display text-3xl font-semibold text-primary-deep md:text-4xl">{title}</h1>
+          {description ? <p className="mt-3 max-w-2xl text-muted-foreground">{description}</p> : null}
+        </div>
       </div>
       {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
     </section>

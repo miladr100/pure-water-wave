@@ -30,6 +30,7 @@ export type AppMessages = {
     activities: (n: number) => string;
   };
   header: {
+    profile: string;
     academyTitle: string;
     academySubtitle: (firstName: string) => string;
     adminTitle: string;
@@ -92,6 +93,7 @@ export type AppMessages = {
     recommendedStart: string;
   };
   catalog: {
+    otherLanguageHint: string;
     heading: string;
     description: string;
     view: string;
@@ -230,6 +232,41 @@ export type AppMessages = {
     appearance: string;
     light: string;
     dark: string;
+  };
+  profile: {
+    heading: string;
+    description: string;
+    photoSection: string;
+    changePhoto: string;
+    removePhoto: string;
+    photoHint: string;
+    uploading: string;
+    photoSaved: string;
+    photoTooLarge: string;
+    dataSection: string;
+    birthday: string;
+    saved: string;
+    accountSection: string;
+    newEmail: string;
+    confirmWithPassword: string;
+    changeEmail: string;
+    emailChanged: string;
+    preferencesSection: string;
+    theme: string;
+    themeLight: string;
+    themeDark: string;
+    themeSystem: string;
+    otherLanguage: string;
+    otherLanguageHint: string;
+    tutorSection: string;
+    tutorHint: string;
+    tutorNone: string;
+    noTutorsYet: string;
+    tutorSaved: string;
+    memberSince: (date: string) => string;
+    incompleteTitle: string;
+    incompleteBody: string;
+    incompleteCta: string;
   };
   admin: {
     overviewHeading: string;
@@ -384,6 +421,7 @@ const pt: AppMessages = {
     activities: (n) => (n === 1 ? "1 atividade" : `${n} atividades`),
   },
   header: {
+    profile: "Meu perfil",
     academyTitle: "Academia Água Pura",
     academySubtitle: (firstName) => `Bem-vindo(a), ${firstName}`,
     adminTitle: "Painel de tutores",
@@ -446,6 +484,7 @@ const pt: AppMessages = {
     recommendedStart: "Recomendamos começar por:",
   },
   catalog: {
+    otherLanguageHint: "Não vê o curso que procura? Ative \"Ver cursos em outros idiomas\" no seu perfil.",
     heading: "Cursos",
     description: "Trilhas em vídeo com atividades de revisão e acompanhamento de tutores.",
     view: "Ver curso",
@@ -585,6 +624,41 @@ const pt: AppMessages = {
     appearance: "Aparência",
     light: "Claro",
     dark: "Escuro",
+  },
+  profile: {
+    heading: "Meu perfil",
+    description: "Seus dados, sua conta e como você prefere usar a academia.",
+    photoSection: "Foto",
+    changePhoto: "Trocar foto",
+    removePhoto: "Remover foto",
+    photoHint: "JPG, PNG ou WebP, até 4 MB. A foto é recortada em quadrado.",
+    uploading: "Enviando...",
+    photoSaved: "Foto atualizada.",
+    photoTooLarge: "A imagem é grande demais (máximo 4 MB).",
+    dataSection: "Meus dados",
+    birthday: "Data de nascimento",
+    saved: "Dados salvos.",
+    accountSection: "Conta",
+    newEmail: "Novo e-mail",
+    confirmWithPassword: "Confirme com sua senha atual",
+    changeEmail: "Alterar e-mail",
+    emailChanged: "E-mail alterado. Use o novo e-mail para entrar.",
+    preferencesSection: "Preferências",
+    theme: "Tema",
+    themeLight: "Claro",
+    themeDark: "Escuro",
+    themeSystem: "Sistema",
+    otherLanguage: "Ver cursos em outros idiomas",
+    otherLanguageHint: "Por padrão você vê só os cursos gravados no seu idioma.",
+    tutorSection: "Meu tutor",
+    tutorHint: "Quem acompanha o seu caminho na academia. Você pode mudar quando quiser.",
+    tutorNone: "Sem tutor por enquanto",
+    noTutorsYet: "Ainda não há tutores disponíveis.",
+    tutorSaved: "Tutor atualizado.",
+    memberSince: (date) => `Na academia desde ${date}`,
+    incompleteTitle: "Complete seu perfil",
+    incompleteBody: "Falta telefone ou data de nascimento. Isso ajuda o tutor a entrar em contato.",
+    incompleteCta: "Completar perfil",
   },
   admin: {
     overviewHeading: "Visão geral",
@@ -745,6 +819,7 @@ const en: AppMessages = {
     activities: (n) => (n === 1 ? "1 activity" : `${n} activities`),
   },
   header: {
+    profile: "My profile",
     academyTitle: "Pure Water Academy",
     academySubtitle: (firstName) => `Welcome, ${firstName}`,
     adminTitle: "Tutor panel",
@@ -807,6 +882,7 @@ const en: AppMessages = {
     recommendedStart: "We recommend starting with:",
   },
   catalog: {
+    otherLanguageHint: "Can't find a course? Turn on \"Show courses in other languages\" in your profile.",
     heading: "Courses",
     description: "Video tracks with review activities and tutor follow-up.",
     view: "View course",
@@ -946,6 +1022,41 @@ const en: AppMessages = {
     appearance: "Appearance",
     light: "Light",
     dark: "Dark",
+  },
+  profile: {
+    heading: "My profile",
+    description: "Your details, your account and how you prefer to use the academy.",
+    photoSection: "Photo",
+    changePhoto: "Change photo",
+    removePhoto: "Remove photo",
+    photoHint: "JPG, PNG or WebP, up to 4 MB. The photo is cropped to a square.",
+    uploading: "Uploading...",
+    photoSaved: "Photo updated.",
+    photoTooLarge: "The image is too large (4 MB maximum).",
+    dataSection: "My details",
+    birthday: "Date of birth",
+    saved: "Details saved.",
+    accountSection: "Account",
+    newEmail: "New email",
+    confirmWithPassword: "Confirm with your current password",
+    changeEmail: "Change email",
+    emailChanged: "Email changed. Use the new email to sign in.",
+    preferencesSection: "Preferences",
+    theme: "Theme",
+    themeLight: "Light",
+    themeDark: "Dark",
+    themeSystem: "System",
+    otherLanguage: "Show courses in other languages",
+    otherLanguageHint: "By default you only see courses recorded in your language.",
+    tutorSection: "My tutor",
+    tutorHint: "Who follows your path in the academy. You can change it any time.",
+    tutorNone: "No tutor for now",
+    noTutorsYet: "No tutors available yet.",
+    tutorSaved: "Tutor updated.",
+    memberSince: (date) => `In the academy since ${date}`,
+    incompleteTitle: "Complete your profile",
+    incompleteBody: "Phone or date of birth is missing. It helps your tutor reach you.",
+    incompleteCta: "Complete profile",
   },
   admin: {
     overviewHeading: "Overview",
@@ -1106,6 +1217,7 @@ const es: AppMessages = {
     activities: (n) => (n === 1 ? "1 actividad" : `${n} actividades`),
   },
   header: {
+    profile: "Mi perfil",
     academyTitle: "Academia Agua Pura",
     academySubtitle: (firstName) => `Te damos la bienvenida, ${firstName}`,
     adminTitle: "Panel de tutores",
@@ -1168,6 +1280,7 @@ const es: AppMessages = {
     recommendedStart: "Te recomendamos empezar por:",
   },
   catalog: {
+    otherLanguageHint: "¿No ves el curso que buscás? Activá \"Ver cursos en otros idiomas\" en tu perfil.",
     heading: "Cursos",
     description: "Trayectos en video con actividades de repaso y acompañamiento de tutores.",
     view: "Ver curso",
@@ -1307,6 +1420,41 @@ const es: AppMessages = {
     appearance: "Apariencia",
     light: "Claro",
     dark: "Oscuro",
+  },
+  profile: {
+    heading: "Mi perfil",
+    description: "Tus datos, tu cuenta y cómo preferís usar la academia.",
+    photoSection: "Foto",
+    changePhoto: "Cambiar foto",
+    removePhoto: "Quitar foto",
+    photoHint: "JPG, PNG o WebP, hasta 4 MB. La foto se recorta en cuadrado.",
+    uploading: "Subiendo...",
+    photoSaved: "Foto actualizada.",
+    photoTooLarge: "La imagen es demasiado grande (máximo 4 MB).",
+    dataSection: "Mis datos",
+    birthday: "Fecha de nacimiento",
+    saved: "Datos guardados.",
+    accountSection: "Cuenta",
+    newEmail: "Nuevo correo",
+    confirmWithPassword: "Confirmá con tu contraseña actual",
+    changeEmail: "Cambiar correo",
+    emailChanged: "Correo cambiado. Usá el nuevo correo para ingresar.",
+    preferencesSection: "Preferencias",
+    theme: "Tema",
+    themeLight: "Claro",
+    themeDark: "Oscuro",
+    themeSystem: "Sistema",
+    otherLanguage: "Ver cursos en otros idiomas",
+    otherLanguageHint: "Por defecto ves solo los cursos grabados en tu idioma.",
+    tutorSection: "Mi tutor",
+    tutorHint: "Quien acompaña tu camino en la academia. Podés cambiarlo cuando quieras.",
+    tutorNone: "Sin tutor por ahora",
+    noTutorsYet: "Todavía no hay tutores disponibles.",
+    tutorSaved: "Tutor actualizado.",
+    memberSince: (date) => `En la academia desde ${date}`,
+    incompleteTitle: "Completá tu perfil",
+    incompleteBody: "Falta el teléfono o la fecha de nacimiento. Ayuda al tutor a contactarte.",
+    incompleteCta: "Completar perfil",
   },
   admin: {
     overviewHeading: "Resumen",

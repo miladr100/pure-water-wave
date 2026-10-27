@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { PageHeading } from "@/components/admin/admin-shell";
 import { toastError, useDateFormat } from "@/components/admin/helpers";
 import { useLocale } from "@/components/academy/locale-provider";
+import { UserAvatar } from "@/components/academy/user-avatar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -124,6 +125,16 @@ export function StudentDetail({ studentId, session }: { studentId: string; sessi
 
       <PageHeading
         title={student.fullName}
+        leading={
+          student.photoUrl ? (
+            <UserAvatar
+              fullName={student.fullName}
+              photoUrl={student.photoUrl}
+              className="h-16 w-16 shadow-soft"
+              textClassName="text-xl"
+            />
+          ) : null
+        }
         actions={
           isTutor ? (
             <Badge variant="secondary">{t.header.tutors}</Badge>
@@ -159,7 +170,9 @@ export function StudentDetail({ studentId, session }: { studentId: string; sessi
             ) : null}
             <Fact icon={MapPin}>{[student.country, student.city].filter(Boolean).join(" · ") || "—"}</Fact>
             <Fact icon={Globe}>{USER_LANGUAGE_LABELS[student.language]}</Fact>
-            {student.birthYear ? <Fact icon={Cake}>{student.birthYear}</Fact> : null}
+            <Fact icon={Cake}>
+              {student.birthday ? formatDate(`${student.birthday}T00:00:00`) : "—"}
+            </Fact>
             <Fact icon={Calendar}>
               {t.admin.colSignedUp}: {formatDate(student.createdAt)}
             </Fact>

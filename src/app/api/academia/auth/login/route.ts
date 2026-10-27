@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createSessionToken, getSessionCookieOptions } from "@/lib/academy/auth";
 import { connectDB } from "@/lib/mongodb";
 import { verifyPassword } from "@/lib/password";
+import { isAppTheme } from "@/lib/theme";
 import { isUserLanguage } from "@/lib/user-languages";
 import { AcademyUser } from "@/models/academy-user";
 
@@ -60,6 +61,8 @@ export async function POST(request: Request) {
     }
 
     const language = isUserLanguage(user.language) ? user.language : "pt";
+    // The browser adopts the saved theme at sign-in (FFPUM F10).
+    const theme = isAppTheme(user.theme) ? user.theme : "system";
 
     const token = await createSessionToken({
       userId: user._id.toString(),
@@ -79,6 +82,7 @@ export async function POST(request: Request) {
         login: user.login,
         role: user.role,
         language,
+        theme,
       },
     });
 

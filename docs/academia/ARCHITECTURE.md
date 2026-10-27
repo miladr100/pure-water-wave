@@ -15,7 +15,7 @@ segue, peça por peça, o que o resto do repositório já faz.
 | Sessão JWT própria (`jose`) em cookie httpOnly | igual | cookie `pww_academy_session`, papéis `student`/`tutor` |
 | `SystemUser` (pastor/hjteam) + segredo de cadastro | `AcademyUser` | aluno se cadastra livre; tutor precisa de `TUTOR_REGISTER_SECRET` ou ser convertido no painel |
 | Rotas `/api/auth/*` (login, logout, register, profile, language, change/forgot/reset password) | `/api/academia/auth/*` | mesmas rotas, modelo `AcademyUser` |
-| `LibraryHeader` + menu de configurações (nome, senha, tema, idioma) | `AppHeader` + `SettingsMenu` | nav muda por área |
+| `LibraryHeader` + menu de configurações (nome, senha, tema, idioma) | `AppHeader` + página `/academia/perfil` | nav muda por área; o logo abre o perfil |
 | `LocaleProvider` + `messages.ts` (pt/en/es) | `components/academy/locale-provider` + `lib/i18n/academy-messages.ts` | copy própria |
 | Resend + `@react-email` | igual | reset de senha, aviso de aluno novo |
 
@@ -30,6 +30,7 @@ segue, peça por peça, o que o resto do repositório já faz.
 /academia/cursos/[slug]/atividade/[examId]  atividade de revisão
 /academia/cursos/[slug]/concluido           curso concluído
 /academia/perguntas                         minhas perguntas e respostas
+/academia/perfil                            perfil: foto, dados, e-mail, senha, idioma, tema, outros idiomas, meu tutor
 /admin                                      visão geral (tutores)
 /admin/alunos, /admin/alunos/[id]           alunos, primeiro contato, notas, converter em tutor
 /admin/tutores                              tutores
@@ -44,8 +45,13 @@ tudo que começa com `/admin`. A biblioteca continua com o gate de sempre.
 
 ## Modelo de dados (`src/models`)
 
-- `AcademyUser` — conta (aluno ou tutor), idioma, país, `firstContactAt`,
-  `tutorNotes`, `assignedTutorId`.
+- `AcademyUser` — conta (aluno ou tutor), idioma, país, cidade, telefone,
+  `birthday`, `theme` (light/dark/system, adotado pelo navegador ao entrar),
+  `showOtherLanguage` (ver cursos gravados em outros idiomas),
+  `photo` (JPEG 512 px guardado no próprio documento, servido por
+  `/api/academia/foto/[id]`, sem conta de storage), `firstContactAt`,
+  `tutorNotes`, `assignedTutorId` (o aluno escolhe o tutor no perfil; o
+  painel também pode atribuir).
 - `Course` — `slug`, `title`/`description` localizados (`{pt,en,es}`),
   `language` dos vídeos, `published`, `starter`, `order`, `prerequisites`
   (qualquer UM concluído libera), `modules[]` embutidos.
@@ -80,6 +86,16 @@ tudo que começa com `/admin`. A biblioteca continua com o gate de sempre.
   autorização TUS; tudo opcional. `youtube.ts` — thumbnail e parse de id.
 - `types.ts` — **o contrato** entre rotas e telas. Respostas de erro:
   `{ error: string, code?: string }`.
+
+## Perfil (como na academia da FFPUM, menos a parte de tutores)
+
+`GET/PATCH /api/academia/me` (dados, idioma, tema, outros idiomas, tutor),
+`POST/DELETE /api/academia/me/foto`, `PATCH /api/academia/auth/email`
+(troca de e-mail confirmada com a senha atual — a FFPUM confirma por código,
+mas aqui o envio de e-mail é opcional), `POST /api/academia/auth/change-password`,
+`GET /api/academia/tutores`. O catálogo mostra só os cursos gravados no
+idioma da conta, salvo se `showOtherLanguage` estiver ligado (tutores veem
+tudo).
 
 ## Vídeo
 

@@ -17,6 +17,7 @@ import type {
   AdminStudentRow,
 } from "@/lib/academy/types";
 import { pick, type Localized } from "@/lib/academy/localized";
+import { formatBirthday, photoUrlOf } from "@/lib/academy/profile";
 import type { UserLanguage } from "@/lib/user-languages";
 import type { AcademyRole } from "@/lib/academy/roles";
 import { AcademyUser } from "@/models/academy-user";
@@ -39,7 +40,8 @@ export type UserDoc = {
   phone?: string;
   country?: string;
   city?: string;
-  birthYear?: number | null;
+  birthday?: Date | null;
+  photoUpdatedAt?: Date | null;
   language: UserLanguage;
   role: AcademyRole;
   firstContactAt?: Date | null;
@@ -82,7 +84,7 @@ export type ExamFullDoc = {
 const iso = (value: Date | null | undefined) => (value ? value.toISOString() : null);
 
 export const USER_ROW_FIELDS =
-  "fullName email phone country city birthYear language role firstContactAt tutorNotes assignedTutorId lastSeenAt createdAt";
+  "fullName email phone country city birthday photoUpdatedAt language role firstContactAt tutorNotes assignedTutorId lastSeenAt createdAt";
 
 export async function studentRows(users: UserDoc[]): Promise<AdminStudentRow[]> {
   if (users.length === 0) {
@@ -223,7 +225,8 @@ export async function studentDetail(user: UserDoc): Promise<AdminStudentDetail> 
 
   return {
     ...row,
-    birthYear: user.birthYear ?? null,
+    birthday: formatBirthday(user.birthday),
+    photoUrl: photoUrlOf(user),
     tutorNotes: user.tutorNotes ?? "",
     enrollments: enrollmentDetails,
     questions: await questionRows(questions),

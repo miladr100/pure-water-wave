@@ -4,6 +4,7 @@ import { createSessionToken, getSessionCookieOptions } from "@/lib/academy/auth"
 import { emailConfigured, sendEmailNewStudent } from "@/lib/academy/emails";
 import { connectDB } from "@/lib/mongodb";
 import { hashPassword } from "@/lib/password";
+import { parseBirthday } from "@/lib/academy/profile";
 import { isValidTutorSecret } from "@/lib/academy/register-secret";
 import { USER_LANGUAGE_LABELS, isUserLanguage } from "@/lib/user-languages";
 import { AcademyUser } from "@/models/academy-user";
@@ -15,7 +16,8 @@ type RegisterBody = {
   phone?: string;
   country?: string;
   city?: string;
-  birthYear?: number | string;
+  // yyyy-mm-dd, optional
+  birthday?: string | null;
   language?: string;
   tutorSecret?: string;
 };
@@ -46,9 +48,7 @@ export async function POST(request: Request) {
     const city = body.city?.trim() ?? "";
     const language = body.language?.trim() ?? "pt";
     const tutorSecret = body.tutorSecret?.trim() ?? "";
-    const birthYearRaw = body.birthYear;
-    const birthYear =
-      birthYearRaw === undefined || birthYearRaw === "" ? null : Number(birthYearRaw);
+    const birthdayRaw = typeof body.birthday === "string" ? body.birthday.trim() : "";
 
     if (!fullName || !email || !password || !country) {
       return NextResponse.json(
@@ -72,11 +72,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Língua inválida" }, { status: 400 });
     }
 
-    if (
-      birthYear != null &&
-      (!Number.isInteger(birthYear) || birthYear < 1900 || birthYear > new Date().getFullYear())
-    ) {
-      return NextResponse.json({ error: "Ano de nascimento inválido" }, { status: 400 });
+    // Same rule as PATCH /api/academia/me: a real day, 1900 or later, not
+    // in the future. Empty means the student chose not to say.
+    const birthday = birthdayRaw ? parseBirthday(birthdayRaw) : null;
+    if (birthdayRaw && !birthday) {
+      return NextResponse.json({ error: "Data de nascimento inválida" }, { status: 400 });
     }
 
     if (tutorSecret && !isValidTutorSecret(tutorSecret)) {
@@ -104,7 +104,7 @@ export async function POST(request: Request) {
       phone,
       country,
       city,
-      birthYear,
+      birthday,
       language,
       role,
     });
@@ -135,9 +135,18 @@ export async function POST(request: Request) {
       }
     }
 
+    // The same `user` object the login route returns, so the browser adopts
+    // the theme the same way on both paths (a new account starts on "system").
     const response = NextResponse.json({
       ok: true,
       redirectTo: role === "tutor" ? "/admin" : "/academia",
+      user: {
+        fullName: user.fullName,
+        login: user.login,
+        role: user.role,
+        language,
+        theme: "system",
+      },
     });
     response.cookies.set(getSessionCookieOptions(token));
 

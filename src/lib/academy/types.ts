@@ -5,6 +5,7 @@
 import type { Localized } from "@/lib/academy/localized";
 import type { UserLanguage } from "@/lib/user-languages";
 import type { AcademyRole } from "@/lib/academy/roles";
+import type { AppTheme } from "@/lib/theme";
 import type { QuestionType } from "@/models/exam";
 import type { VideoProvider } from "@/models/lesson";
 
@@ -229,19 +230,44 @@ export type LessonQuestion = {
   answer: { text: string; by: string; at: string; seen: boolean } | null;
 };
 
+export type TutorCard = { id: string; fullName: string; country: string; photoUrl: string | null };
+
+export type MeProfile = {
+  id: string;
+  fullName: string;
+  email: string;
+  role: AcademyRole;
+  language: UserLanguage;
+  country: string;
+  city: string;
+  phone: string;
+  // ISO date (yyyy-mm-dd) or null
+  birthday: string | null;
+  // `/api/academia/foto/<id>?v=<ts>` or null when there is no photo
+  photoUrl: string | null;
+  theme: AppTheme;
+  showOtherLanguage: boolean;
+  tutor: TutorCard | null;
+  createdAt: string;
+};
+
+// PATCH /api/academia/me: every field optional; the server validates each
+// and answers 400 `{ error: "validation", fields: { <name>: <code> } }`.
+export type ProfilePatchBody = {
+  fullName?: string;
+  country?: string;
+  city?: string;
+  phone?: string;
+  birthday?: string | null;
+  language?: UserLanguage;
+  theme?: AppTheme;
+  showOtherLanguage?: boolean;
+  // null detaches the tutor
+  assignedTutorId?: string | null;
+};
+
 export type MeResponse = {
-  profile: {
-    id: string;
-    fullName: string;
-    email: string;
-    role: AcademyRole;
-    language: UserLanguage;
-    country: string;
-    city: string;
-    phone: string;
-    birthYear: number | null;
-    tutor: { id: string; fullName: string } | null;
-  };
+  profile: MeProfile;
   enrollments: (CourseCard & { enrolledAt: string })[];
   continueLesson: {
     lessonId: string;
@@ -298,7 +324,8 @@ export type AdminStudentRow = {
 };
 
 export type AdminStudentDetail = AdminStudentRow & {
-  birthYear: number | null;
+  birthday: string | null;
+  photoUrl: string | null;
   tutorNotes: string;
   enrollments: {
     courseId: string;

@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { todayIso } from "@/components/academy/format";
 import { useLocale } from "@/components/academy/locale-provider";
+import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -22,6 +24,7 @@ import { USER_LANGUAGE_LABELS, USER_LANGUAGES, type UserLanguage } from "@/lib/u
 export function RegisterForm() {
   const router = useRouter();
   const { t, language: uiLanguage } = useLocale();
+  const { setTheme } = useTheme();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,7 +32,7 @@ export function RegisterForm() {
   const [phone, setPhone] = useState("");
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
-  const [birthYear, setBirthYear] = useState("");
+  const [birthday, setBirthday] = useState("");
   const [language, setLanguage] = useState<UserLanguage>(uiLanguage);
   const [isTutor, setIsTutor] = useState(false);
   const [tutorSecret, setTutorSecret] = useState("");
@@ -63,7 +66,7 @@ export function RegisterForm() {
           phone,
           country,
           city,
-          birthYear: birthYear || undefined,
+          birthday: birthday || undefined,
           language,
           tutorSecret: isTutor ? tutorSecret : "",
         }),
@@ -76,6 +79,8 @@ export function RegisterForm() {
         return;
       }
 
+      // A new account starts on the device's own theme.
+      setTheme("system");
       router.push(data.redirectTo ?? "/academia");
       router.refresh();
     } catch {
@@ -84,8 +89,6 @@ export function RegisterForm() {
       setIsLoading(false);
     }
   }
-
-  const currentYear = new Date().getFullYear();
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -139,8 +142,8 @@ export function RegisterForm() {
           <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} disabled={isLoading} autoComplete="tel" placeholder="+55 11 99999-9999" />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="birthYear">{t.auth.birthYear}</Label>
-          <Input id="birthYear" type="number" min={1900} max={currentYear} value={birthYear} onChange={(e) => setBirthYear(e.target.value)} disabled={isLoading} />
+          <Label htmlFor="birthday">{t.profile.birthday}</Label>
+          <Input id="birthday" type="date" max={todayIso()} value={birthday} onChange={(e) => setBirthday(e.target.value)} disabled={isLoading} autoComplete="bday" />
         </div>
       </div>
 

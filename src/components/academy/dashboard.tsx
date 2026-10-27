@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Play, Sparkles } from "lucide-react";
+import { ArrowRight, Play, Sparkles, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -56,7 +56,8 @@ export function Dashboard({ session }: { session: SessionPayload }) {
     );
   }
 
-  const { enrollments, continueLesson } = me.data;
+  const { enrollments, continueLesson, profile } = me.data;
+  const profileIncomplete = !profile.phone || !profile.birthday;
   const enrolledSlugs = new Set(enrollments.map((course) => course.slug));
   const starter =
     enrollments.length === 0
@@ -119,6 +120,28 @@ export function Dashboard({ session }: { session: SessionPayload }) {
               </div>
             </div>
           </Link>
+        </section>
+      ) : null}
+
+      {profileIncomplete ? (
+        <section className="flex flex-col gap-4 rounded-3xl border border-border/60 bg-card p-5 shadow-card sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="flex items-start gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-cta text-primary-foreground">
+              <UserRound className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="font-display text-lg font-semibold text-primary-deep">
+                {t.profile.incompleteTitle}
+              </p>
+              <p className="text-sm text-muted-foreground">{t.profile.incompleteBody}</p>
+            </div>
+          </div>
+          <Button asChild variant="outline" className="shrink-0 rounded-full">
+            <Link href="/academia/perfil">
+              {t.profile.incompleteCta}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
         </section>
       ) : null}
 

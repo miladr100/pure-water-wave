@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import type { AppMessages } from "@/lib/i18n/academy-messages";
 import { api, ApiError } from "@/lib/academy/api-client";
+import type { MeResponse } from "@/lib/academy/types";
 
 type Result<T> = { key: string; data: T | null; error: ApiError | null };
 
@@ -55,4 +56,46 @@ export function describeError(error: unknown, t: AppMessages) {
   const apiError = toApiError(error);
   const text = typeof apiError.data.error === "string" ? apiError.data.error.trim() : "";
   return apiError.status > 0 && text ? text : t.common.error;
+}
+
+// `/me` is wanted by the header (photo), the bell (notifications) and the
+// dashboard at the same time. Mounts that overlap share one request; a later
+// mount, or `refreshMe()` after the profile changes, fetches again and every
+// subscriber receives the new answer.
+type MeListener = (me: MeResponse) => void;
+const meListeners = new Set<MeListener>();
+let meInFlight: Promise<MeResponse> | null = null;
+let meLast: MeResponse | null = null;
+
+export function refreshMe() {
+  if (!meInFlight) {
+    meInFlight = api<MeResponse>("/api/academia/me")
+      .then((me) => {
+        meLast = me;
+        meListeners.forEach((listener) => listener(me));
+        return me;
+      })
+      .finally(() => {
+        meInFlight = null;
+      });
+  }
+
+  return meInFlight;
+}
+
+export function useMe() {
+  const [me, setMe] = useState<MeResponse | null>(meLast);
+
+  useEffect(() => {
+    meListeners.add(setMe);
+    refreshMe().catch(() => {
+      // A convenience for the header and the bell; the screen reports failures.
+    });
+
+    return () => {
+      meListeners.delete(setMe);
+    };
+  }, []);
+
+  return me;
 }

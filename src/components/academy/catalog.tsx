@@ -39,9 +39,10 @@ export function Catalog() {
           <CourseCardSkeleton />
         </div>
       ) : data.courses.length === 0 ? (
-        <p className="rounded-3xl border border-border/60 bg-card p-8 text-center text-muted-foreground shadow-card">
-          {t.catalog.empty}
-        </p>
+        <div className="space-y-2 rounded-3xl border border-border/60 bg-card p-8 text-center shadow-card">
+          <p className="text-muted-foreground">{t.catalog.empty}</p>
+          <p className="text-sm text-muted-foreground/80">{t.catalog.otherLanguageHint}</p>
+        </div>
       ) : (
         <section className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {data.courses.map((course) => (
