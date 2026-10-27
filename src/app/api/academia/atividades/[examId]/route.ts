@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
 import { Types } from "mongoose";
 
-import { examUnlocked, nextAfterPass, type LockReason, type StudentState } from "@/lib/academy/gating";
+import {
+  examUnlocked,
+  nextAfterPass,
+  type CourseStructure,
+  type LockReason,
+  type StructureExam,
+  type StudentState,
+} from "@/lib/academy/gating";
 import { examSnapshot, gradeExam, type AnswerMap, type ExamDocLike } from "@/lib/academy/grading";
 import { isObjectId, jsonError, serverError, withDb } from "@/lib/academy/http";
 import {
@@ -32,9 +39,25 @@ const EMPTY_STATE: StudentState = { progress: [], attempts: [] };
 
 type Gate = { unlocked: true } | { unlocked: false; reason: LockReason };
 
+// `error?: never` on the success branch is what lets `"error" in context`
+// narrow; without it both handlers are typed as possibly answering nothing.
+type ExamContext =
+  | { error: NextResponse }
+  | {
+      error?: never;
+      exam: ExamRow;
+      course: CourseDoc;
+      structure: CourseStructure;
+      state: StudentState;
+      gate: Gate;
+      structureExam: StructureExam;
+      studentExam: StudentExam;
+      tutorView: boolean;
+    };
+
 // Everything both verbs need: the exam with its answer key (server side
 // only), the course, the gating verdict and the student's state.
-async function loadExamContext(session: SessionPayload, examId: string) {
+async function loadExamContext(session: SessionPayload, examId: string): Promise<ExamContext> {
   const tutorView = session.role === "tutor";
 
   const exam = (await Exam.findById(examId).lean()) as ExamRow | null;

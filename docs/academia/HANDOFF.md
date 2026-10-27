@@ -97,6 +97,7 @@ Depois, novos tutores são promovidos pelo painel ("Converter em tutor").
 npm install
 npm run seed      # opcional: curso de exemplo + tutor
 npm run dev       # http://localhost:3000/academia
+npm test          # regras, middleware e API contra um Mongo em memória
 ```
 
 Sem um MongoDB à mão, `npm run db:local` sobe um em memória e imprime a URI

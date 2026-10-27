@@ -287,11 +287,14 @@ export async function lessonHasProgress(lessonId: Types.ObjectId) {
 export async function adminCourseStructure(course: CourseDoc): Promise<AdminCourseStructure> {
   const courseId = course._id;
 
-  const [lessons, exams, progressLessonIds, attemptCounts, others, enrolledCount] =
+  const [lessons, exams, progressLessonIds, questionLessonIds, attemptCounts, others, enrolledCount] =
     await Promise.all([
       Lesson.find({ courseId }).sort({ number: 1 }).lean() as Promise<LessonDoc[]>,
       Exam.find({ courseId }).lean() as Promise<ExamFullDoc[]>,
       LessonProgress.distinct("lessonId", { courseId }) as Promise<Types.ObjectId[]>,
+      // Same rule as `lessonHasProgress()` and the delete route: a question
+      // under the lesson keeps it too.
+      Question.distinct("lessonId", { courseId }) as Promise<Types.ObjectId[]>,
       ExamAttempt.aggregate<{ _id: Types.ObjectId; count: number }>([
         { $match: { courseId } },
         { $group: { _id: "$examId", count: { $sum: 1 } } },
@@ -303,7 +306,7 @@ export async function adminCourseStructure(course: CourseDoc): Promise<AdminCour
       Enrollment.countDocuments({ courseId, status: "active" }),
     ]);
 
-  const withProgress = new Set(progressLessonIds.map((id) => id.toString()));
+  const withProgress = new Set([...progressLessonIds, ...questionLessonIds].map((id) => id.toString()));
   const attemptsByExam = new Map(attemptCounts.map((row) => [row._id.toString(), row.count]));
 
   return {

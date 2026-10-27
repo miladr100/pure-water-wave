@@ -108,6 +108,13 @@ assinado num `<video>` (hls.js) com o teto aplicado no scrubber, nos botões
 ±10 s e no evento `seeking` do elemento. Tutores veem tudo sem teto e sem
 gravar progresso.
 
+## Testes
+
+`npm test` roda a suíte (vitest): regras puras (`tests/unit`), middleware,
+sessão e as rotas da API (`tests/api`) contra um MongoDB em memória —
+nenhum segredo, nenhum e-mail. O workflow `.github/workflows/academia.yml`
+roda typecheck, lint das pastas da academia e os testes em cada PR.
+
 ## Como rodar
 
 ```
