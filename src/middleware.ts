@@ -1,11 +1,83 @@
 import { jwtVerify } from "jose";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { SESSION_COOKIE as ACADEMY_SESSION_COOKIE } from "@/lib/academy/session-cookie";
+import { isAcademyRole } from "@/lib/academy/roles";
 import { SESSION_COOKIE } from "@/lib/session-cookie";
 import { isSystemUserRole } from "@/lib/user-roles";
 
+// Two gates, one file: the library (pastors) and the academy (students and
+// tutors) each have their own cookie and their own roles, so a pastor's
+// session never opens the academy and vice versa.
+
+// Sign-in, sign-up and password reset must work without a session; the
+// account routes under /api/academia/auth check the session themselves.
+const ACADEMY_PUBLIC = [
+  "/academia/login",
+  "/academia/cadastro",
+  "/academia/esqueci-senha",
+  "/api/academia/auth",
+];
+
+async function academyMiddleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const isApi = pathname.startsWith("/api/");
+  const isAdminArea = pathname.startsWith("/admin") || pathname.startsWith("/api/admin/");
+  const token = request.cookies.get(ACADEMY_SESSION_COOKIE)?.value;
+
+  if (ACADEMY_PUBLIC.some((path) => pathname === path || pathname.startsWith(`${path}/`))) {
+    return NextResponse.next();
+  }
+
+  const deny = (status: 401 | 403) => {
+    if (isApi) {
+      return NextResponse.json({ error: "Não autorizado" }, { status });
+    }
+
+    if (status === 403) {
+      return NextResponse.redirect(new URL("/academia", request.url));
+    }
+
+    const login = new URL("/academia/login", request.url);
+    login.searchParams.set("next", pathname);
+    return NextResponse.redirect(login);
+  };
+
+  const secret = process.env.AUTH_SECRET;
+  if (!token || !secret) {
+    return deny(401);
+  }
+
+  try {
+    const { payload } = await jwtVerify(token, new TextEncoder().encode(secret));
+
+    if (!isAcademyRole(payload.role)) {
+      return deny(401);
+    }
+
+    if (isAdminArea && payload.role !== "tutor") {
+      return deny(403);
+    }
+
+    return NextResponse.next();
+  } catch {
+    return deny(401);
+  }
+}
+
 export async function middleware(request: NextRequest) {
-  const isProtectedApi = request.nextUrl.pathname.startsWith("/api/biblioteca/");
+  const { pathname } = request.nextUrl;
+
+  if (
+    pathname.startsWith("/academia") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/api/academia/") ||
+    pathname.startsWith("/api/admin/")
+  ) {
+    return academyMiddleware(request);
+  }
+
+  const isProtectedApi = pathname.startsWith("/api/biblioteca/");
   const token = request.cookies.get(SESSION_COOKIE)?.value;
 
   if (!token) {
@@ -47,5 +119,13 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/biblioteca/:path*", "/painel/:path*", "/api/biblioteca/:path*"],
+  matcher: [
+    "/biblioteca/:path*",
+    "/painel/:path*",
+    "/api/biblioteca/:path*",
+    "/academia/:path*",
+    "/admin/:path*",
+    "/api/academia/:path*",
+    "/api/admin/:path*",
+  ],
 };

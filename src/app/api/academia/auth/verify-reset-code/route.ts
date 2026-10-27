@@ -1,0 +1,94 @@
+import { NextResponse } from "next/server";
+
+import { connectDB } from "@/lib/mongodb";
+import { verifyPassword } from "@/lib/password";
+import { AcademyPasswordReset } from "@/models/academy-password-reset";
+import { AcademyUser } from "@/models/academy-user";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_ATTEMPTS = 5;
+
+type VerifyBody = {
+  email?: string;
+  code?: string;
+};
+
+export async function POST(request: Request) {
+  try {
+    if (!process.env.MONGODB_URI) {
+      return NextResponse.json(
+        { error: "Banco de dados não configurado" },
+        { status: 503 },
+      );
+    }
+
+    const body = (await request.json()) as VerifyBody;
+    const email = body.email?.trim().toLowerCase() ?? "";
+    const code = body.code?.replace(/\s+/g, "") ?? "";
+
+    if (!email || !EMAIL_PATTERN.test(email)) {
+      return NextResponse.json({ error: "Informe um e-mail válido" }, { status: 400 });
+    }
+
+    if (!/^\d{6}$/.test(code)) {
+      return NextResponse.json(
+        { error: "Informe o código de 6 dígitos" },
+        { status: 400 },
+      );
+    }
+
+    await connectDB();
+
+    const user = await AcademyUser.findOne({
+      $or: [{ email }, { login: email }],
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Código inválido ou expirado" },
+        { status: 400 },
+      );
+    }
+
+    const reset = await AcademyPasswordReset.findOne({ email: user.email }).sort({
+      createdAt: -1,
+    });
+
+    if (!reset || reset.expiresAt.getTime() < Date.now()) {
+      return NextResponse.json(
+        { error: "Código inválido ou expirado" },
+        { status: 400 },
+      );
+    }
+
+    if (reset.attempts >= MAX_ATTEMPTS) {
+      return NextResponse.json(
+        { error: "Muitas tentativas. Solicite um novo código." },
+        { status: 429 },
+      );
+    }
+
+    const isValidCode = await verifyPassword(code, reset.codeHash);
+
+    if (!isValidCode) {
+      reset.attempts += 1;
+      await reset.save();
+
+      return NextResponse.json(
+        { error: "Código inválido ou expirado" },
+        { status: 400 },
+      );
+    }
+
+    reset.verifiedAt = new Date();
+    await reset.save();
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("Erro ao confirmar código de redefinição:", error);
+    return NextResponse.json(
+      { error: "Não foi possível confirmar o código. Tente novamente." },
+      { status: 500 },
+    );
+  }
+}

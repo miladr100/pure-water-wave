@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,7 +23,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
   "include": [
@@ -40,7 +46,29 @@
     "src/lib/**/*.json",
     "src/models/**/*.ts",
     "src/hooks/**/*.ts",
-    "src/hooks/**/*.tsx"
+    "src/hooks/**/*.tsx",
+    "src/components/academy/**/*.ts",
+    "src/components/academy/**/*.tsx",
+    "src/components/admin/**/*.ts",
+    "src/components/admin/**/*.tsx",
+    "scripts/seed.ts",
+    "scripts/local-mongo.ts",
+    "src/components/ui/alert-dialog.tsx",
+    "src/components/ui/badge.tsx",
+    "src/components/ui/card.tsx",
+    "src/components/ui/popover.tsx",
+    "src/components/ui/progress.tsx",
+    "src/components/ui/select.tsx",
+    "src/components/ui/separator.tsx",
+    "src/components/ui/sheet.tsx",
+    "src/components/ui/skeleton.tsx",
+    "src/components/ui/switch.tsx",
+    "src/components/ui/table.tsx",
+    "src/components/ui/tabs.tsx",
+    "src/components/ui/textarea.tsx",
+    "src/components/ui/tooltip.tsx"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
