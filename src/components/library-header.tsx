@@ -6,6 +6,9 @@ import { LibraryFeedbackButton } from "@/components/library-feedback-button";
 import { LibraryHeaderNav } from "@/components/library-header-nav";
 import { LibraryMobileMenu } from "@/components/library-mobile-menu";
 import { LibrarySettingsMenu } from "@/components/library-settings-menu";
+import { useLibraryViewer } from "@/components/library-viewer";
+import { BrandLogo } from "@/components/brand-logo";
+import Link from "next/link";
 import { LogoutButton } from "@/components/logout-button";
 
 type LibraryHeaderProps = {
@@ -29,17 +32,27 @@ export function LibraryHeader({
 }: LibraryHeaderProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  // Academy accounts keep their settings in the academy profile, so for
+  // them the logo is the way back instead of the settings dialog.
+  const viewer = useLibraryViewer();
+  const backHref = viewer === "tutor" ? "/admin" : "/academia";
 
   return (
     <header className="border-b border-border/60 bg-card/80 backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-3 gap-y-3 px-4 py-4 sm:px-6 sm:py-5">
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-          <LibrarySettingsMenu
-            fullName={fullName}
-            logoClassName="h-10 w-10"
-            open={settingsOpen}
-            onOpenChange={setSettingsOpen}
-          />
+          {viewer === "pastor" ? (
+            <LibrarySettingsMenu
+              fullName={fullName}
+              logoClassName="h-10 w-10"
+              open={settingsOpen}
+              onOpenChange={setSettingsOpen}
+            />
+          ) : (
+            <Link href={backHref} className="shrink-0 rounded-full">
+              <BrandLogo className="h-10 w-10" />
+            </Link>
+          )}
           <LibraryMobileMenu
             showSupportMaterialsLink={showSupportMaterialsLink}
             showVideosLink={showVideosLink}

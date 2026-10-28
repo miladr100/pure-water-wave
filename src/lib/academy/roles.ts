@@ -5,7 +5,7 @@ export type AcademyRole = (typeof ACADEMY_ROLES)[number];
 
 export const ACADEMY_ROLE_LABELS: Record<AcademyRole, string> = {
   student: "Aluno",
-  tutor: "Tutor",
+  tutor: "Educador(a)",
 };
 
 export function isAcademyRole(value: unknown): value is AcademyRole {

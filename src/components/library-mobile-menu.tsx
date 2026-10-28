@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {
+  ArrowLeft,
   BookOpen,
   FileText,
   LogOut,
@@ -14,6 +15,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { useLibraryViewer } from "@/components/library-viewer";
 import { useLocale } from "@/components/locale-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,6 +48,7 @@ export function LibraryMobileMenu({
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const viewer = useLibraryViewer();
 
   function openAfterClose(action: () => void) {
     setOpen(false);
@@ -84,15 +87,26 @@ export function LibraryMobileMenu({
         </SheetHeader>
 
         <nav className="flex flex-1 flex-col gap-1">
-          <Button
-            type="button"
-            variant="ghost"
-            className="h-11 w-full justify-start gap-3"
-            onClick={() => openAfterClose(onOpenSettings)}
-          >
-            <Settings className="h-4 w-4" />
-            {t.settings.title}
-          </Button>
+          {viewer === "pastor" ? (
+            <Button
+              type="button"
+              variant="ghost"
+              className="h-11 w-full justify-start gap-3"
+              onClick={() => openAfterClose(onOpenSettings)}
+            >
+              <Settings className="h-4 w-4" />
+              {t.settings.title}
+            </Button>
+          ) : (
+            <SheetClose asChild>
+              <Button asChild variant="ghost" className="h-11 w-full justify-start gap-3">
+                <Link href={viewer === "tutor" ? "/admin" : "/academia"}>
+                  <ArrowLeft className="h-4 w-4" />
+                  {viewer === "tutor" ? t.common.adminPanel : t.common.academy}
+                </Link>
+              </Button>
+            </SheetClose>
+          )}
 
           {showBackToLibrary ? (
             <SheetClose asChild>

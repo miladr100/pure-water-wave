@@ -70,6 +70,7 @@ export function ForgotPasswordForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [notRegistered, setNotRegistered] = useState(false);
+  const [libraryAccount, setLibraryAccount] = useState(false);
   const [info, setInfo] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -105,6 +106,7 @@ export function ForgotPasswordForm() {
         ok: false as const,
         error: data.error ?? "Não foi possível enviar o código.",
         notRegistered: data.code === "USER_NOT_FOUND",
+        libraryAccount: data.code === "LIBRARY_ACCOUNT",
       };
     }
 
@@ -127,6 +129,7 @@ export function ForgotPasswordForm() {
       if (!result.ok) {
         setError(result.error);
         setNotRegistered(result.notRegistered);
+        setLibraryAccount(Boolean(result.libraryAccount));
         return;
       }
 
@@ -155,6 +158,7 @@ export function ForgotPasswordForm() {
       if (!result.ok) {
         setError(result.error);
         setNotRegistered(result.notRegistered);
+        setLibraryAccount(Boolean(result.libraryAccount));
         return;
       }
 
@@ -390,6 +394,14 @@ export function ForgotPasswordForm() {
       {error ? (
         <div className="space-y-1 text-center" role="alert">
           <p className="text-sm text-destructive">{error}</p>
+          {libraryAccount ? (
+            <Link
+              href="/esqueci-senha"
+              className="inline-block text-sm font-medium text-primary hover:underline"
+            >
+              Esta conta é da Biblioteca: recuperar a senha por lá
+            </Link>
+          ) : null}
           {notRegistered ? (
             <Link
               href="/academia/cadastro"

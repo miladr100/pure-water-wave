@@ -66,10 +66,6 @@ const aca = "/assets/academy2.jpeg";
 // WhatsApp destination (international format, digits only)
 const WHATSAPP_NUMBER = "5511999999999";
 
-// Contato da Academia Online (seção #academia). Ajustar quando o endereço
-// definitivo existir.
-const ACADEMY_EMAIL = "academia@aguapura.org";
-
 const COUNTRIES: { name: string; flag: string }[] = [
   { name: "Brasil", flag: "🇧🇷" },
   { name: "Argentina", flag: "🇦🇷" },
@@ -496,13 +492,12 @@ export default function Home() {
           <nav className="hidden md:flex items-center gap-8 text-sm text-primary-foreground/90">
             <a href="#movimento" className="hover:text-primary-foreground transition">O movimento</a>
             <a href="#impacto" className="hover:text-primary-foreground transition">Impacto</a>
-            <a href="#academia" className="hover:text-primary-foreground transition">Academia Online</a>
             <a href="#prova" className="hover:text-primary-foreground transition">Histórias</a>
             <a href="#doar" className="hover:text-primary-foreground transition">Doar</a>
           </nav>
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
-              href="/login"
+              href="/academia/login"
               className="inline-flex items-center rounded-full border border-white/40 bg-white/10 px-4 py-2.5 text-sm font-semibold text-primary-foreground backdrop-blur transition hover:bg-white/20"
             >
               Login
@@ -632,71 +627,6 @@ export default function Home() {
         open={!!openImpact}
         onOpenChange={(v) => !v && setOpenImpact(null)}
       />
-
-      {/* ACADEMIA ONLINE */}
-      <section id="academia" className="relative py-24 sm:py-32 bg-gradient-wave overflow-hidden scroll-mt-16">
-        <div className="absolute -top-24 -left-24 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
-        <div className="relative mx-auto max-w-7xl px-6 grid lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-7">
-            <span className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">Academia Online</span>
-            <h2 className="mt-3 font-display text-4xl sm:text-5xl text-balance">
-              Formação gratuita, em vídeo,<br />
-              <em className="text-primary">com um tutor ao seu lado.</em>
-            </h2>
-            <p className="mt-6 text-lg text-foreground/80 leading-relaxed max-w-2xl">
-              A Academia Água Pura é a nossa escola online para jovens que querem crescer com
-              propósito. Cursos organizados em módulos, aulas em vídeo para assistir no seu
-              ritmo, atividades de revisão ao fim de cada etapa e uma pessoa da equipe para
-              acompanhar você e responder suas perguntas.
-            </p>
-            <ul className="mt-8 grid sm:grid-cols-3 gap-4">
-              {[
-                { icon: GraduationCap, title: "Aulas em vídeo", desc: "Em português, espanhol e inglês." },
-                { icon: ShieldCheck, title: "Atividades", desc: "Corrigidas na hora, para fixar o conteúdo." },
-                { icon: HandHeart, title: "Tutores", desc: "Dúvidas respondidas por quem vive o movimento." },
-              ].map((item) => (
-                <li key={item.title} className="rounded-2xl border border-border/60 bg-card/80 p-4 shadow-card">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-cta text-primary-foreground">
-                    <item.icon className="h-5 w-5" />
-                  </span>
-                  <p className="mt-3 font-display text-lg">{item.title}</p>
-                  <p className="text-sm text-muted-foreground">{item.desc}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="lg:col-span-5">
-            <div className="rounded-3xl border border-border/60 bg-card p-8 shadow-glow">
-              <p className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">Comece hoje</p>
-              <p className="mt-2 font-display text-3xl">É gratuita e aberta a todos.</p>
-              <p className="mt-3 text-sm text-muted-foreground">
-                Crie sua conta em um minuto, escolha um curso e, se quiser, um tutor do seu país.
-              </p>
-              <div className="mt-6 flex flex-col gap-3">
-                <Link
-                  href="/academia"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-cta text-primary-foreground px-6 py-3 text-sm font-semibold shadow-soft hover:scale-[1.02] transition"
-                >
-                  <GraduationCap className="h-4 w-4" /> Entrar na Academia <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link
-                  href="/academia/cadastro"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-input bg-background px-6 py-3 text-sm font-semibold hover:bg-accent transition"
-                >
-                  Criar minha conta
-                </Link>
-              </div>
-              <div className="mt-6 border-t border-border/60 pt-5 text-sm">
-                <p className="text-muted-foreground">Dúvidas sobre a academia?</p>
-                <a href={`mailto:${ACADEMY_EMAIL}`} className="mt-1 inline-flex items-center gap-2 font-medium text-primary hover:underline">
-                  <Mail className="h-4 w-4" /> {ACADEMY_EMAIL}
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* STORY — PURE WATER WAVE */}
       <section id="movimento" className="relative py-24 sm:py-32 bg-gradient-wave overflow-hidden">

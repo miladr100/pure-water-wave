@@ -84,7 +84,7 @@ interface NewStudentEmailParams {
   adminUrl: string;
 }
 
-// Tutors hear about every sign-up (the FFPUM "Nueva cuenta" notice) so the
+// Educators hear about every sign-up (the FFPUM "Nueva cuenta" notice) so the
 // welcome happens while the student is still warm.
 export async function sendEmailNewStudent({
   to,

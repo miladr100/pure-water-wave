@@ -31,7 +31,7 @@ describe("roles", () => {
     expect(ACADEMY_ROLES).toEqual(["student", "tutor"]);
     expect(Object.keys(ACADEMY_ROLE_LABELS).sort()).toEqual(["student", "tutor"]);
     expect(ACADEMY_ROLE_LABELS.student).toBe("Aluno");
-    expect(ACADEMY_ROLE_LABELS.tutor).toBe("Tutor");
+    expect(ACADEMY_ROLE_LABELS.tutor).toBe("Educador(a)");
   });
 
   it("rejects the library's roles and anything that is not a string", () => {

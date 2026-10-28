@@ -116,6 +116,9 @@ export function LoginForm() {
           <Link href="/academia/cadastro" className="inline-block text-sm font-medium text-primary hover:underline">
             {t.auth.register}
           </Link>
+          <Link href="/cadastro" className="block text-xs text-muted-foreground hover:text-foreground">
+            {t.auth.registerPastor}
+          </Link>
         </div>
       ) : null}
 

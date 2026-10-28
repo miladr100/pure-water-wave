@@ -17,6 +17,8 @@ import { SESSION_COOKIE } from "@/lib/academy/session-cookie";
 import { hashPassword } from "@/lib/password";
 import { AcademyPasswordReset } from "@/models/academy-password-reset";
 import { AcademyUser } from "@/models/academy-user";
+import { SystemUser } from "@/models/system-user";
+import { SESSION_COOKIE as LIBRARY_COOKIE } from "@/lib/session-cookie";
 
 import { adoptSessionCookie, createUser, jsonRequest, readJson, setCookieHeader, signInAs } from "../helpers/api";
 import { clearDb, startDb, stopDb } from "../helpers/db";
@@ -144,6 +146,8 @@ describe("auth", () => {
       expect(body.redirectTo).toBe("/academia");
       expect(body.user?.theme).toBe("dark");
       expect(setCookieHeader(response)).toContain(`${SESSION_COOKIE}=`);
+      // An academy account can open the library too.
+      expect(setCookieHeader(response)).toContain(`${LIBRARY_COOKIE}=`);
 
       const stored = await AcademyUser.findById(user._id).lean();
       expect(stored?.lastSeenAt).toBeInstanceOf(Date);
@@ -163,6 +167,59 @@ describe("auth", () => {
       const response = await loginWith("a@example.test", "senha123");
       expect(response.status).toBe(503);
     });
+
+    async function createLibraryUser(role: "pastor" | "hjteam", email: string) {
+      return SystemUser.create({
+        fullName: role === "pastor" ? "Pastor de Teste" : "Membro HJ de Teste",
+        phone: role === "pastor" ? "11988887777" : "11977776666",
+        email,
+        churchName: "Igreja Teste",
+        country: "Brasil",
+        language: "pt",
+        login: email,
+        password: await hashPassword("senha123"),
+        role,
+      });
+    }
+
+    it("signs a pastor into the library, and only the library", async () => {
+      await createLibraryUser("pastor", "pastor@example.test");
+
+      const response = await loginWith("pastor@example.test", "senha123");
+      expect(response.status).toBe(200);
+      expect((await readJson<AuthBody>(response)).redirectTo).toBe("/biblioteca");
+
+      const cookies = setCookieHeader(response);
+      expect(cookies).toContain(`${LIBRARY_COOKIE}=`);
+      expect(cookies).not.toContain(`${SESSION_COOKIE}=`);
+      expect(await AcademyUser.countDocuments()).toBe(0);
+    });
+
+    it("signs an HJ Team member into the academy, creating the academy account once", async () => {
+      await createLibraryUser("hjteam", "hj@example.test");
+
+      const first = await loginWith("hj@example.test", "senha123");
+      expect(first.status).toBe(200);
+      expect((await readJson<AuthBody>(first)).redirectTo).toBe("/academia");
+      expect(setCookieHeader(first)).toContain(`${SESSION_COOKIE}=`);
+      expect(setCookieHeader(first)).toContain(`${LIBRARY_COOKIE}=`);
+
+      const provisioned = await AcademyUser.findOne({ email: "hj@example.test" }).lean();
+      expect(provisioned?.role).toBe("student");
+      expect(provisioned?.fullName).toBe("Membro HJ de Teste");
+
+      const second = await loginWith("hj@example.test", "senha123");
+      expect(second.status).toBe(200);
+      expect(await AcademyUser.countDocuments({ email: "hj@example.test" })).toBe(1);
+    });
+
+    it("refuses a library account with the wrong password", async () => {
+      await createLibraryUser("hjteam", "hj@example.test");
+
+      const response = await loginWith("hj@example.test", "errada1");
+      expect(response.status).toBe(401);
+      expect((await readJson<AuthBody>(response)).code).toBe("INVALID_PASSWORD");
+    });
   });
 
   describe("logout", () => {
@@ -172,6 +229,8 @@ describe("auth", () => {
 
       const cookie = setCookieHeader(response);
       expect(cookie).toMatch(new RegExp(`${SESSION_COOKIE}=;`));
+      // The library session goes with it: both came from the same Login.
+      expect(cookie).toMatch(new RegExp(`${LIBRARY_COOKIE}=;`));
       expect(cookie.toLowerCase()).toContain("max-age=0");
     });
   });

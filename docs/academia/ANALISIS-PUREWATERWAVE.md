@@ -153,8 +153,9 @@ donación con montos, newsletter, CTA final sobre azul profundo y footer.
 | Tema | Decisión | Por qué |
 |---|---|---|
 | ¿Base de datos? | **MongoDB, misma que el sitio** (colecciones `academy_*`) | El equipo ya la opera; Neon/Postgres les añadiría una pieza nueva. |
-| ¿Admin dentro del sitio? | No existe; la academia trae **su propio panel en `/admin`** con el estilo de la biblioteca | Los tutores son los administradores; no hace falta un CMS aparte como Payload. |
+| ¿Admin dentro del sitio? | No existe; la academia trae **su propio panel en `/admin`** con el estilo de la biblioteca | Los educadores son los administradores; no hace falta un CMS aparte como Payload. |
 | ¿Dónde vive? | **En este mismo repo**, como rutas nuevas (`/academia`, `/admin`) con sus propios modelos, API y componentes | Comparte base, auth, UI kit y deploy; las colisiones de nombre se resolvieron con prefijos (`academy_`, `/api/academia/auth`, `AcademyUser`). |
 | ¿Vídeo? | YouTube por defecto (es lo que ya usan), **Bunny Stream opcional** con el mismo esquema de URLs firmadas de FFPUM | Sin cuentas nuevas la academia ya funciona; cuando quieran vídeos privados, cuatro variables de entorno. |
-| ¿Auth? | La misma JWT propia, cookie distinta (`pww_academy_session`), roles `student`/`tutor` | Convive con la biblioteca en el mismo dominio sin mezclar sesiones. |
-| ¿Alumnos? | Registro libre (sin secreto); tutores con `TUTOR_REGISTER_SECRET` o "Converter em tutor" desde el panel | Igual que el secreto `verdadeirospais` del sitio, pero configurable. |
+| ¿Auth? | La misma JWT propia, cookie distinta (`pww_academy_session`), roles `student`/`tutor` (en la interfaz, "educador(a)") | Convive con la biblioteca en el mismo dominio sin mezclar sesiones. |
+| ¿Login? | **Uno solo para todo el sitio**, en `/academia/login` (`/login` redirige allí). Pastores (biblioteca, rol pastor) → sólo la biblioteca; HJ Team (biblioteca, rol hjteam, o alumnos de la academia) → academia + biblioteca; educadores (academia, rol `tutor`) → panel + biblioteca | La biblioteca se abre desde el encabezado de la academia y del panel ("Biblioteca") y su logo vuelve a la academia o al panel. Al entrar en la academia también se emite la cookie de la biblioteca (`src/lib/academy/session-bridge.ts`), sin tocar sus roles. |
+| ¿Alumnos? | Registro libre (sin secreto); educadores con `TUTOR_REGISTER_SECRET` o "Converter em educador(a)" desde el panel | Igual que el secreto `verdadeirospais` del sitio, pero configurable. |

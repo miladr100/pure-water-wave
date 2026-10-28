@@ -25,12 +25,7 @@ async function academyMiddleware(request: NextRequest) {
   const isAdminArea = pathname.startsWith("/admin") || pathname.startsWith("/api/admin/");
   const token = request.cookies.get(ACADEMY_SESSION_COOKIE)?.value;
 
-  // "/academia" itself is the academy's public home (a landing when signed
-  // out, the dashboard when signed in); everything beneath it is private.
-  if (
-    pathname === "/academia" ||
-    ACADEMY_PUBLIC.some((path) => pathname === path || pathname.startsWith(`${path}/`))
-  ) {
+  if (ACADEMY_PUBLIC.some((path) => pathname === path || pathname.startsWith(`${path}/`))) {
     return NextResponse.next();
   }
 

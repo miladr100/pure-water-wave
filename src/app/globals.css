@@ -59,10 +59,7 @@
     oklch(0.65 0.20 25) 100%);
 }
 
-/* .theme-light re-applies the light tokens on a subtree: the academy's
-   public landing stays light whatever theme the account stored. */
-:root,
-.theme-light {
+:root {
   color-scheme: light;
   --radius: 1rem;
   --background: oklch(0.99 0.005 220);

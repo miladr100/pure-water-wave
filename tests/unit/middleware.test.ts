@@ -75,8 +75,7 @@ async function expectJsonError(response: Response, status: number, error: string
 
 describe("academy pages", () => {
   it("sends an anonymous visitor to the login with the page as next", async () => {
-    expectNext(await academy("/academia"));
-    expectRedirectToLogin(await academy("/academia/cursos"), "/academia/cursos");
+    expectRedirectToLogin(await academy("/academia"), "/academia");
     expectRedirectToLogin(await academy("/academia/cursos/intro"), "/academia/cursos/intro");
   });
 
@@ -92,17 +91,17 @@ describe("academy pages", () => {
   });
 
   it("treats a token signed with another secret as no session", async () => {
-    expectRedirectToLogin(await academy("/academia/cursos", foreignToken), "/academia/cursos");
-    expectRedirectToLogin(await academy("/academia/cursos", "garbage"), "/academia/cursos");
+    expectRedirectToLogin(await academy("/academia", foreignToken), "/academia");
+    expectRedirectToLogin(await academy("/academia", "garbage"), "/academia");
   });
 
   it("treats a library session (pastor role) as no academy session", async () => {
-    expectRedirectToLogin(await academy("/academia/cursos", pastorToken), "/academia/cursos");
+    expectRedirectToLogin(await academy("/academia", pastorToken), "/academia");
   });
 
   it("ignores the library's cookie", async () => {
-    const response = await middleware(request("/academia/cursos", { name: "pww_session", value: tutorToken }));
-    expectRedirectToLogin(response, "/academia/cursos");
+    const response = await middleware(request("/academia", { name: "pww_session", value: tutorToken }));
+    expectRedirectToLogin(response, "/academia");
   });
 });
 

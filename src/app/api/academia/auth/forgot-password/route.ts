@@ -6,6 +6,7 @@ import { connectDB } from "@/lib/mongodb";
 import { hashPassword } from "@/lib/password";
 import { AcademyPasswordReset } from "@/models/academy-password-reset";
 import { AcademyUser } from "@/models/academy-user";
+import { SystemUser } from "@/models/system-user";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CODE_TTL_MS = 15 * 60 * 1000;
@@ -50,10 +51,15 @@ export async function POST(request: Request) {
     });
 
     if (!user) {
+      // A library account (pastor / HJ Team) resets through the library's
+      // own flow; tell the form so it can point there.
+      const libraryAccount = await SystemUser.exists({
+        $or: [{ email: normalizedEmail }, { login: normalizedEmail }],
+      });
       return NextResponse.json(
         {
           error: "Este e-mail não está cadastrado",
-          code: "USER_NOT_FOUND",
+          code: libraryAccount ? "LIBRARY_ACCOUNT" : "USER_NOT_FOUND",
         },
         { status: 404 },
       );

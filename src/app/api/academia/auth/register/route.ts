@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { createSessionToken, getSessionCookieOptions } from "@/lib/academy/auth";
+import { setAcademyCookies } from "@/lib/academy/session-bridge";
 import { emailConfigured, sendEmailNewStudent } from "@/lib/academy/emails";
 import { connectDB } from "@/lib/mongodb";
 import { hashPassword } from "@/lib/password";
@@ -111,13 +111,6 @@ export async function POST(request: Request) {
 
     // A new student is signed in straight away — the academy has no email
     // verification step; the tutors are told by e-mail and welcome the student.
-    const token = await createSessionToken({
-      userId: user._id.toString(),
-      login: user.login,
-      fullName: user.fullName,
-      role: user.role,
-      language,
-    });
 
     if (role === "student" && emailConfigured()) {
       const tutors = await AcademyUser.find({ role: "tutor" }).select("email");
@@ -148,7 +141,13 @@ export async function POST(request: Request) {
         theme: "system",
       },
     });
-    response.cookies.set(getSessionCookieOptions(token));
+    await setAcademyCookies(response, {
+      userId: user._id.toString(),
+      login: user.login,
+      fullName: user.fullName,
+      role: user.role,
+      language,
+    });
 
     return response;
   } catch (error) {

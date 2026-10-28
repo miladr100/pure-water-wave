@@ -1,19 +1,11 @@
 import { NextResponse } from "next/server";
 
-import { SESSION_COOKIE } from "@/lib/academy/auth";
+import { clearSessionCookies } from "@/lib/academy/session-bridge";
 
+// Signing out of the academy also signs out of the library: both cookies
+// were minted by the same Login.
 export async function POST() {
   const response = NextResponse.json({ ok: true });
-
-  response.cookies.set({
-    name: SESSION_COOKIE,
-    value: "",
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 0,
-    path: "/",
-  });
-
+  clearSessionCookies(response);
   return response;
 }

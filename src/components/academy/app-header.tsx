@@ -7,6 +7,7 @@ import {
   ClipboardCheck,
   GraduationCap,
   LayoutDashboard,
+  Library,
   LogOut,
   Menu,
   MessageCircleQuestion,
@@ -85,6 +86,7 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
           { href: "/academia", label: t.header.myCourses, icon: GraduationCap, exact: true },
           { href: "/academia/cursos", label: t.header.catalog, icon: BookOpen },
           { href: "/academia/perguntas", label: t.header.myQuestions, icon: MessageCircleQuestion },
+          { href: "/biblioteca", label: t.header.library, icon: Library },
           ...(isTutor ? [{ href: "/admin", label: t.header.viewAdmin, icon: Shield }] : []),
         ]
       : [
@@ -94,6 +96,7 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
           { href: "/admin/cursos", label: t.header.courses, icon: BookOpen },
           { href: "/admin/perguntas", label: t.header.inbox, icon: MessageCircleQuestion },
           { href: "/admin/correcoes", label: t.header.grading, icon: ClipboardCheck },
+          { href: "/biblioteca", label: t.header.library, icon: Library },
           { href: "/academia", label: t.header.viewAcademy, icon: GraduationCap },
         ];
 
