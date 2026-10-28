@@ -30,6 +30,7 @@ export type AppMessages = {
     activities: (n: number) => string;
   };
   header: {
+    account: string;
     profile: string;
     academyTitle: string;
     academySubtitle: (firstName: string) => string;
@@ -412,6 +413,7 @@ const pt: AppMessages = {
     activities: (n) => (n === 1 ? "1 atividade" : `${n} atividades`),
   },
   header: {
+    account: "Conta",
     profile: "Meu perfil",
     academyTitle: "Academia Água Pura",
     academySubtitle: (firstName) => `Bem-vindo(a), ${firstName}`,
@@ -801,6 +803,7 @@ const en: AppMessages = {
     activities: (n) => (n === 1 ? "1 activity" : `${n} activities`),
   },
   header: {
+    account: "Account",
     profile: "My profile",
     academyTitle: "Pure Water Academy",
     academySubtitle: (firstName) => `Welcome, ${firstName}`,
@@ -1190,6 +1193,7 @@ const es: AppMessages = {
     activities: (n) => (n === 1 ? "1 actividad" : `${n} actividades`),
   },
   header: {
+    account: "Cuenta",
     profile: "Mi perfil",
     academyTitle: "Academia Agua Pura",
     academySubtitle: (firstName) => `Te damos la bienvenida, ${firstName}`,

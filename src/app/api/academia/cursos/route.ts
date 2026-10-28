@@ -38,15 +38,18 @@ export async function GET() {
 
     // A gated course does not exist for the student until a prerequisite is
     // done — it is not shown locked, it is simply absent (the FFPUM rule).
-    const open: CourseDoc[] = [];
+    const reachable: CourseDoc[] = [];
     for (const course of published) {
-      if (!seesEveryLanguage && course.language !== language) {
-        continue;
-      }
       if (await prerequisiteMet(course, user)) {
-        open.push(course);
+        reachable.push(course);
       }
     }
+
+    // When nothing at all is recorded in the student's language, an empty
+    // catalogue helps nobody: show the other languages (each card carries
+    // the "not translated" note) rather than hide the whole academy.
+    const ownLanguage = reachable.filter((course) => course.language === language);
+    const open = seesEveryLanguage || ownLanguage.length === 0 ? reachable : ownLanguage;
 
     open.sort((a, b) => {
       const ownA = a.language === language ? 0 : 1;

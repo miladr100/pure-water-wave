@@ -173,16 +173,19 @@ describe("PATCH /api/academia/me", () => {
   });
 
   it("flips the catalogue to show other languages", async () => {
+    // A pt course must exist, otherwise the catalogue falls back to every
+    // language on its own.
+    await createSampleCourse({ slug: "em-portugues", language: "pt" });
     await createSampleCourse({ slug: "em-espanhol", language: "es" });
     const user = await createUser({ language: "pt" });
     await signInAs(user);
 
     const hidden = await readJson<{ courses: CourseCard[] }>(await listCourses());
-    expect(hidden.courses).toEqual([]);
+    expect(hidden.courses.map((course) => course.slug)).toEqual(["em-portugues"]);
 
     await patch({ showOtherLanguage: true });
     const shown = await readJson<{ courses: CourseCard[] }>(await listCourses());
-    expect(shown.courses.map((course) => course.slug)).toEqual(["em-espanhol"]);
+    expect(shown.courses.map((course) => course.slug)).toEqual(["em-portugues", "em-espanhol"]);
   });
 });
 

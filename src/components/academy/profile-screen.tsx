@@ -16,6 +16,7 @@ import { describeError, refreshMe, useApi } from "@/components/academy/use-api";
 import { UserAvatar } from "@/components/academy/user-avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import { api } from "@/lib/academy/api-client";
 import type { SessionPayload } from "@/lib/academy/auth";
 import type { MeProfile, MeResponse } from "@/lib/academy/types";
@@ -103,7 +104,15 @@ function ProfileSkeleton() {
   );
 }
 
-export function ProfileScreen({ session }: { session: SessionPayload }) {
+// `layout`: the page spreads the sections over two columns, the dialog
+// stacks them.
+export function ProfileContent({
+  session,
+  layout = "grid",
+}: {
+  session: SessionPayload;
+  layout?: "grid" | "stack";
+}) {
   const { t } = useLocale();
   const me = useApi<MeResponse>("/api/academia/me");
   // Each section saves on its own and hands back the profile the server
@@ -132,21 +141,21 @@ export function ProfileScreen({ session }: { session: SessionPayload }) {
     void refreshMe().catch(() => {});
   }
 
-  return (
-    <div className="space-y-8">
-      <section>
-        <h1 className="font-display text-3xl font-semibold text-primary-deep md:text-4xl">
-          {t.profile.heading}
-        </h1>
-        <p className="mt-3 max-w-2xl text-muted-foreground">{t.profile.description}</p>
-      </section>
+  if (me.error) {
+    return <ErrorState message={describeError(me.error, t)} onRetry={me.reload} />;
+  }
 
-      {me.error ? (
-        <ErrorState message={describeError(me.error, t)} onRetry={me.reload} />
-      ) : !profile ? (
-        <ProfileSkeleton />
-      ) : (
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
+  if (!profile) {
+    return <ProfileSkeleton />;
+  }
+
+  return (
+    <div
+      className={cn(
+        "grid gap-6",
+        layout === "grid" && "lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start",
+      )}
+    >
           <div className="space-y-6">
             <ProfileHeaderCard profile={profile} onChanged={reloadAll} />
             <ProfileDataForm profile={profile} onSaved={handleSaved} />
@@ -160,9 +169,23 @@ export function ProfileScreen({ session }: { session: SessionPayload }) {
             {session.role === "tutor" ? null : (
               <ProfileTutor profile={profile} onSaved={handleSaved} />
             )}
-          </div>
-        </div>
-      )}
+      </div>
+    </div>
+  );
+}
+
+export function ProfileScreen({ session }: { session: SessionPayload }) {
+  const { t } = useLocale();
+
+  return (
+    <div className="space-y-8">
+      <section>
+        <h1 className="font-display text-3xl font-semibold text-primary-deep md:text-4xl">
+          {t.profile.heading}
+        </h1>
+        <p className="mt-3 max-w-2xl text-muted-foreground">{t.profile.description}</p>
+      </section>
+      <ProfileContent session={session} />
     </div>
   );
 }

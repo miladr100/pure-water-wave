@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   BookOpen,
   ClipboardCheck,
@@ -11,17 +11,16 @@ import {
   Menu,
   MessageCircleQuestion,
   Shield,
+  UserRound,
   Users,
   UserCheck,
-  UserRound,
   type LucideIcon,
 } from "lucide-react";
 import { useState } from "react";
 
+import { AccountMenu } from "@/components/academy/account-menu";
 import { useLocale } from "@/components/academy/locale-provider";
-import { LogoutButton } from "@/components/academy/logout-button";
-import { useMe } from "@/components/academy/use-api";
-import { UserAvatar } from "@/components/academy/user-avatar";
+import { ProfileDialog } from "@/components/academy/profile-dialog";
 import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,10 +34,11 @@ import {
 import type { SessionPayload } from "@/lib/academy/auth";
 import { cn } from "@/lib/utils";
 
-// The library's header (logo, title, nav buttons, logout, sheet on phones),
-// with the nav decided by the area. The logo is the person's photo once they
-// have one and opens their profile. Tutors get a link across to the other
-// area in both.
+// The library's header (logo, title, nav buttons, sheet on phones) with the
+// FFPUM account menu on the right: the avatar opens Perfil (a dialog over
+// the current screen), the other area for tutors, and Sair. The logo goes to
+// the area's home. `?perfil=1` on any URL opens the profile dialog, so the
+// dashboard banner and old links can still point at it.
 type AppHeaderProps = {
   area: "academy" | "admin";
   session: SessionPayload;
@@ -50,16 +50,34 @@ type AppHeaderProps = {
 
 type NavItem = { href: string; label: string; icon: LucideIcon; exact?: boolean };
 
+export const PROFILE_QUERY = "perfil";
+
 export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderProps) {
   const { t } = useLocale();
   const pathname = usePathname() ?? "";
   const router = useRouter();
-  const me = useMe();
+  const searchParams = useSearchParams();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [profileRequested, setProfileRequested] = useState(false);
   const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const isTutor = session.role === "tutor";
-  const photoUrl = me?.profile.photoUrl ?? null;
+  const home = area === "academy" ? "/academia" : "/admin";
+
+  // Open from the menu, or from `?perfil=1` in the URL; closing drops the
+  // query so a refresh does not reopen it.
+  const wantsProfile = searchParams.get(PROFILE_QUERY) === "1";
+  const profileOpen = profileRequested || wantsProfile;
+
+  function setProfileOpen(open: boolean) {
+    setProfileRequested(open);
+    if (!open && wantsProfile) {
+      const next = new URLSearchParams(searchParams.toString());
+      next.delete(PROFILE_QUERY);
+      const query = next.toString();
+      router.replace(query ? `${pathname}?${query}` : pathname);
+    }
+  }
 
   const items: NavItem[] =
     area === "academy"
@@ -67,7 +85,6 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
           { href: "/academia", label: t.header.myCourses, icon: GraduationCap, exact: true },
           { href: "/academia/cursos", label: t.header.catalog, icon: BookOpen },
           { href: "/academia/perguntas", label: t.header.myQuestions, icon: MessageCircleQuestion },
-          { href: "/academia/perfil", label: t.header.profile, icon: UserRound },
           ...(isTutor ? [{ href: "/admin", label: t.header.viewAdmin, icon: Shield }] : []),
         ]
       : [
@@ -77,7 +94,6 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
           { href: "/admin/cursos", label: t.header.courses, icon: BookOpen },
           { href: "/admin/perguntas", label: t.header.inbox, icon: MessageCircleQuestion },
           { href: "/admin/correcoes", label: t.header.grading, icon: ClipboardCheck },
-          { href: "/academia/perfil", label: t.header.profile, icon: UserRound },
           { href: "/academia", label: t.header.viewAcademy, icon: GraduationCap },
         ];
 
@@ -103,23 +119,10 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
 
   return (
     <header className="sticky top-0 z-30 border-b border-border/60 bg-card/80 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-3 gap-y-3 px-4 py-3 sm:px-6 sm:py-4">
-        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-          <Link
-            href="/academia/perfil"
-            className="shrink-0 rounded-full border-2 border-transparent p-0.5 transition hover:border-primary hover:shadow-[0_0_0_3px] hover:shadow-primary/25 focus-visible:border-primary focus-visible:outline-none focus-visible:shadow-[0_0_0_3px] focus-visible:shadow-primary/25"
-            aria-label={t.header.profile}
-          >
-            {photoUrl ? (
-              <UserAvatar
-                fullName={session.fullName}
-                photoUrl={photoUrl}
-                className="h-10 w-10"
-                textClassName="text-sm"
-              />
-            ) : (
-              <BrandLogo className="h-10 w-10 shrink-0" />
-            )}
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
+          <Link href={home} className="shrink-0" aria-label={headerTitle}>
+            <BrandLogo className="h-10 w-10 shrink-0" />
           </Link>
 
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -153,6 +156,18 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
                     </Button>
                   </SheetClose>
                 ))}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="h-11 w-full justify-start gap-3"
+                  onClick={() => {
+                    setSheetOpen(false);
+                    window.setTimeout(() => setProfileOpen(true), 180);
+                  }}
+                >
+                  <UserRound className="h-4 w-4" />
+                  {t.header.profile}
+                </Button>
               </nav>
               <Button
                 type="button"
@@ -177,8 +192,7 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {extra}
+        <div className="flex shrink-0 items-center gap-2">
           <nav className="hidden items-center gap-1 lg:flex">
             {items.map((item) => (
               <Button
@@ -194,11 +208,12 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
               </Button>
             ))}
           </nav>
-          <div className="hidden lg:block">
-            <LogoutButton />
-          </div>
+          {extra}
+          <AccountMenu area={area} session={session} onOpenProfile={() => setProfileOpen(true)} />
         </div>
       </div>
+
+      <ProfileDialog session={session} open={profileOpen} onOpenChange={setProfileOpen} />
     </header>
   );
 }

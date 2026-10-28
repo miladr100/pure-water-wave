@@ -15,7 +15,7 @@ segue, peça por peça, o que o resto do repositório já faz.
 | Sessão JWT própria (`jose`) em cookie httpOnly | igual | cookie `pww_academy_session`, papéis `student`/`tutor` |
 | `SystemUser` (pastor/hjteam) + segredo de cadastro | `AcademyUser` | aluno se cadastra livre; tutor precisa de `TUTOR_REGISTER_SECRET` ou ser convertido no painel |
 | Rotas `/api/auth/*` (login, logout, register, profile, language, change/forgot/reset password) | `/api/academia/auth/*` | mesmas rotas, modelo `AcademyUser` |
-| `LibraryHeader` + menu de configurações (nome, senha, tema, idioma) | `AppHeader` + página `/academia/perfil` | nav muda por área; o logo abre o perfil |
+| `LibraryHeader` + menu de configurações (nome, senha, tema, idioma) | `AppHeader` + menu de conta (avatar) + diálogo de perfil | nav muda por área; o perfil abre sobre qualquer tela, como na FFPUM |
 | `LocaleProvider` + `messages.ts` (pt/en/es) | `components/academy/locale-provider` + `lib/i18n/academy-messages.ts` | copy própria |
 | Resend + `@react-email` | igual | reset de senha, aviso de aluno novo |
 
@@ -30,7 +30,8 @@ segue, peça por peça, o que o resto do repositório já faz.
 /academia/cursos/[slug]/atividade/[examId]  atividade de revisão
 /academia/cursos/[slug]/concluido           curso concluído
 /academia/perguntas                         minhas perguntas e respostas
-/academia/perfil                            perfil: foto, dados, e-mail, senha, idioma, tema, outros idiomas, meu tutor
+?perfil=1 (em qualquer tela)                abre o diálogo de perfil: foto, dados, e-mail, senha, idioma, tema, outros idiomas, meu tutor
+/academia/perfil                            só redireciona para /academia?perfil=1 (links antigos)
 /admin                                      visão geral (tutores)
 /admin/alunos, /admin/alunos/[id]           alunos, notas do tutor, converter em tutor
 /admin/tutores                              tutores
@@ -98,7 +99,9 @@ biblioteca continua com o gate de sempre.
 mas aqui o envio de e-mail é opcional), `POST /api/academia/auth/change-password`,
 `GET /api/academia/tutores`. O catálogo mostra só os cursos gravados no
 idioma da conta, salvo se `showOtherLanguage` estiver ligado (tutores veem
-tudo).
+tudo); quando não existe nenhum curso no idioma da conta, mostra os outros
+mesmo assim, com o aviso de "não traduzido". As páginas de login, cadastro
+e recuperação de senha ficam sempre no tema claro.
 
 ## Vídeo
 

@@ -59,8 +59,14 @@ describe("resolveTheme", () => {
 
 describe("isLibraryThemePath", () => {
   it("covers the library, the panel, the academy and the admin, with their children", () => {
-    for (const path of ["/biblioteca", "/painel", "/academia", "/admin", "/academia/login", "/admin/alunos/1"]) {
+    for (const path of ["/biblioteca", "/painel", "/academia", "/admin", "/academia/cursos/x", "/admin/alunos/1"]) {
       expect(isLibraryThemePath(path)).toBe(true);
+    }
+  });
+
+  it("keeps the academy sign-in pages light, like the public site", () => {
+    for (const path of ["/academia/login", "/academia/cadastro", "/academia/esqueci-senha", "/academia/cadastro/"]) {
+      expect(isLibraryThemePath(path)).toBe(false);
     }
   });
 

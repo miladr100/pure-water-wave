@@ -96,6 +96,13 @@ describe("GET /api/academia/cursos", () => {
     await signInAs(await createUser({ language: "pt", role: "tutor" }));
     expect(await catalogSlugs()).toEqual(["em-portugues", "em-espanhol"]);
   });
+
+  it("falls back to every language when nothing exists in the student's own", async () => {
+    await createSampleCourse({ slug: "em-portugues", language: "pt" });
+
+    await signInAs(await createUser({ language: "en" }));
+    expect(await catalogSlugs()).toEqual(["em-portugues"]);
+  });
 });
 
 describe("GET /api/academia/cursos/[slug]", () => {
