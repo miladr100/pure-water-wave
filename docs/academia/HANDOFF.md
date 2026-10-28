@@ -81,7 +81,14 @@ Com elas, o botão "Enviar vídeo" aparece no editor de aulas: o arquivo sobe
 direto do navegador para o Bunny (a chave nunca vai ao navegador) e a
 academia toca o HLS com URLs assinadas que expiram em 4 horas.
 
-## 5. Primeiro tutor
+## 5. E-mail da academia
+
+O site (seção "Academia Online") e a home da academia mostram o endereço
+`academia@aguapura.org`. Ele ainda não existe: criem o alias (ou troquem a
+constante `ACADEMY_EMAIL` em `src/components/home.tsx` e
+`ACADEMY_CONTACT_EMAIL` em `src/components/academy/landing.tsx`).
+
+## 6. Primeiro tutor
 
 - Cadastrar-se em `/academia/cadastro` marcando "Sou tutor(a)" e digitando o
   `TUTOR_REGISTER_SECRET`; ou
@@ -90,7 +97,7 @@ academia toca o HLS com URLs assinadas que expiram em 4 horas.
 
 Depois, novos tutores são promovidos pelo painel ("Converter em tutor").
 
-## 6. Rodando localmente
+## 7. Rodando localmente
 
 ```
 npm install
@@ -102,7 +109,7 @@ npm test          # regras, middleware e API contra um Mongo em memória
 Sem um MongoDB à mão, `npm run db:local` sobe um em memória e imprime a URI
 para colar no `.env.local` (os dados somem ao parar o processo).
 
-## 7. Onde está cada coisa
+## 8. Onde está cada coisa
 
 [ARCHITECTURE.md](ARCHITECTURE.md): rotas, modelo de dados, regras de
 desbloqueio e correção, vídeo. [ANALISIS-PUREWATERWAVE.md](ANALISIS-PUREWATERWAVE.md)

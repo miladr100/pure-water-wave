@@ -22,8 +22,8 @@ segue, peça por peça, o que o resto do repositório já faz.
 ## Áreas e rotas
 
 ```
+/academia                                   home pública da academia (sem sessão) · painel do aluno (com sessão)
 /academia/login  /academia/cadastro  /academia/esqueci-senha   públicas
-/academia                                   painel do aluno (meus cursos, continuar)
 /academia/cursos                            catálogo
 /academia/cursos/[slug]                     curso: módulos, aulas, atividades
 /academia/cursos/[slug]/aulas/[lessonId]    player + perguntas ao tutor
@@ -90,6 +90,15 @@ biblioteca continua com o gate de sempre.
   autorização TUS; tudo opcional. `youtube.ts` — thumbnail e parse de id.
 - `types.ts` — **o contrato** entre rotas e telas. Respostas de erro:
   `{ error: string, code?: string }`.
+
+## Home pública
+
+`/academia` sem sessão é a página de apresentação da academia (como
+academy.ffpum.org): o que é, como funciona, os cursos abertos a quem começa
+e o e-mail de contato (`ACADEMY_CONTACT_EMAIL` em
+`src/components/academy/landing.tsx`). Sempre em tema claro (`.theme-light`
+em `globals.css`). O site tem a seção `#academia` e o item "Academia
+Online" no menu apontando para cá (`ACADEMY_EMAIL` em `home.tsx`).
 
 ## Perfil (como na academia da FFPUM, menos a parte de tutores)
 

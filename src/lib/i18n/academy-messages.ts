@@ -234,6 +234,24 @@ export type AppMessages = {
     light: string;
     dark: string;
   };
+  landing: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    enter: string;
+    register: string;
+    free: string;
+    featuresTitle: string;
+    features: { title: string; body: string }[];
+    howTitle: string;
+    steps: { title: string; body: string }[];
+    coursesTitle: string;
+    coursesBody: string;
+    coursesEmpty: string;
+    contactTitle: string;
+    contactBody: string;
+    backToSite: string;
+  };
   profile: {
     heading: string;
     description: string;
@@ -617,6 +635,33 @@ const pt: AppMessages = {
     appearance: "Aparência",
     light: "Claro",
     dark: "Escuro",
+  },
+  landing: {
+    eyebrow: "Academia online · Pure Water Wave",
+    title: "Formação para quem quer viver com propósito",
+    subtitle:
+      "Cursos em vídeo com atividades de revisão e um tutor que acompanha você. Gratuita, no seu ritmo, em português, espanhol e inglês.",
+    enter: "Entrar",
+    register: "Criar minha conta",
+    free: "100% gratuita",
+    featuresTitle: "Como é a academia",
+    features: [
+      { title: "Aulas em vídeo", body: "Trilhas organizadas em módulos, para assistir no seu tempo e continuar de onde parou." },
+      { title: "Atividades de revisão", body: "Perguntas ao fim de cada módulo, corrigidas na hora, para fixar o que você aprendeu." },
+      { title: "Um tutor com você", body: "Tire dúvidas dentro da aula e receba a resposta de uma pessoa da equipe Água Pura." },
+    ],
+    howTitle: "Como funciona",
+    steps: [
+      { title: "Crie sua conta", body: "Leva um minuto. Escolha seu idioma e, se quiser, um tutor do seu país." },
+      { title: "Escolha um curso", body: "Comece pelo curso recomendado; novos cursos se abrem conforme você avança." },
+      { title: "Assista e pratique", body: "Veja as aulas, faça as atividades e converse com seu tutor pelo caminho." },
+    ],
+    coursesTitle: "Cursos disponíveis",
+    coursesBody: "Estes são os cursos abertos para quem está começando.",
+    coursesEmpty: "Os primeiros cursos estão sendo preparados.",
+    contactTitle: "Fale com a academia",
+    contactBody: "Dúvidas sobre os cursos, a inscrição ou os tutores? Escreva para a gente.",
+    backToSite: "Voltar para o site",
   },
   profile: {
     heading: "Meu perfil",
@@ -1008,6 +1053,33 @@ const en: AppMessages = {
     light: "Light",
     dark: "Dark",
   },
+  landing: {
+    eyebrow: "Online academy · Pure Water Wave",
+    title: "Formation for those who want to live with purpose",
+    subtitle:
+      "Video courses with review activities and a tutor who walks with you. Free, at your own pace, in Portuguese, Spanish and English.",
+    enter: "Sign in",
+    register: "Create my account",
+    free: "100% free",
+    featuresTitle: "What the academy is like",
+    features: [
+      { title: "Video lessons", body: "Tracks organised in modules, to watch in your own time and pick up where you left off." },
+      { title: "Review activities", body: "Questions at the end of each module, graded instantly, to anchor what you learned." },
+      { title: "A tutor with you", body: "Ask questions inside the lesson and get an answer from someone on the Pure Water team." },
+    ],
+    howTitle: "How it works",
+    steps: [
+      { title: "Create your account", body: "It takes a minute. Pick your language and, if you like, a tutor from your country." },
+      { title: "Choose a course", body: "Start with the recommended one; new courses open as you move forward." },
+      { title: "Watch and practise", body: "Watch the lessons, do the activities and talk to your tutor along the way." },
+    ],
+    coursesTitle: "Available courses",
+    coursesBody: "These are the courses open to anyone starting out.",
+    coursesEmpty: "The first courses are being prepared.",
+    contactTitle: "Talk to the academy",
+    contactBody: "Questions about the courses, signing up or the tutors? Write to us.",
+    backToSite: "Back to the site",
+  },
   profile: {
     heading: "My profile",
     description: "Your details, your account and how you prefer to use the academy.",
@@ -1397,6 +1469,33 @@ const es: AppMessages = {
     appearance: "Apariencia",
     light: "Claro",
     dark: "Oscuro",
+  },
+  landing: {
+    eyebrow: "Academia online · Pure Water Wave",
+    title: "Formación para quienes quieren vivir con propósito",
+    subtitle:
+      "Cursos en video con actividades de repaso y un tutor que te acompaña. Gratuita, a tu ritmo, en portugués, español e inglés.",
+    enter: "Ingresar",
+    register: "Crear mi cuenta",
+    free: "100% gratuita",
+    featuresTitle: "Cómo es la academia",
+    features: [
+      { title: "Clases en video", body: "Trayectos organizados en módulos, para ver a tu tiempo y continuar donde quedaste." },
+      { title: "Actividades de repaso", body: "Preguntas al final de cada módulo, corregidas al instante, para fijar lo aprendido." },
+      { title: "Un tutor con vos", body: "Hacé preguntas dentro de la clase y recibí la respuesta de alguien del equipo Agua Pura." },
+    ],
+    howTitle: "Cómo funciona",
+    steps: [
+      { title: "Creá tu cuenta", body: "Lleva un minuto. Elegí tu idioma y, si querés, un tutor de tu país." },
+      { title: "Elegí un curso", body: "Empezá por el recomendado; los nuevos cursos se abren a medida que avanzás." },
+      { title: "Mirá y practicá", body: "Mirá las clases, hacé las actividades y hablá con tu tutor en el camino." },
+    ],
+    coursesTitle: "Cursos disponibles",
+    coursesBody: "Estos son los cursos abiertos para quien recién empieza.",
+    coursesEmpty: "Los primeros cursos se están preparando.",
+    contactTitle: "Hablá con la academia",
+    contactBody: "¿Dudas sobre los cursos, la inscripción o los tutores? Escribinos.",
+    backToSite: "Volver al sitio",
   },
   profile: {
     heading: "Mi perfil",
