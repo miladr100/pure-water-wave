@@ -12,7 +12,7 @@ export default async function AcademiaHomePage() {
   const session = await getSession();
 
   if (!session) {
-    redirect("/academia/login");
+    redirect("/login");
   }
 
   return (

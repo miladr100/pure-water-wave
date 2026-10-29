@@ -1,7 +1,6 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { COUNTRIES, COUNTRIES_MAIN, COUNTRIES_REST, isCountry } from "@/lib/academy/countries";
-import { isValidTutorSecret } from "@/lib/academy/register-secret";
 import { ACADEMY_ROLE_LABELS, ACADEMY_ROLES, isAcademyRole } from "@/lib/academy/roles";
 import { SESSION_COOKIE as ACADEMY_SESSION_COOKIE } from "@/lib/academy/session-cookie";
 import { SESSION_COOKIE as LIBRARY_SESSION_COOKIE } from "@/lib/session-cookie";
@@ -42,28 +41,6 @@ describe("roles", () => {
     expect(isAcademyRole("Tutor")).toBe(false);
     expect(isAcademyRole(undefined)).toBe(false);
     expect(isAcademyRole({})).toBe(false);
-  });
-});
-
-describe("isValidTutorSecret", () => {
-  afterEach(() => {
-    vi.unstubAllEnvs();
-  });
-
-  it("never accepts a secret while TUTOR_REGISTER_SECRET is unset or blank", () => {
-    expect(isValidTutorSecret("anything")).toBe(false);
-    expect(isValidTutorSecret("")).toBe(false);
-    vi.stubEnv("TUTOR_REGISTER_SECRET", "   ");
-    expect(isValidTutorSecret("")).toBe(false);
-    expect(isValidTutorSecret("   ")).toBe(false);
-  });
-
-  it("matches the configured secret ignoring case and surrounding whitespace", () => {
-    vi.stubEnv("TUTOR_REGISTER_SECRET", "  Agua-Pura ");
-    expect(isValidTutorSecret("agua-pura")).toBe(true);
-    expect(isValidTutorSecret("  AGUA-PURA\n")).toBe(true);
-    expect(isValidTutorSecret("agua pura")).toBe(false);
-    expect(isValidTutorSecret("")).toBe(false);
   });
 });
 

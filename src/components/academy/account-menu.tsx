@@ -48,7 +48,7 @@ export function AccountMenu({
     setIsLoggingOut(true);
     try {
       await fetch("/api/academia/auth/logout", { method: "POST" });
-      router.push("/academia/login");
+      router.push("/login");
       router.refresh();
     } finally {
       setIsLoggingOut(false);

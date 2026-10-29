@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   BookOpen,
+  Church,
   ClipboardCheck,
   GraduationCap,
   LayoutDashboard,
@@ -93,6 +94,7 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
           { href: "/admin", label: t.header.overview, icon: LayoutDashboard, exact: true },
           { href: "/admin/alunos", label: t.header.students, icon: Users },
           { href: "/admin/tutores", label: t.header.tutors, icon: UserCheck },
+          { href: "/admin/pastores", label: t.header.pastors, icon: Church },
           { href: "/admin/cursos", label: t.header.courses, icon: BookOpen },
           { href: "/admin/perguntas", label: t.header.inbox, icon: MessageCircleQuestion },
           { href: "/admin/correcoes", label: t.header.grading, icon: ClipboardCheck },
@@ -108,7 +110,7 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
     try {
       await fetch("/api/academia/auth/logout", { method: "POST" });
       setSheetOpen(false);
-      router.push("/academia/login");
+      router.push("/login");
       router.refresh();
     } finally {
       setIsLoggingOut(false);

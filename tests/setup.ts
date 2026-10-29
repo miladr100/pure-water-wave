@@ -13,4 +13,3 @@ delete process.env.BUNNY_STREAM_CDN_HOST;
 delete process.env.BUNNY_STREAM_TOKEN_KEY;
 delete process.env.BUNNY_STREAM_LIBRARY_ID;
 delete process.env.BUNNY_STREAM_API_KEY;
-delete process.env.TUTOR_REGISTER_SECRET;

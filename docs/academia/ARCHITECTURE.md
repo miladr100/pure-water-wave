@@ -13,15 +13,15 @@ código segue, peça por peça, o que o resto do repositório já faz.
 | `globals.css` (tokens oklch, Fraunces + Plus Jakarta, gradientes, sombras) | igual | tema escuro só na área logada, como na biblioteca |
 | MongoDB + mongoose, `connectDB()` com cache global | igual | coleções com prefixo `academy_` |
 | Sessão JWT própria (`jose`) em cookie httpOnly | igual | cookie `pww_academy_session`, papéis `student`/`tutor` |
-| `SystemUser` (pastor/hjteam) + segredo de cadastro | `AcademyUser` | aluno se cadastra livre; educador(a) precisa de `TUTOR_REGISTER_SECRET` ou ser convertido no painel |
+| `SystemUser` (pastor/hjteam) | `AcademyUser` | não há cadastro público em nenhum dos dois: educadores criam toda conta no painel (`src/lib/academy/accounts.ts`); o primeiro educador(a) vem do seed |
 | Rotas `/api/auth/*` (login, logout, register, profile, language, change/forgot/reset password) | `/api/academia/auth/*` | mesmas rotas, modelo `AcademyUser` |
 | `LibraryHeader` + menu de configurações (nome, senha, tema, idioma) | `AppHeader` + menu de conta (avatar) + diálogo de perfil | nav muda por área; o perfil abre sobre qualquer tela, como na FFPUM |
 | `LocaleProvider` + `messages.ts` (pt/en/es) | `components/academy/locale-provider` + `lib/i18n/academy-messages.ts` | copy própria |
-| Resend + `@react-email` | igual | reset de senha, aviso de aluno novo |
+| Resend + `@react-email` | igual | reset de senha, boas-vindas com a senha temporária (`WelcomeEmail`) |
 
 ## Acesso: um Login, três tipos de pessoa
 
-O site tem **um único Login**, em `/academia/login` (`/login` só redireciona
+O site tem **um único Login**, em `/login` (`/login` só redireciona
 para lá). Quem entra é levado para a área que lhe cabe:
 
 | quem | conta | onde entra |
@@ -36,6 +36,16 @@ isso, um login na academia também emite o cookie da biblioteca (com papel
 `hjteam`), e o logout limpa os dois — ver `src/lib/academy/session-bridge.ts`.
 A biblioteca mantém o cookie e os papéis de sempre.
 
+**Não há cadastro público.** Toda conta é criada por um(a) educador(a) no
+painel (`/admin/contas`, uma por vez ou por CSV), com senha temporária
+mostrada uma vez e enviada por e-mail quando o Resend está configurado —
+`src/lib/academy/accounts.ts` valida, grava na coleção certa e manda o
+`WelcomeEmail`. "Esqueci minha senha" (`/esqueci-senha`, rotas
+`/api/auth/forgot-password`, `verify-reset-code`, `reset-password`) atende os
+dois tipos de conta: `src/lib/academy/account-lookup.ts` encontra a pessoa
+na biblioteca ou na academia e devolve a coleção de códigos e o `setPassword`
+de cada uma.
+
 No código, o valor do papel continua sendo `tutor` (`src/lib/academy/roles.ts`,
 modelos, API, cookie, testes); só o texto que o usuário vê diz
 "educador(a)".
@@ -43,9 +53,9 @@ modelos, API, cookie, testes); só o texto que o usuário vê diz
 ## Áreas e rotas
 
 ```
-/login                                      redireciona para /academia/login (o Login do site)
+/login                                      redireciona para /login (o Login do site)
 /academia                                   painel do aluno (sem sessão, redireciona para o login)
-/academia/login  /academia/cadastro  /academia/esqueci-senha   públicas
+/login  /esqueci-senha                       públicas (não existe página de cadastro)
 /academia/cursos                            catálogo
 /academia/cursos/[slug]                     curso: módulos, aulas, atividades
 /academia/cursos/[slug]/aulas/[lessonId]    player + perguntas ao educador
@@ -57,9 +67,21 @@ modelos, API, cookie, testes); só o texto que o usuário vê diz
 /admin                                      visão geral (educadores)
 /admin/alunos, /admin/alunos/[id]           alunos, anotações do educador, converter em educador(a)
 /admin/tutores                              educadores
+/admin/pastores                             contas da biblioteca (pastores e HJ Team legado)
+/admin/contas, /admin/contas/importar       criar conta (pastor | hjteam | educador) ou importar CSV
 /admin/cursos, /admin/cursos/[id]           editor de curso: módulos, aulas, atividades, perguntas
 /admin/perguntas                            caixa de perguntas dos alunos
 /admin/correcoes                            respostas escritas a revisar
+```
+
+API de contas (educadores; `requireTutorSession()` → 403):
+
+```
+POST /api/admin/contas            AdminCreateAccountBody → 201 AdminCreateAccountResult
+                                  400 { error, code: "validation", fields: { campo: required|invalid|too_short } }
+                                  409 { error, code: "EMAIL_IN_USE" | "PHONE_IN_USE" }
+POST /api/admin/contas/importar   { rows: AdminImportRowInput[] } (1..500) → 200 AdminImportResult
+GET  /api/admin/pastores          { pastors: AdminPastorRow[] } — SystemUser pastor/hjteam, mais novos primeiro
 ```
 
 `src/middleware.ts` exige a sessão da academia (cookie `pww_academy_session`)
@@ -113,6 +135,14 @@ biblioteca continua com o gate de sempre.
 - `session-bridge.ts` — o Login único: emite os cookies da academia e da
   biblioteca juntos, limpa os dois no logout e decide para onde cada papel
   vai depois de entrar.
+- `accounts.ts` — contas criadas no painel: `validateAccountInput`
+  (códigos por campo), `generateTemporaryPassword` (10 caracteres sem 0/O/1/l/I),
+  `createAccount` (pastor → `SystemUser`; hjteam/educador → `AcademyUser`
+  student/tutor; recusa e-mail repetido nas duas coleções e telefone repetido
+  na biblioteca; manda o `WelcomeEmail` se o Resend estiver configurado),
+  `importAccounts` (linha a linha, `idade` → 1º de janeiro, mensagens em
+  português). `account-lookup.ts` — a pessoa por login em qualquer uma das
+  duas coleções, para o "Esqueci minha senha".
 - `types.ts` — **o contrato** entre rotas e telas. Respostas de erro:
   `{ error: string, code?: string }`.
 
@@ -125,8 +155,8 @@ mas aqui o envio de e-mail é opcional), `POST /api/academia/auth/change-passwor
 `GET /api/academia/tutores`. O catálogo mostra só os cursos gravados no
 idioma da conta, salvo se `showOtherLanguage` estiver ligado (educadores veem
 tudo); quando não existe nenhum curso no idioma da conta, mostra os outros
-mesmo assim, com o aviso de "não traduzido". As páginas de login, cadastro
-e recuperação de senha ficam sempre no tema claro.
+mesmo assim, com o aviso de "não traduzido". As páginas de login e de
+recuperação de senha ficam sempre no tema claro.
 
 ## Vídeo
 

@@ -444,3 +444,76 @@ export type AdminCourseStructure = {
 };
 
 export type ApiErrorBody = { error: string; code?: string; [key: string]: unknown };
+
+// ---------- accounts created by educators (admin) ----------
+
+// What kind of account the panel is creating. "pastor" lives in the
+// library's SystemUser collection; the other two are AcademyUser roles
+// (student / tutor) and get the library through the session bridge.
+export type AccountKind = "pastor" | "hjteam" | "educador";
+
+export type AdminCreateAccountBody = {
+  kind: AccountKind;
+  fullName: string;
+  email: string;
+  phone?: string;
+  country?: string;
+  city?: string;
+  // yyyy-mm-dd; the CSV may give an age instead, converted by the importer
+  birthday?: string | null;
+  language?: UserLanguage;
+  // pastors only
+  churchName?: string;
+  // empty → a temporary password is generated and returned once
+  password?: string;
+};
+
+export type AdminCreateAccountResult = {
+  id: string;
+  kind: AccountKind;
+  fullName: string;
+  email: string;
+  // present only when the server generated it; shown once, never stored
+  temporaryPassword: string | null;
+  // whether a welcome e-mail with the credentials went out
+  emailed: boolean;
+};
+
+export type AdminImportRowInput = AdminCreateAccountBody & {
+  // 1-based line in the CSV, echoed back so the UI can point at it
+  line: number;
+  // optional alternative to birthday
+  age?: number | null;
+};
+
+export type AdminImportRowResult = {
+  line: number;
+  email: string;
+  fullName: string;
+  kind: AccountKind | null;
+  status: "created" | "exists" | "invalid";
+  // Portuguese, shown as is
+  message: string;
+  temporaryPassword: string | null;
+  emailed: boolean;
+};
+
+export type AdminImportResult = {
+  created: number;
+  exists: number;
+  invalid: number;
+  rows: AdminImportRowResult[];
+};
+
+export type AdminPastorRow = {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  country: string;
+  churchName: string;
+  language: UserLanguage;
+  // "pastor", or the library's legacy "hjteam" membership
+  role: "pastor" | "hjteam";
+  createdAt: string;
+};

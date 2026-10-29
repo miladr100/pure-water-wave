@@ -12,15 +12,15 @@ quiserem vídeos privados, uma conta no Bunny Stream.
 
 ## 1. O que está pronto
 
-- **Um único Login para o site inteiro**, em `/academia/login` (`/login`
+- **Um único Login para o site inteiro**, em `/login` (`/login`
   redireciona para lá). Três tipos de pessoa entram por ele: pastores (conta
   da biblioteca, papel pastor) vão só para a biblioteca; HJ Team (conta da
   biblioteca com papel hjteam, ou alunos da academia) vão para a academia e
   têm a biblioteca; educadores (conta da academia) vão para o painel e têm a
   biblioteca. A biblioteca aparece como "Biblioteca" no cabeçalho da academia
   e do painel, e o logo da biblioteca volta para a academia ou para o painel.
-- Área do aluno em `/academia`: cadastro livre, login, recuperação de senha
-  por código (igual à biblioteca), catálogo, inscrição grátis, player com
+- Área do aluno em `/academia`: login, recuperação de senha por código
+  (igual à biblioteca; não há cadastro público — ver 5), catálogo, inscrição grátis, player com
   **bloqueio de adiantamento** (não dá para pular o que ainda não viu),
   progresso que continua de onde parou, atividades de revisão corrigidas na
   hora (múltipla escolha, V/F) e respostas escritas revisadas por um
@@ -31,9 +31,10 @@ quiserem vídeos privados, uma conta no Bunny Stream.
   de storage.
 - Painel dos educadores em `/admin` (educadores são os administradores):
   visão geral, alunos (busca, anotações, educador(a) responsável, converter
-  em educador(a)), educadores, editor completo de cursos (módulos, aulas com
-  YouTube ou Bunny, materiais, atividades e perguntas em três idiomas), caixa
-  de perguntas dos alunos, revisão de respostas escritas.
+  em educador(a)), educadores, pastores, **contas** (criar pastores, HJ Team
+  e educadores um a um ou por CSV — ver 5), editor completo de cursos
+  (módulos, aulas com YouTube ou Bunny, materiais, atividades e perguntas em
+  três idiomas), caixa de perguntas dos alunos, revisão de respostas escritas.
 - Um curso de exemplo (`npm run seed`) montado com o **Manual de apoio dos
   vídeos do Kit 1** que já está na biblioteca — os 17 vídeos do YouTube,
   em 4 módulos, com atividades em pt e es — e um segundo curso bloqueado por
@@ -57,7 +58,7 @@ quiserem vídeos privados, uma conta no Bunny Stream.
   são contas diferentes, mas entram pelo mesmo Login; ao entrar, uma conta da
   academia recebe também o cookie da biblioteca
   (`src/lib/academy/session-bridge.ts`). Um pastor que quiser ser
-  educador(a) cria a conta na academia.
+  educador(a) recebe uma conta de educador(a) criada no painel.
 
 ## 3. Variáveis de ambiente
 
@@ -68,8 +69,7 @@ Novas (opcionais):
 
 | Variável | Para quê |
 |---|---|
-| `TUTOR_REGISTER_SECRET` | Quem souber pode se cadastrar direto como educador(a) em `/academia/cadastro`. Sem ela, educadores só nascem pelo painel ("Converter em educador(a)") ou pelo seed. |
-| `EMAIL_FROM` | Remetente dos e-mails da academia (padrão: `Pure Water Wave <contact@purewaterwave.org>`). |
+| `EMAIL_FROM` | Remetente dos e-mails da academia (padrão: `Pure Water Wave <contact@purewaterwave.org>`). Com `RESEND_API_KEY`, cada conta criada no painel recebe um e-mail de boas-vindas com o login e a senha temporária. |
 | `BUNNY_STREAM_LIBRARY_ID`, `BUNNY_STREAM_API_KEY`, `BUNNY_STREAM_CDN_HOST`, `BUNNY_STREAM_TOKEN_KEY`, `BUNNY_URL_TTL_SECONDS` | Só para aulas com vídeo privado no Bunny Stream (ver 4). |
 | `SEED_TUTOR_EMAIL`, `SEED_TUTOR_PASSWORD`, `SEED_TUTOR_NAME`, `SEED_STUDENT_EMAIL`, `SEED_STUDENT_PASSWORD` | Só para `npm run seed`. |
 
@@ -94,15 +94,56 @@ Com elas, o botão "Enviar vídeo" aparece no editor de aulas: o arquivo sobe
 direto do navegador para o Bunny (a chave nunca vai ao navegador) e a
 academia toca o HLS com URLs assinadas que expiram em 4 horas.
 
-## 5. Primeiro educador(a)
+## 5. Contas
 
-- Cadastrar-se em `/academia/cadastro` marcando "Sou educador(a)" e digitando
-  o `TUTOR_REGISTER_SECRET`; ou
-- `npm run seed` com `SEED_TUTOR_*` no `.env.local` (cria também o curso de
-  exemplo; é idempotente).
+**Ninguém se cadastra sozinho.** Não existe página pública de cadastro: toda
+conta — pastor, HJ Team ou educador(a) — é criada por um(a) educador(a) no
+painel, em **Contas → Nova conta** (uma de cada vez) ou **Contas → Importar
+CSV** (várias). O que acontece ao criar:
 
-Depois, novos educadores são promovidos pelo painel ("Converter em
-educador(a)").
+- **Pastor** vira uma conta da biblioteca (`SystemUser`, papel `pastor`;
+  telefone obrigatório, porque a biblioteca o exige) e entra só na
+  biblioteca. **HJ Team** vira aluno da academia (`AcademyUser`, papel
+  `student`) e **Educador(a)** vira `tutor`; os dois entram na academia ou
+  no painel e têm a biblioteca.
+- Se a senha ficar em branco, o sistema gera uma **senha temporária**, que o
+  painel mostra **uma única vez** (anote ou copie na hora; ela não fica
+  guardada em lugar nenhum). Com `RESEND_API_KEY` configurada, a pessoa
+  também recebe um e-mail de boas-vindas com o login, a área em que vai
+  entrar e a senha temporária.
+- A pessoa troca a senha no perfil (menu da conta) ou, se perdeu, por
+  "Esqueci minha senha" em `/esqueci-senha`, que atende os dois tipos de
+  conta.
+- Um e-mail que já exista em qualquer uma das duas coleções é recusado; um
+  pastor com telefone já cadastrado na biblioteca também.
+
+**Importar CSV** aceita até 500 linhas por vez, com cabeçalho e estas
+colunas (ordem livre; só `tipo`, `nome` e `email` são obrigatórias, mais
+`telefone` para pastores):
+
+| coluna | valores |
+|---|---|
+| `tipo` | `pastor`, `hjteam` ou `educador` |
+| `nome` | nome completo |
+| `email` | vira o login |
+| `telefone` | obrigatório para pastor; só os dígitos são guardados |
+| `pais` | um dos países da lista do perfil (`src/lib/academy/countries.ts`) |
+| `cidade` | texto livre |
+| `nascimento` | `AAAA-MM-DD` ou `DD/MM/AAAA` |
+| `idade` | alternativa a `nascimento`: vira 1º de janeiro do ano correspondente |
+| `idioma` | `pt` (padrão), `en` ou `es` |
+| `igreja` | só para pastores |
+| `senha` | em branco gera uma senha temporária; se preenchida, mínimo 6 caracteres |
+
+Cada linha é tratada sozinha: o resultado diz, linha por linha, se a conta
+foi **criada** (com a senha temporária, quando gerada), se o e-mail **já
+existia** (no banco ou repetido mais acima no mesmo arquivo) ou se a linha
+é **inválida** e por quê, em português.
+
+**O primeiro educador(a)** ainda vem de `npm run seed` com `SEED_TUTOR_*` no
+`.env.local` (cria também o curso de exemplo; é idempotente). A partir dele,
+todas as outras contas nascem no painel. "Converter em educador(a)" na ficha
+do aluno continua existindo para promover um aluno já cadastrado.
 
 ## 6. Rodando localmente
 
@@ -114,7 +155,8 @@ npm test          # regras, middleware e API contra um Mongo em memória
 ```
 
 Sem um MongoDB à mão, `npm run db:local` sobe um em memória e imprime a URI
-para colar no `.env.local` (os dados somem ao parar o processo).
+para colar no `.env.local` (os dados somem ao parar o processo). Sem o seed,
+não há como entrar: não existe cadastro público (ver 5).
 
 ## 7. Onde está cada coisa
 

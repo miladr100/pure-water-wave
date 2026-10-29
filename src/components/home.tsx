@@ -497,7 +497,7 @@ export default function Home() {
           </nav>
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
-              href="/academia/login"
+              href="/login"
               className="inline-flex items-center rounded-full border border-white/40 bg-white/10 px-4 py-2.5 text-sm font-semibold text-primary-foreground backdrop-blur transition hover:bg-white/20"
             >
               Login

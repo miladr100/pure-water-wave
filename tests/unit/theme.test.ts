@@ -64,12 +64,6 @@ describe("isLibraryThemePath", () => {
     }
   });
 
-  it("keeps the academy sign-in pages light, like the public site", () => {
-    for (const path of ["/academia/login", "/academia/cadastro", "/academia/esqueci-senha", "/academia/cadastro/"]) {
-      expect(isLibraryThemePath(path)).toBe(false);
-    }
-  });
-
   it("leaves the public site and look-alike prefixes alone", () => {
     for (const path of ["/", "/sobre", "/academiax", "/administracao", "/api/academia/me"]) {
       expect(isLibraryThemePath(path)).toBe(false);

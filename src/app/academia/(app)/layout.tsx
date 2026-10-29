@@ -9,7 +9,7 @@ export default async function AcademiaLayout({ children }: { children: ReactNode
   const session = await getSession();
 
   if (!session || !isAcademySession(session)) {
-    redirect("/academia/login");
+    redirect("/login");
   }
 
   return (

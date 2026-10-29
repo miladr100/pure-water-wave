@@ -17,6 +17,7 @@ export type AppMessages = {
     cancel: string;
     delete: string;
     back: string;
+    close: string;
     loading: string;
     error: string;
     retry: string;
@@ -30,6 +31,7 @@ export type AppMessages = {
     activities: (n: number) => string;
   };
   header: {
+    pastors: string;
     library: string;
     account: string;
     profile: string;
@@ -274,6 +276,49 @@ export type AppMessages = {
     incompleteCta: string;
   };
   admin: {
+    accountsHeading: string;
+    pastorsHeading: string;
+    pastorsDescription: string;
+    noPastors: string;
+    colChurch: string;
+    colRole: string;
+    libraryMember: string;
+    newAccount: string;
+    newPastor: string;
+    newStudent: string;
+    newEducator: string;
+    accountKind: string;
+    kinds: Record<"pastor" | "hjteam" | "educador", string>;
+    kindHint: string;
+    churchName: string;
+    initialPassword: string;
+    initialPasswordHint: string;
+    createAccount: string;
+    accountCreated: string;
+    temporaryPassword: string;
+    temporaryPasswordHint: string;
+    emailedCredentials: string;
+    notEmailed: string;
+    copy: string;
+    copied: string;
+    importCsv: string;
+    importHeading: string;
+    importDescription: string;
+    importColumns: string;
+    importExample: string;
+    chooseFile: string;
+    importPreview: (n: number) => string;
+    importCapped: (max: number, total: number) => string;
+    unknownColumns: string;
+    phoneRequiredForPastors: string;
+    importRun: string;
+    importing: string;
+    importDone: (created: number, exists: number, invalid: number) => string;
+    importDownload: string;
+    importStatus: Record<"created" | "exists" | "invalid", string>;
+    colLine: string;
+    colStatus: string;
+    colPassword: string;
     overviewHeading: string;
     overviewDescription: string;
     statStudents: string;
@@ -404,6 +449,7 @@ const pt: AppMessages = {
     cancel: "Cancelar",
     delete: "Excluir",
     back: "Voltar",
+    close: "Fechar",
     loading: "Carregando...",
     error: "Algo deu errado. Tente novamente.",
     retry: "Tentar novamente",
@@ -417,6 +463,7 @@ const pt: AppMessages = {
     activities: (n) => (n === 1 ? "1 atividade" : `${n} atividades`),
   },
   header: {
+    pastors: "Pastores",
     library: "Biblioteca",
     account: "Conta",
     profile: "Meu perfil",
@@ -662,6 +709,49 @@ const pt: AppMessages = {
     incompleteCta: "Completar perfil",
   },
   admin: {
+    accountsHeading: "Contas",
+    pastorsHeading: "Pastores",
+    pastorsDescription: "Contas da biblioteca: pastores e membros antigos do HJ Team.",
+    noPastors: "Nenhum pastor cadastrado.",
+    colChurch: "Igreja",
+    colRole: "Tipo",
+    libraryMember: "HJ Team (biblioteca)",
+    newAccount: "Nova conta",
+    newPastor: "Novo pastor",
+    newStudent: "Novo aluno",
+    newEducator: "Novo educador(a)",
+    accountKind: "Tipo de conta",
+    kinds: { pastor: "Pastor", hjteam: "HJ Team (aluno)", educador: "Educador(a)" },
+    kindHint: "Pastores entram na biblioteca; HJ Team entra na academia; educadores entram no painel.",
+    churchName: "Igreja",
+    initialPassword: "Senha inicial",
+    initialPasswordHint: "Deixe em branco para gerar uma senha temporária.",
+    createAccount: "Criar conta",
+    accountCreated: "Conta criada.",
+    temporaryPassword: "Senha temporária",
+    temporaryPasswordHint: "Anote agora: ela não será mostrada de novo. A pessoa pode trocá-la no perfil ou em \"Esqueci minha senha\".",
+    emailedCredentials: "Enviamos os dados de acesso por e-mail.",
+    notEmailed: "Envio de e-mail não configurado: passe os dados de acesso pessoalmente.",
+    copy: "Copiar",
+    copied: "Copiado.",
+    importCsv: "Importar CSV",
+    importHeading: "Importar contas (CSV)",
+    importDescription: "Crie várias contas de uma vez a partir de uma planilha salva como CSV.",
+    importColumns: "Colunas aceitas (a primeira linha é o cabeçalho): tipo (pastor, hjteam ou educador), nome, email, telefone, pais, cidade, nascimento (AAAA-MM-DD ou DD/MM/AAAA) ou idade, idioma (pt, en, es), igreja, senha. Só tipo, nome e email são obrigatórios.",
+    importExample: "Baixar modelo",
+    chooseFile: "Escolher arquivo CSV",
+    importPreview: (n) => (n === 1 ? "1 linha pronta para importar" : `${n} linhas prontas para importar`),
+    importCapped: (max, total) => `Só as primeiras ${max} linhas serão importadas (de ${total}).`,
+    unknownColumns: "Colunas ignoradas:",
+    phoneRequiredForPastors: "Obrigatório para pastores.",
+    importRun: "Importar",
+    importing: "Importando...",
+    importDone: (created, exists, invalid) => `${created} criadas · ${exists} já existiam · ${invalid} inválidas`,
+    importDownload: "Baixar resultado com senhas (CSV)",
+    importStatus: { created: "Criada", exists: "Já existia", invalid: "Inválida" },
+    colLine: "Linha",
+    colStatus: "Resultado",
+    colPassword: "Senha temporária",
     overviewHeading: "Visão geral",
     overviewDescription: "O que precisa da sua atenção hoje.",
     statStudents: "Alunos",
@@ -798,6 +888,7 @@ const en: AppMessages = {
     cancel: "Cancel",
     delete: "Delete",
     back: "Back",
+    close: "Close",
     loading: "Loading...",
     error: "Something went wrong. Please try again.",
     retry: "Try again",
@@ -811,6 +902,7 @@ const en: AppMessages = {
     activities: (n) => (n === 1 ? "1 activity" : `${n} activities`),
   },
   header: {
+    pastors: "Pastors",
     library: "Library",
     account: "Account",
     profile: "My profile",
@@ -1056,6 +1148,49 @@ const en: AppMessages = {
     incompleteCta: "Complete profile",
   },
   admin: {
+    accountsHeading: "Accounts",
+    pastorsHeading: "Pastors",
+    pastorsDescription: "Library accounts: pastors and legacy HJ Team members.",
+    noPastors: "No pastors yet.",
+    colChurch: "Church",
+    colRole: "Type",
+    libraryMember: "HJ Team (library)",
+    newAccount: "New account",
+    newPastor: "New pastor",
+    newStudent: "New student",
+    newEducator: "New educator",
+    accountKind: "Account type",
+    kinds: { pastor: "Pastor", hjteam: "HJ Team (student)", educador: "Educator" },
+    kindHint: "Pastors enter the library; HJ Team enters the academy; educators enter the panel.",
+    churchName: "Church",
+    initialPassword: "Initial password",
+    initialPasswordHint: "Leave blank to generate a temporary password.",
+    createAccount: "Create account",
+    accountCreated: "Account created.",
+    temporaryPassword: "Temporary password",
+    temporaryPasswordHint: "Write it down now: it will not be shown again. The person can change it in the profile or through \"Forgot my password\".",
+    emailedCredentials: "The sign-in details were sent by e-mail.",
+    notEmailed: "E-mail is not configured: hand over the sign-in details in person.",
+    copy: "Copy",
+    copied: "Copied.",
+    importCsv: "Import CSV",
+    importHeading: "Import accounts (CSV)",
+    importDescription: "Create many accounts at once from a spreadsheet saved as CSV.",
+    importColumns: "Accepted columns (first line is the header): tipo (pastor, hjteam or educador), nome, email, telefone, pais, cidade, nascimento (YYYY-MM-DD or DD/MM/YYYY) or idade, idioma (pt, en, es), igreja, senha. Only tipo, nome and email are required.",
+    importExample: "Download template",
+    chooseFile: "Choose CSV file",
+    importPreview: (n) => (n === 1 ? "1 row ready to import" : `${n} rows ready to import`),
+    importCapped: (max, total) => `Only the first ${max} rows will be imported (of ${total}).`,
+    unknownColumns: "Ignored columns:",
+    phoneRequiredForPastors: "Required for pastors.",
+    importRun: "Import",
+    importing: "Importing...",
+    importDone: (created, exists, invalid) => `${created} created · ${exists} already existed · ${invalid} invalid`,
+    importDownload: "Download result with passwords (CSV)",
+    importStatus: { created: "Created", exists: "Already existed", invalid: "Invalid" },
+    colLine: "Line",
+    colStatus: "Result",
+    colPassword: "Temporary password",
     overviewHeading: "Overview",
     overviewDescription: "What needs your attention today.",
     statStudents: "Students",
@@ -1192,6 +1327,7 @@ const es: AppMessages = {
     cancel: "Cancelar",
     delete: "Eliminar",
     back: "Volver",
+    close: "Cerrar",
     loading: "Cargando...",
     error: "Algo salió mal. Intenta de nuevo.",
     retry: "Reintentar",
@@ -1205,6 +1341,7 @@ const es: AppMessages = {
     activities: (n) => (n === 1 ? "1 actividad" : `${n} actividades`),
   },
   header: {
+    pastors: "Pastores",
     library: "Biblioteca",
     account: "Cuenta",
     profile: "Mi perfil",
@@ -1450,6 +1587,49 @@ const es: AppMessages = {
     incompleteCta: "Completar perfil",
   },
   admin: {
+    accountsHeading: "Cuentas",
+    pastorsHeading: "Pastores",
+    pastorsDescription: "Cuentas de la biblioteca: pastores y miembros antiguos del HJ Team.",
+    noPastors: "Ningún pastor registrado.",
+    colChurch: "Iglesia",
+    colRole: "Tipo",
+    libraryMember: "HJ Team (biblioteca)",
+    newAccount: "Nueva cuenta",
+    newPastor: "Nuevo pastor",
+    newStudent: "Nuevo estudiante",
+    newEducator: "Nuevo educador(a)",
+    accountKind: "Tipo de cuenta",
+    kinds: { pastor: "Pastor", hjteam: "HJ Team (estudiante)", educador: "Educador(a)" },
+    kindHint: "Los pastores entran a la biblioteca; HJ Team entra a la academia; los educadores entran al panel.",
+    churchName: "Iglesia",
+    initialPassword: "Contraseña inicial",
+    initialPasswordHint: "Dejala en blanco para generar una contraseña temporal.",
+    createAccount: "Crear cuenta",
+    accountCreated: "Cuenta creada.",
+    temporaryPassword: "Contraseña temporal",
+    temporaryPasswordHint: "Anotala ahora: no se mostrará de nuevo. La persona puede cambiarla en su perfil o con \"Olvidé mi contraseña\".",
+    emailedCredentials: "Enviamos los datos de acceso por correo.",
+    notEmailed: "El envío de correo no está configurado: entregá los datos de acceso en persona.",
+    copy: "Copiar",
+    copied: "Copiado.",
+    importCsv: "Importar CSV",
+    importHeading: "Importar cuentas (CSV)",
+    importDescription: "Creá varias cuentas de una vez desde una planilla guardada como CSV.",
+    importColumns: "Columnas aceptadas (la primera línea es el encabezado): tipo (pastor, hjteam o educador), nome, email, telefone, pais, cidade, nascimento (AAAA-MM-DD o DD/MM/AAAA) o idade, idioma (pt, en, es), igreja, senha. Solo tipo, nome y email son obligatorios.",
+    importExample: "Descargar modelo",
+    chooseFile: "Elegir archivo CSV",
+    importPreview: (n) => (n === 1 ? "1 fila lista para importar" : `${n} filas listas para importar`),
+    importCapped: (max, total) => `Solo se importarán las primeras ${max} filas (de ${total}).`,
+    unknownColumns: "Columnas ignoradas:",
+    phoneRequiredForPastors: "Obligatorio para pastores.",
+    importRun: "Importar",
+    importing: "Importando...",
+    importDone: (created, exists, invalid) => `${created} creadas · ${exists} ya existían · ${invalid} inválidas`,
+    importDownload: "Descargar resultado con contraseñas (CSV)",
+    importStatus: { created: "Creada", exists: "Ya existía", invalid: "Inválida" },
+    colLine: "Línea",
+    colStatus: "Resultado",
+    colPassword: "Contraseña temporal",
     overviewHeading: "Resumen",
     overviewDescription: "Lo que necesita tu atención hoy.",
     statStudents: "Estudiantes",

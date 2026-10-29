@@ -4,22 +4,22 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { useLocale } from "@/components/academy/locale-provider";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { isAppTheme } from "@/lib/theme";
 
-type LoginErrorState =
-  | { kind: "message"; text: string }
-  | { kind: "not_registered" }
-  | null;
+type LoginErrorState = { kind: "message"; text: string } | null;
 
+// The site's one Login. The academy's endpoint recognises every account
+// (library and academy) and says where the person belongs: pastors go to
+// the library, HJ Team members to the academy, educators to the panel.
+// Accounts are created by the educators in the panel, so there is no
+// sign-up link here.
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { t } = useLocale();
   const { setTheme } = useTheme();
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
@@ -42,32 +42,35 @@ export function LoginForm() {
         error?: string;
         code?: string;
         redirectTo?: string;
-        user?: { theme?: unknown };
+        user?: { theme?: string };
       };
 
       if (!response.ok) {
-        if (data.code === "USER_NOT_FOUND") {
-          setError({ kind: "not_registered" });
-          return;
-        }
-
-        setError({ kind: "message", text: data.error ?? t.auth.failed });
+        setError({
+          kind: "message",
+          text:
+            data.code === "USER_NOT_FOUND"
+              ? "Este usuário não está cadastrado. Fale com a equipe Água Pura."
+              : (data.error ?? "Não foi possível entrar. Tente novamente."),
+        });
         return;
       }
 
-      // The account remembers its theme; this device follows it from now on.
-      const theme = data.user?.theme;
-      if (isAppTheme(theme)) {
-        setTheme(theme);
+      // The academy stores the person's theme; adopt it before moving on.
+      if (isAppTheme(data.user?.theme)) {
+        setTheme(data.user.theme);
       }
 
-      // `next` is set by the middleware when a protected page bounced here.
+      // A protected page that bounced here says where to go back to.
       const next = searchParams.get("next");
-      const target = next && next.startsWith("/") ? next : (data.redirectTo ?? "/academia");
+      const target = next && next.startsWith("/") ? next : (data.redirectTo ?? "/biblioteca");
       router.push(target);
       router.refresh();
     } catch {
-      setError({ kind: "message", text: t.auth.failed });
+      setError({
+        kind: "message",
+        text: "Não foi possível entrar. Tente novamente.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -76,7 +79,7 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-2">
-        <Label htmlFor="login">{t.auth.email}</Label>
+        <Label htmlFor="login">E-mail</Label>
         <Input
           id="login"
           name="login"
@@ -91,12 +94,13 @@ export function LoginForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">{t.auth.password}</Label>
+        <Label htmlFor="password">Senha</Label>
         <Input
           id="password"
           name="password"
           type="password"
           autoComplete="current-password"
+          placeholder="Sua senha"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           required
@@ -104,36 +108,24 @@ export function LoginForm() {
         />
       </div>
 
-      {error?.kind === "message" ? (
+      {error ? (
         <p className="text-sm text-destructive" role="alert">
           {error.text}
         </p>
       ) : null}
 
-      {error?.kind === "not_registered" ? (
-        <div className="space-y-1 text-center" role="alert">
-          <p className="text-sm text-destructive">{t.auth.notRegistered}</p>
-          <Link href="/academia/cadastro" className="inline-block text-sm font-medium text-primary hover:underline">
-            {t.auth.register}
-          </Link>
-          <Link href="/cadastro" className="block text-xs text-muted-foreground hover:text-foreground">
-            {t.auth.registerPastor}
-          </Link>
-        </div>
-      ) : null}
-
-      <Button type="submit" className="w-full rounded-full" size="lg" disabled={isLoading}>
-        {isLoading ? t.auth.entering : t.auth.enter}
+      <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+        {isLoading ? "Entrando..." : "Entrar"}
       </Button>
 
-      <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
-        <Link href="/academia/esqueci-senha" className="font-medium text-primary hover:underline">
-          {t.auth.forgot}
+      <p className="text-center text-sm text-muted-foreground">
+        <Link
+          href="/esqueci-senha"
+          className="font-medium text-primary hover:underline"
+        >
+          Esqueci minha senha
         </Link>
-        <Link href="/academia/cadastro" className="hover:text-foreground">
-          {t.auth.register}
-        </Link>
-      </div>
+      </p>
     </form>
   );
 }

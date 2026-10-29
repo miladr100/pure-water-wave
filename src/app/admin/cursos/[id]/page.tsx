@@ -7,7 +7,7 @@ import { getSession } from "@/lib/academy/auth";
 export default async function AdminCoursePage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
   if (!session) {
-    redirect("/academia/login");
+    redirect("/login");
   }
 
   const { id } = await params;

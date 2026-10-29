@@ -56,7 +56,7 @@ function expectNext(response: Response) {
 function expectRedirectToLogin(response: Response, next: string) {
   expect(response.status).toBe(307);
   const location = new URL(response.headers.get("location")!);
-  expect(location.pathname).toBe("/academia/login");
+  expect(location.pathname).toBe("/login");
   expect(location.searchParams.get("next")).toBe(next);
   expect(location.search).toBe(`?next=${encodeURIComponent(next)}`);
 }
@@ -80,7 +80,7 @@ describe("academy pages", () => {
   });
 
   it("lets the login, sign-up and password reset pages through without a session", async () => {
-    for (const path of ["/academia/login", "/academia/cadastro", "/academia/esqueci-senha", "/academia/login/"]) {
+    for (const path of ["/api/academia/auth/login", "/api/academia/auth/logout"]) {
       expectNext(await academy(path));
     }
   });

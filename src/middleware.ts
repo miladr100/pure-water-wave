@@ -10,17 +10,24 @@ import { isSystemUserRole } from "@/lib/user-roles";
 // tutors) each have their own cookie and their own roles, so a pastor's
 // session never opens the academy and vice versa.
 
-// Sign-in, sign-up and password reset must work without a session; the
-// account routes under /api/academia/auth check the session themselves.
-const ACADEMY_PUBLIC = [
-  "/academia/login",
-  "/academia/cadastro",
-  "/academia/esqueci-senha",
-  "/api/academia/auth",
-];
+// The site's Login (/login) posts here, so this API must work without a
+// session; the account routes under it check the session themselves.
+const ACADEMY_PUBLIC = ["/api/academia/auth"];
+
+// The academy once had its own sign-in pages; old links land on the site's.
+const MOVED_TO_SITE: Record<string, string> = {
+  "/academia/login": "/login",
+  "/academia/cadastro": "/login",
+  "/academia/esqueci-senha": "/esqueci-senha",
+};
 
 async function academyMiddleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (MOVED_TO_SITE[pathname]) {
+    return NextResponse.redirect(new URL(MOVED_TO_SITE[pathname], request.url), 308);
+  }
+
   const isApi = pathname.startsWith("/api/");
   const isAdminArea = pathname.startsWith("/admin") || pathname.startsWith("/api/admin/");
   const token = request.cookies.get(ACADEMY_SESSION_COOKIE)?.value;
@@ -50,7 +57,7 @@ async function academyMiddleware(request: NextRequest) {
       return NextResponse.json({ error: "Não autorizado" }, { status });
     }
 
-    const login = new URL("/academia/login", request.url);
+    const login = new URL("/login", request.url);
     login.searchParams.set("next", pathname);
     return NextResponse.redirect(login);
   };

@@ -1,18 +1,22 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("next/headers", () => import("../helpers/next-headers"));
+// The site's mail module builds its Resend client at import time and throws
+// without a key; the reset routes only reach it after a 503 guard anyway.
+vi.mock("@/lib/emails", () => ({
+  sendEmailPasswordReset: vi.fn(),
+  sendEmailPasswordChanged: vi.fn(),
+}));
 
 import { POST as changePassword } from "@/app/api/academia/auth/change-password/route";
 import { PATCH as changeEmail } from "@/app/api/academia/auth/email/route";
-import { POST as forgotPassword } from "@/app/api/academia/auth/forgot-password/route";
+import { POST as forgotPassword } from "@/app/api/auth/forgot-password/route";
 import { PATCH as changeLanguage } from "@/app/api/academia/auth/language/route";
 import { POST as login } from "@/app/api/academia/auth/login/route";
 import { POST as logout } from "@/app/api/academia/auth/logout/route";
 import { PATCH as changeProfile } from "@/app/api/academia/auth/profile/route";
-import { POST as register } from "@/app/api/academia/auth/register/route";
-import { POST as resetPassword } from "@/app/api/academia/auth/reset-password/route";
-import { POST as verifyResetCode } from "@/app/api/academia/auth/verify-reset-code/route";
-import { GET as getMe } from "@/app/api/academia/me/route";
+import { POST as resetPassword } from "@/app/api/auth/reset-password/route";
+import { POST as verifyResetCode } from "@/app/api/auth/verify-reset-code/route";
 import { SESSION_COOKIE } from "@/lib/academy/session-cookie";
 import { hashPassword } from "@/lib/password";
 import { AcademyPasswordReset } from "@/models/academy-password-reset";
@@ -20,7 +24,7 @@ import { AcademyUser } from "@/models/academy-user";
 import { SystemUser } from "@/models/system-user";
 import { SESSION_COOKIE as LIBRARY_COOKIE } from "@/lib/session-cookie";
 
-import { adoptSessionCookie, createUser, jsonRequest, readJson, setCookieHeader, signInAs } from "../helpers/api";
+import { createUser, jsonRequest, readJson, setCookieHeader, signInAs } from "../helpers/api";
 import { clearDb, startDb, stopDb } from "../helpers/db";
 import { resetNextHeaders } from "../helpers/next-headers";
 
@@ -31,17 +35,6 @@ type AuthBody = {
   redirectTo?: string;
   user?: { fullName: string; login: string; role: string; language: string; theme: string };
 };
-
-const REGISTRATION = {
-  fullName: "Nova Aluna",
-  email: "nova@example.test",
-  password: "senha123",
-  country: "Brasil",
-};
-
-function registerWith(body: Record<string, unknown>) {
-  return register(jsonRequest("/api/academia/auth/register", { body }));
-}
 
 function loginWith(loginValue: string, password: string) {
   return login(jsonRequest("/api/academia/auth/login", { body: { login: loginValue, password } }));
@@ -56,68 +49,6 @@ describe("auth", () => {
   });
   afterEach(() => {
     vi.unstubAllEnvs();
-  });
-
-  describe("register", () => {
-    it("creates a student, signs them in and points them at the academy", async () => {
-      const response = await registerWith(REGISTRATION);
-      expect(response.status).toBe(200);
-
-      const body = await readJson<AuthBody>(response);
-      expect(body.redirectTo).toBe("/academia");
-      expect(body.user).toMatchObject({ role: "student", login: "nova@example.test", theme: "system", language: "pt" });
-      expect(setCookieHeader(response)).toContain(`${SESSION_COOKIE}=`);
-
-      const stored = await AcademyUser.findOne({ email: "nova@example.test" }).select("+password").lean();
-      expect(stored?.role).toBe("student");
-      expect(stored?.password).not.toBe("senha123");
-
-      adoptSessionCookie(response);
-      const me = await getMe();
-      expect(me.status).toBe(200);
-    });
-
-    it("refuses a duplicate e-mail with EMAIL_IN_USE", async () => {
-      await createUser({ email: "nova@example.test" });
-
-      const response = await registerWith(REGISTRATION);
-      expect(response.status).toBe(409);
-      expect((await readJson<AuthBody>(response)).code).toBe("EMAIL_IN_USE");
-    });
-
-    it("rejects missing fields, a short password, a bad e-mail and an invalid birthday", async () => {
-      const cases: Record<string, unknown>[] = [
-        { ...REGISTRATION, country: "" },
-        { ...REGISTRATION, password: "12345" },
-        { ...REGISTRATION, email: "not-an-email" },
-        { ...REGISTRATION, birthday: "2024-02-30" },
-        { ...REGISTRATION, birthday: "2999-01-01" },
-      ];
-
-      for (const body of cases) {
-        const response = await registerWith(body);
-        expect(response.status, JSON.stringify(body)).toBe(400);
-      }
-      expect(await AcademyUser.countDocuments()).toBe(0);
-    });
-
-    it("refuses a tutor secret when none is configured", async () => {
-      const response = await registerWith({ ...REGISTRATION, tutorSecret: "x" });
-      expect(response.status).toBe(403);
-      expect((await readJson<AuthBody>(response)).error).toBe("Segredo de tutor inválido");
-    });
-
-    it("creates a tutor when the secret matches and sends them to the panel", async () => {
-      vi.stubEnv("TUTOR_REGISTER_SECRET", "x");
-
-      const response = await registerWith({ ...REGISTRATION, tutorSecret: "X" });
-      expect(response.status).toBe(200);
-
-      const body = await readJson<AuthBody>(response);
-      expect(body.redirectTo).toBe("/admin");
-      expect(body.user?.role).toBe("tutor");
-      expect((await AcademyUser.findOne({ email: "nova@example.test" }).lean())?.role).toBe("tutor");
-    });
   });
 
   describe("login", () => {

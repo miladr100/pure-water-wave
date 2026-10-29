@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import { AccountActions } from "@/components/admin/account-actions";
 import { PageHeading } from "@/components/admin/admin-shell";
 import { toastError, useDateFormat } from "@/components/admin/helpers";
 import { useLocale } from "@/components/academy/locale-provider";
@@ -23,16 +24,30 @@ export function TutorsTable() {
   const { t } = useLocale();
   const formatDate = useDateFormat();
   const [tutors, setTutors] = useState<AdminStudentRow[] | null>(null);
+  const [version, setVersion] = useState(0);
+  const reload = useCallback(() => setVersion((current) => current + 1), []);
 
   useEffect(() => {
+    let cancelled = false;
+
     api<{ tutors: AdminStudentRow[] }>("/api/admin/tutores")
-      .then((data) => setTutors(data.tutors))
+      .then((data) => {
+        if (!cancelled) setTutors(data.tutors);
+      })
       .catch((error) => toastError(error, t.common.error));
-  }, [t]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [version, t]);
 
   return (
     <>
-      <PageHeading title={t.admin.tutorsHeading} description={t.admin.tutorsDescription} />
+      <PageHeading
+        title={t.admin.tutorsHeading}
+        description={t.admin.tutorsDescription}
+        actions={<AccountActions kind="educador" onCreated={reload} />}
+      />
 
       <Card className="border-border/60 shadow-card">
         <CardContent className="p-0">

@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { ArrowDown, ArrowUp, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import { AccountActions } from "@/components/admin/account-actions";
 import { PageHeading } from "@/components/admin/admin-shell";
 import { toastError, useDateFormat } from "@/components/admin/helpers";
 import { useLocale } from "@/components/academy/locale-provider";
@@ -65,6 +66,8 @@ export function StudentsTable() {
   const [sort, setSort] = useState<Sort>("createdAt");
   const [dir, setDir] = useState<"asc" | "desc">("desc");
   const [students, setStudents] = useState<AdminStudentRow[] | null>(null);
+  const [version, setVersion] = useState(0);
+  const reload = useCallback(() => setVersion((current) => current + 1), []);
 
   // Typing should not fire a request per keystroke.
   useEffect(() => {
@@ -85,7 +88,7 @@ export function StudentsTable() {
     return () => {
       cancelled = true;
     };
-  }, [query, sort, dir, t]);
+  }, [query, sort, dir, version, t]);
 
   function toggleSort(next: Sort) {
     if (next === sort) {
@@ -98,7 +101,11 @@ export function StudentsTable() {
 
   return (
     <>
-      <PageHeading title={t.admin.studentsHeading} description={t.admin.studentsDescription} />
+      <PageHeading
+        title={t.admin.studentsHeading}
+        description={t.admin.studentsDescription}
+        actions={<AccountActions kind="hjteam" onCreated={reload} />}
+      />
 
       <div className="relative mb-4">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

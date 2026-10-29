@@ -11,7 +11,7 @@ export default async function CourseCompletePage({
 }) {
   const session = await getSession();
   if (!session) {
-    redirect("/academia/login");
+    redirect("/login");
   }
 
   const { slug } = await params;

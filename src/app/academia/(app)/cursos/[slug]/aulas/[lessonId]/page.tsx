@@ -12,7 +12,7 @@ export default async function LessonPage({
 }) {
   const session = await getSession();
   if (!session) {
-    redirect("/academia/login");
+    redirect("/login");
   }
 
   const { slug, lessonId } = await params;

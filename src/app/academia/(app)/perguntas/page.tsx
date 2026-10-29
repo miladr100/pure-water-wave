@@ -7,7 +7,7 @@ import { getSession } from "@/lib/academy/auth";
 export default async function MyQuestionsPage() {
   const session = await getSession();
   if (!session) {
-    redirect("/academia/login");
+    redirect("/login");
   }
 
   return (

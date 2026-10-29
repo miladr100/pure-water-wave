@@ -12,7 +12,7 @@ export default async function ActivityPage({
 }) {
   const session = await getSession();
   if (!session) {
-    redirect("/academia/login");
+    redirect("/login");
   }
 
   const { slug, examId } = await params;

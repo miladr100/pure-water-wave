@@ -16,7 +16,7 @@ export function LogoutButton() {
 
     try {
       await fetch("/api/academia/auth/logout", { method: "POST" });
-      router.push("/academia/login");
+      router.push("/login");
       router.refresh();
     } finally {
       setIsLoading(false);

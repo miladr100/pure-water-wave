@@ -3,6 +3,8 @@ import { Resend } from "resend";
 import { NewStudentEmail } from "@/app/emails/academy/NewStudentEmail";
 import { PasswordChangedEmail } from "@/app/emails/academy/PasswordChangedEmail";
 import { PasswordResetEmail } from "@/app/emails/academy/PasswordResetEmail";
+import { WelcomeEmail } from "@/app/emails/academy/WelcomeEmail";
+import type { AccountKind } from "@/lib/academy/types";
 import { getEmailLogoAttachment } from "@/lib/email-assets";
 
 // Created on first send, not at import: the Resend constructor throws without
@@ -112,4 +114,40 @@ export async function sendEmailNewStudent({
   }
 
   console.info("Aviso de novo aluno enviado para:", to.join(", "));
+}
+
+interface WelcomeEmailParams {
+  to: string;
+  fullName: string;
+  kind: AccountKind;
+  email: string;
+  // null when the educator set the password themself
+  temporaryPassword: string | null;
+  appUrl: string;
+}
+
+// Sent to every account an educator creates from the panel: where to sign
+// in, with which e-mail, and the temporary password when one was generated.
+export async function sendEmailWelcome({
+  to,
+  fullName,
+  kind,
+  email,
+  temporaryPassword,
+  appUrl,
+}: WelcomeEmailParams) {
+  const { error } = await resend().emails.send({
+    from: FROM,
+    to: [to],
+    subject: "Sua conta na Água Pura",
+    react: WelcomeEmail({ fullName, kind, email, temporaryPassword, appUrl }),
+    attachments: [getEmailLogoAttachment()],
+  });
+
+  if (error) {
+    console.error("Error sending welcome email:", error);
+    throw new Error("Error sending welcome email");
+  }
+
+  console.info("E-mail de boas-vindas enviado para:", to);
 }

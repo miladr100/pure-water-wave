@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 
+import { findAccountByLogin } from "@/lib/academy/account-lookup";
 import { connectDB } from "@/lib/mongodb";
 import { verifyPassword } from "@/lib/password";
-import { PasswordReset } from "@/models/password-reset";
-import { SystemUser } from "@/models/system-user";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_ATTEMPTS = 5;
@@ -39,18 +38,16 @@ export async function POST(request: Request) {
 
     await connectDB();
 
-    const user = await SystemUser.findOne({
-      $or: [{ email }, { login: email }],
-    });
+    const account = await findAccountByLogin(email);
 
-    if (!user) {
+    if (!account) {
       return NextResponse.json(
         { error: "Código inválido ou expirado" },
         { status: 400 },
       );
     }
 
-    const reset = await PasswordReset.findOne({ email: user.email }).sort({
+    const reset = await account.resets.findOne({ email: account.email }).sort({
       createdAt: -1,
     });
 
