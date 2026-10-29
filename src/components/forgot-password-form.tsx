@@ -390,14 +390,6 @@ export function ForgotPasswordForm() {
       {error ? (
         <div className="space-y-1 text-center" role="alert">
           <p className="text-sm text-destructive">{error}</p>
-          {notRegistered ? (
-            <Link
-              href="/cadastro"
-              className="inline-block text-sm font-medium text-primary hover:underline"
-            >
-              Fazer meu cadastro
-            </Link>
-          ) : null}
         </div>
       ) : null}
 

@@ -1,0 +1,28 @@
+# Checks for every pull request: types, lint of the academy's own folders
+# and the test suite (pure rules, middleware and API handlers against a
+# MongoDB started in memory — no secrets needed).
+name: academia
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Only placeholders: the suite pins what it needs in tests/setup.ts.
+      AUTH_SECRET: ci-only
+      MONGODB_URI: mongodb://placeholder.invalid:27017/unused
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npx eslint src/app/academia src/app/admin src/app/api/academia src/app/api/admin src/components/academy src/components/admin src/lib/academy src/middleware.ts tests scripts
+      - run: npm test

@@ -13,6 +13,7 @@ import {
   THEME_STORAGE_KEY,
   isAppTheme,
   isLibraryThemePath,
+  resolveTheme,
   type AppTheme,
 } from "@/lib/theme";
 
@@ -24,7 +25,7 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function applyTheme(theme: AppTheme, pathname: string) {
-  const enableDark = theme === "dark" && isLibraryThemePath(pathname);
+  const enableDark = resolveTheme(theme) === "dark" && isLibraryThemePath(pathname);
   document.documentElement.classList.toggle("dark", enableDark);
 }
 

@@ -2,19 +2,25 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
+import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { isAppTheme } from "@/lib/theme";
 
-type LoginErrorState =
-  | { kind: "message"; text: string }
-  | { kind: "not_registered" }
-  | null;
+type LoginErrorState = { kind: "message"; text: string } | null;
 
+// The site's one Login. The academy's endpoint recognises every account
+// (library and academy) and says where the person belongs: pastors go to
+// the library, HJ Team members to the academy, educators to the panel.
+// Accounts are created by the educators in the panel, so there is no
+// sign-up link here.
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { setTheme } = useTheme();
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<LoginErrorState>(null);
@@ -26,7 +32,7 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch("/api/academia/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ login, password }),
@@ -36,22 +42,29 @@ export function LoginForm() {
         error?: string;
         code?: string;
         redirectTo?: string;
+        user?: { theme?: string };
       };
 
       if (!response.ok) {
-        if (data.code === "USER_NOT_FOUND") {
-          setError({ kind: "not_registered" });
-          return;
-        }
-
         setError({
           kind: "message",
-          text: data.error ?? "Não foi possível entrar. Tente novamente.",
+          text:
+            data.code === "USER_NOT_FOUND"
+              ? "Este usuário não está cadastrado. Fale com a equipe Água Pura."
+              : (data.error ?? "Não foi possível entrar. Tente novamente."),
         });
         return;
       }
 
-      router.push(data.redirectTo ?? "/biblioteca");
+      // The academy stores the person's theme; adopt it before moving on.
+      if (isAppTheme(data.user?.theme)) {
+        setTheme(data.user.theme);
+      }
+
+      // A protected page that bounced here says where to go back to.
+      const next = searchParams.get("next");
+      const target = next && next.startsWith("/") ? next : (data.redirectTo ?? "/biblioteca");
+      router.push(target);
       router.refresh();
     } catch {
       setError({
@@ -95,24 +108,10 @@ export function LoginForm() {
         />
       </div>
 
-      {error?.kind === "message" ? (
+      {error ? (
         <p className="text-sm text-destructive" role="alert">
           {error.text}
         </p>
-      ) : null}
-
-      {error?.kind === "not_registered" ? (
-        <div className="space-y-1 text-center" role="alert">
-          <p className="text-sm text-destructive">
-            Este usuário não está cadastrado
-          </p>
-          <Link
-            href="/cadastro"
-            className="inline-block text-sm font-medium text-primary hover:underline"
-          >
-            Fazer meu cadastro
-          </Link>
-        </div>
       ) : null}
 
       <Button type="submit" className="w-full" size="lg" disabled={isLoading}>

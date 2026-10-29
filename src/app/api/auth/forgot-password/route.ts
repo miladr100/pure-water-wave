@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 import { randomInt } from "crypto";
 
+import { findAccountByLogin } from "@/lib/academy/account-lookup";
 import { sendEmailPasswordReset } from "@/lib/emails";
 import { connectDB } from "@/lib/mongodb";
 import { hashPassword } from "@/lib/password";
-import { PasswordReset } from "@/models/password-reset";
-import { SystemUser } from "@/models/system-user";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CODE_TTL_MS = 15 * 60 * 1000;
@@ -20,6 +19,9 @@ type ForgotBody = {
   email?: string;
 };
 
+// One "esqueci minha senha" for every account the site's Login accepts:
+// library (pastors, HJ Team) and academy (students, educators). The reset
+// codes are kept next to the account they belong to (account-lookup.ts).
 export async function POST(request: Request) {
   try {
     if (!process.env.MONGODB_URI) {
@@ -45,11 +47,9 @@ export async function POST(request: Request) {
 
     await connectDB();
 
-    const user = await SystemUser.findOne({
-      $or: [{ email: normalizedEmail }, { login: normalizedEmail }],
-    });
+    const account = await findAccountByLogin(normalizedEmail);
 
-    if (!user) {
+    if (!account) {
       return NextResponse.json(
         {
           error: "Este e-mail não está cadastrado",
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const latest = await PasswordReset.findOne({ email: user.email }).sort({
+    const latest = await account.resets.findOne({ email: account.email }).sort({
       createdAt: -1,
     });
 
@@ -77,24 +77,24 @@ export async function POST(request: Request) {
     const code = String(randomInt(100000, 1000000));
     const codeHash = await hashPassword(code);
 
-    await PasswordReset.deleteMany({ email: user.email });
-    await PasswordReset.create({
-      email: user.email,
+    await account.resets.deleteMany({ email: account.email });
+    await account.resets.create({
+      email: account.email,
       codeHash,
       expiresAt: new Date(Date.now() + CODE_TTL_MS),
       attempts: 0,
     });
 
-    const firstName = user.fullName.trim().split(/\s+/)[0] ?? user.fullName;
+    const firstName = account.fullName.trim().split(/\s+/)[0] ?? account.fullName;
 
     try {
       await sendEmailPasswordReset({
         userFirstname: firstName,
-        email: user.email,
+        email: account.email,
         code,
       });
     } catch (error) {
-      await PasswordReset.deleteMany({ email: user.email });
+      await account.resets.deleteMany({ email: account.email });
       throw error;
     }
 

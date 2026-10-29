@@ -1,0 +1,79 @@
+{
+  "course": {
+    "slug": "vida-de-fe",
+    "title": { "pt": "Vida de Fé", "es": "Vida de Fe" },
+    "description": {
+      "pt": "Dois encontros para pôr em prática o que o Kit 1 ensinou. Abre ao concluir o Princípio Divino — Kit 1.",
+      "es": "Dos encuentros para poner en práctica lo que enseñó el Kit 1. Se abre al concluir el Principio Divino — Kit 1."
+    },
+    "language": "pt",
+    "published": true,
+    "starter": false,
+    "order": 2,
+    "coverUrl": "/assets/young-1.jpeg",
+    "speaker": "",
+    "prerequisiteSlugs": ["principio-divino-kit-1"]
+  },
+  "modules": [
+    { "number": 1, "title": { "pt": "Fundamentos da vida de fé", "es": "Fundamentos de la vida de fe" } }
+  ],
+  "lessonDefaults": { "durationMinutes": 25, "published": true, "provider": "youtube" },
+  "lessons": [
+    {
+      "number": 1,
+      "module": 1,
+      "title": { "pt": "Viver com a mente original", "es": "Vivir con la mente original" },
+      "description": {
+        "pt": "Revisitar a introdução geral com a pergunta: como a mente original orienta as decisões de cada dia?",
+        "es": "Volver a la introducción general con la pregunta: ¿cómo orienta la mente original las decisiones de cada día?"
+      },
+      "youtubeId": "WNBzectoJPU"
+    },
+    {
+      "number": 2,
+      "module": 1,
+      "title": { "pt": "Harmonia entre mente e corpo", "es": "Armonía entre mente y cuerpo" },
+      "description": {
+        "pt": "O Princípio da Criação aplicado à vida pessoal: a união de mente e corpo como primeira bênção.",
+        "es": "El Principio de la Creación aplicado a la vida personal: la unidad entre mente y cuerpo como primera bendición."
+      },
+      "youtubeId": "-fwCMLda1z4"
+    }
+  ],
+  "activities": [
+    {
+      "scope": "module",
+      "module": 1,
+      "questions": [
+        {
+          "qtype": "truefalse",
+          "text": {
+            "pt": "A nova verdade deve unificar religião e ciência.",
+            "es": "La nueva verdad debe unificar la religión y la ciencia."
+          },
+          "statementIsTrue": true
+        },
+        {
+          "qtype": "single",
+          "text": {
+            "pt": "Por meio de que o ser humano realiza a primeira bênção?",
+            "es": "¿Por medio de qué realiza el ser humano la primera bendición?"
+          },
+          "options": [
+            { "text": { "pt": "Acumulando conhecimento", "es": "Acumulando conocimiento" }, "correct": false },
+            { "text": { "pt": "Da união de mente e corpo tendo Deus como centro", "es": "De la unidad entre mente y cuerpo teniendo a Dios como centro" }, "correct": true },
+            { "text": { "pt": "Dominando os anjos", "es": "Dominando a los ángeles" }, "correct": false },
+            { "text": { "pt": "Vivendo isolado do mundo", "es": "Viviendo aislado del mundo" }, "correct": false }
+          ]
+        },
+        {
+          "qtype": "reflection",
+          "text": {
+            "pt": "Como você tem buscado a harmonia entre mente e corpo nesta semana?",
+            "es": "¿Cómo has buscado la armonía entre mente y cuerpo esta semana?"
+          }
+        }
+      ]
+    }
+  ]
+}

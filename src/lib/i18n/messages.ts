@@ -2,6 +2,8 @@ import type { UserLanguage } from "@/lib/user-languages";
 
 export type AppMessages = {
   common: {
+    academy: string;
+    adminPanel: string;
     library: string;
     supportMaterials: string;
     videos: string;
@@ -286,6 +288,8 @@ export type AppMessages = {
 
 const pt: AppMessages = {
   common: {
+    academy: "Academia",
+    adminPanel: "Painel",
     library: "Biblioteca",
     supportMaterials: "Material de apoio",
     videos: "Vídeos",
@@ -606,6 +610,8 @@ const pt: AppMessages = {
 
 const en: AppMessages = {
   common: {
+    academy: "Academy",
+    adminPanel: "Panel",
     library: "Library",
     supportMaterials: "Support materials",
     videos: "Videos",
@@ -923,6 +929,8 @@ const en: AppMessages = {
 
 const es: AppMessages = {
   common: {
+    academy: "Academia",
+    adminPanel: "Panel",
     library: "Biblioteca",
     supportMaterials: "Material de apoyo",
     videos: "Videos",

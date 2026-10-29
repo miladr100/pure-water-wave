@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 
+import { findAccountByLogin } from "@/lib/academy/account-lookup";
 import { sendEmailPasswordChanged } from "@/lib/emails";
 import { connectDB } from "@/lib/mongodb";
 import { hashPassword } from "@/lib/password";
-import { PasswordReset } from "@/models/password-reset";
-import { SystemUser } from "@/models/system-user";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 6;
@@ -40,18 +39,16 @@ export async function POST(request: Request) {
 
     await connectDB();
 
-    const user = await SystemUser.findOne({
-      $or: [{ email }, { login: email }],
-    });
+    const account = await findAccountByLogin(email);
 
-    if (!user) {
+    if (!account) {
       return NextResponse.json(
         { error: "Confirme o código antes de redefinir a senha" },
         { status: 400 },
       );
     }
 
-    const reset = await PasswordReset.findOne({ email: user.email }).sort({
+    const reset = await account.resets.findOne({ email: account.email }).sort({
       createdAt: -1,
     });
 
@@ -69,20 +66,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const hashedPassword = await hashPassword(password);
+    await account.setPassword(await hashPassword(password));
+    await account.resets.deleteMany({ email: account.email });
 
-    await SystemUser.updateOne(
-      { _id: user._id },
-      { password: hashedPassword },
-    );
-    await PasswordReset.deleteMany({ email: user.email });
-
-    const firstName = user.fullName.trim().split(/\s+/)[0] ?? user.fullName;
+    const firstName = account.fullName.trim().split(/\s+/)[0] ?? account.fullName;
 
     try {
       await sendEmailPasswordChanged({
         userFirstname: firstName,
-        email: user.email,
+        email: account.email,
       });
     } catch (error) {
       console.error("Senha alterada, mas o e-mail de aviso falhou:", error);
