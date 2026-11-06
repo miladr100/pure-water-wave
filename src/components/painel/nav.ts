@@ -1,6 +1,8 @@
 import {
+  BookOpen,
   Building2,
   GraduationCap,
+  MessageCircleQuestion,
   HandCoins,
   Heart,
   Home,
@@ -11,8 +13,11 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import type { AppMessages } from "@/lib/i18n/academy-messages";
 import type { PainelMessages } from "@/lib/i18n/painel-messages";
 import type { Papeis } from "@/lib/hj/types";
+
+export type ShellArea = "painel" | "academia" | "admin";
 
 export type NavItem = {
   href: string;
@@ -27,7 +32,16 @@ export type SubTab = { href: string; label: string; exact?: boolean };
 
 // The sidebar (computer) and bottom bar (phone) of each area. The phone
 // shows the first five; the rest live behind "Mais".
-export function navFor(area: "painel" | "admin", papeis: Papeis | null, t: PainelMessages): NavItem[] {
+export function navFor(area: ShellArea, papeis: Papeis | null, t: PainelMessages, ta: AppMessages): NavItem[] {
+  if (area === "academia") {
+    return [
+      { href: "/academia", label: ta.header.myCourses, icon: GraduationCap, match: ["/academia"], exact: true },
+      { href: "/academia/cursos", label: ta.header.catalog, icon: BookOpen, match: ["/academia/cursos"] },
+      { href: "/academia/perguntas", label: ta.header.myQuestions, icon: MessageCircleQuestion, match: ["/academia/perguntas"] },
+      { href: "/biblioteca", label: ta.header.library, icon: Library, match: ["/biblioteca"] },
+    ];
+  }
+
   if (area === "painel") {
     return [
       { href: "/painel", label: t.nav.inicio, icon: Home, match: ["/painel"], exact: true },

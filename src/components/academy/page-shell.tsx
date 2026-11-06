@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
 
-import { NotificationsBell } from "@/components/academy/notifications-bell";
-import { AppHeader } from "@/components/academy/app-header";
+import { PainelShell } from "@/components/painel/painel-shell";
 import type { SessionPayload } from "@/lib/academy/auth";
 
-// The library's logged-in frame: header, optional banner, one centred main.
+// The academy's logged-in frame: the same shell as the panel (header with
+// the area switch, sidebar on the computer, bottom bar on the phone) in
+// its "academia" area, with an optional banner above the content.
 export function PageShell({
   session,
   banner,
@@ -15,10 +16,8 @@ export function PageShell({
   children: ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">
-      <AppHeader area="academy" session={session} extra={<NotificationsBell />} />
-      {banner}
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">{children}</main>
-    </div>
+    <PainelShell area="academia" session={session} banner={banner}>
+      {children}
+    </PainelShell>
   );
 }

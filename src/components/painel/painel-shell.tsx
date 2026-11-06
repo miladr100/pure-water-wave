@@ -11,7 +11,8 @@ import { NotificationsBell } from "@/components/academy/notifications-bell";
 import { ProfileDialog } from "@/components/academy/profile-dialog";
 import { BrandLogo } from "@/components/brand-logo";
 import { AreaSwitch } from "@/components/painel/area-switch";
-import { isActive, navFor, subTabsFor } from "@/components/painel/nav";
+import { useLocale } from "@/components/academy/locale-provider";
+import { isActive, navFor, subTabsFor, type ShellArea } from "@/components/painel/nav";
 import { useCollapsed } from "@/components/painel/use-collapsed";
 import { usePainelEu, usePainelMessages } from "@/components/painel/use-painel";
 import { Button } from "@/components/ui/button";
@@ -34,15 +35,20 @@ export function PainelShell({
   session,
   title,
   subtitle,
+  banner,
   children,
 }: {
-  area: "painel" | "admin";
+  area: ShellArea;
   session: SessionPayload;
   title?: string;
   subtitle?: string;
+  // Drawn between the header and the content (the educator's "viewing as
+  // a student" line, for one).
+  banner?: ReactNode;
   children: ReactNode;
 }) {
   const t = usePainelMessages();
+  const { t: ta } = useLocale();
   const eu = usePainelEu();
   const pathname = usePathname() ?? "";
   const router = useRouter();
@@ -76,16 +82,20 @@ export function PainelShell({
   }
 
   const papeis = eu?.papeis ?? null;
-  const items = navFor(area, papeis, t);
+  const items = navFor(area, papeis, t, ta);
   const subTabs = area === "admin" ? subTabsFor(pathname, papeis, t) : null;
   const primary = items.slice(0, 5);
   const overflow = items.slice(5);
-  const areaLabel = area === "admin" ? t.areas.admin : t.areas.painel;
+  const areaLabel = area === "admin" ? t.areas.admin : area === "academia" ? t.areas.academia : t.areas.painel;
+  const home = area === "admin" ? "/admin" : area === "academia" ? "/academia" : "/painel";
 
-  const headerTitle = title ?? (area === "admin" ? t.shell.adminTitle : t.shell.painelTitle);
+  const headerTitle =
+    title ?? (area === "admin" ? t.shell.adminTitle : area === "academia" ? ta.header.academyTitle : t.shell.painelTitle);
   const headerSubtitle =
     subtitle ??
-    (area === "admin"
+    (area === "academia"
+      ? ""
+      : area === "admin"
       ? [session.fullName, papeis?.administrador ? t.areas.admin : "Educador(a)"].join(" · ")
       : eu?.equipe
         ? [eu.equipe.nome, eu.projeto ? `${eu.projeto.nome.split(" – ")[0]}, ${t.common.day(eu.projeto.diaAtual, eu.projeto.totalDias)}` : null]
@@ -99,7 +109,7 @@ export function PainelShell({
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-background via-secondary/30 to-background">
       <header className="sticky top-0 z-30 border-b border-border/60 bg-card/80 backdrop-blur">
         <div className="flex items-center gap-3 px-4 py-3 sm:px-6">
-          <Link href={area === "admin" ? "/admin" : "/painel"} className="flex min-w-0 items-center gap-3" aria-label={headerTitle}>
+          <Link href={home} className="flex min-w-0 items-center gap-3" aria-label={headerTitle}>
             <BrandLogo className="h-10 w-10 shrink-0" />
             <span className="min-w-0">
               <span className="block truncate font-display text-xl font-semibold text-primary-deep">{headerTitle}</span>
@@ -167,6 +177,7 @@ export function PainelShell({
         </aside>
 
         <div className="min-w-0 flex-1">
+          {banner}
           {subTabs ? (
             <div className="border-b border-border/60 bg-card/60">
               <nav className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 sm:px-6" aria-label={areaLabel}>
