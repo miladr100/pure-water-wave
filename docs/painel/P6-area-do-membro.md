@@ -37,9 +37,12 @@ cada uma limpa:
   perguntas). Rota `/academia`. Nada muda nas telas dela além do switch e do
   menu de conta compartilhado.
 
-A **Biblioteca** é o terceiro segmento, para todo mundo (Painel · Academia ·
-Biblioteca); dentro dela a barra lateral traz Biblioteca, Materiais, Vídeos,
-Ferramentas e Fale com a IA. Para educadores e administradores o segmento
+A **Biblioteca** é o terceiro segmento para quem tem conta da academia
+(Painel · Academia · Biblioteca); dentro dela a barra lateral traz
+Biblioteca, Materiais, Vídeos, Ferramentas e Fale com a IA. Um **pastor** só
+tem a biblioteca: vê a mesma moldura (barra lateral no computador, barra
+inferior no celular, com as seções da biblioteca) com os menus próprios da
+biblioteca e **sem o switch** — Painel e Academia não existem para ele. Para educadores e administradores o segmento
 Painel abre a administração (`/admin`): é o mesmo Painel, com mais itens,
 não uma quarta área (decidido em 06/11/2026). O switch lembra a última área:
 ao abrir a PWA, a pessoa cai onde parou.

@@ -10,6 +10,9 @@ import { PROFILE_QUERY } from "@/components/academy/app-header";
 import { NotificationsBell } from "@/components/academy/notifications-bell";
 import { ProfileDialog } from "@/components/academy/profile-dialog";
 import { BrandLogo } from "@/components/brand-logo";
+import { LibraryFeedbackButton } from "@/components/library-feedback-button";
+import { LibrarySettingsMenu } from "@/components/library-settings-menu";
+import { LogoutButton } from "@/components/logout-button";
 import { AreaSwitch } from "@/components/painel/area-switch";
 import { useLocale } from "@/components/academy/locale-provider";
 import { isActive, navFor, subTabsFor, type ShellArea } from "@/components/painel/nav";
@@ -33,13 +36,18 @@ import { cn } from "@/lib/utils";
 export function PainelShell({
   area,
   session,
+  pastor,
   title,
   subtitle,
   banner,
   children,
 }: {
   area: ShellArea;
-  session: SessionPayload;
+  // The academy account behind the header's menus; absent for a pastor.
+  session?: SessionPayload;
+  // A pastor reads the library in the same frame, with the library's own
+  // menus and no area switch: the library is all they have.
+  pastor?: { fullName: string };
   title?: string;
   subtitle?: string;
   // Drawn between the header and the content (the educator's "viewing as
@@ -49,7 +57,7 @@ export function PainelShell({
 }) {
   const t = usePainelMessages();
   const { t: ta } = useLocale();
-  const eu = usePainelEu();
+  const eu = usePainelEu(!pastor);
   const pathname = usePathname() ?? "";
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -97,7 +105,7 @@ export function PainelShell({
     (area === "academia" || area === "biblioteca"
       ? ""
       : area === "admin"
-      ? [session.fullName, papeis?.administrador ? "Administrador(a)" : "Educador(a)"].join(" · ")
+      ? [session?.fullName, papeis?.administrador ? "Administrador(a)" : "Educador(a)"].filter(Boolean).join(" · ")
       : eu?.equipe
         ? [eu.equipe.nome, eu.projeto ? `${eu.projeto.nome.split(" – ")[0]}, ${t.common.day(eu.projeto.diaAtual, eu.projeto.totalDias)}` : null]
             .filter(Boolean)
@@ -110,24 +118,46 @@ export function PainelShell({
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-background via-secondary/30 to-background">
       <header className="sticky top-0 z-30 border-b border-border/60 bg-card/80 backdrop-blur">
         <div className="flex items-center gap-3 px-4 py-3 sm:px-6">
-          <Link href={home} className="flex min-w-0 items-center gap-3" aria-label={headerTitle}>
-            <BrandLogo className="h-10 w-10 shrink-0" />
-            <span className="min-w-0">
-              <span className="block truncate font-display text-xl font-semibold text-primary-deep">{headerTitle}</span>
-              {headerSubtitle ? (
-                <span className="hidden truncate text-sm text-muted-foreground sm:block">{headerSubtitle}</span>
-              ) : null}
-            </span>
-          </Link>
-          <AreaSwitch session={session} className="ml-2 hidden sm:inline-flex" />
+          {pastor ? (
+            <div className="flex min-w-0 items-center gap-3">
+              <LibrarySettingsMenu fullName={pastor.fullName} logoClassName="h-10 w-10" />
+              <Link href={home} className="min-w-0" aria-label={headerTitle}>
+                <span className="block truncate font-display text-xl font-semibold text-primary-deep">{headerTitle}</span>
+              </Link>
+            </div>
+          ) : (
+            <Link href={home} className="flex min-w-0 items-center gap-3" aria-label={headerTitle}>
+              <BrandLogo className="h-10 w-10 shrink-0" />
+              <span className="min-w-0">
+                <span className="block truncate font-display text-xl font-semibold text-primary-deep">{headerTitle}</span>
+                {headerSubtitle ? (
+                  <span className="hidden truncate text-sm text-muted-foreground sm:block">{headerSubtitle}</span>
+                ) : null}
+              </span>
+            </Link>
+          )}
+          {session ? <AreaSwitch session={session} className="ml-2 hidden sm:inline-flex" /> : null}
           <div className="ml-auto flex shrink-0 items-center gap-2">
-            <NotificationsBell />
-            <AccountMenu area="painel" session={session} onOpenProfile={() => setProfileOpen(true)} />
+            {session ? (
+              <>
+                <NotificationsBell />
+                <AccountMenu area="painel" session={session} onOpenProfile={() => setProfileOpen(true)} />
+              </>
+            ) : (
+              <>
+                <div className="hidden sm:block">
+                  <LibraryFeedbackButton />
+                </div>
+                <LogoutButton />
+              </>
+            )}
           </div>
         </div>
-        <div className="px-4 pb-3 sm:hidden">
-          <AreaSwitch session={session} full />
-        </div>
+        {session ? (
+          <div className="px-4 pb-3 sm:hidden">
+            <AreaSwitch session={session} full />
+          </div>
+        ) : null}
       </header>
 
       <div className="flex flex-1">
@@ -258,17 +288,19 @@ export function PainelShell({
                     </Button>
                   </SheetClose>
                 ))}
-                <Button type="button" variant="outline" className="mt-2 h-11 justify-start gap-3" onClick={() => void handleLogout()} disabled={isLoggingOut}>
-                  <LogOut className="h-4 w-4" />
-                  {t.shell.logout}
-                </Button>
+                {session ? (
+                  <Button type="button" variant="outline" className="mt-2 h-11 justify-start gap-3" onClick={() => void handleLogout()} disabled={isLoggingOut}>
+                    <LogOut className="h-4 w-4" />
+                    {t.shell.logout}
+                  </Button>
+                ) : null}
               </nav>
             </SheetContent>
           </Sheet>
         ) : null}
       </nav>
 
-      <ProfileDialog session={session} open={profileOpen} onOpenChange={setProfileOpen} />
+      {session ? <ProfileDialog session={session} open={profileOpen} onOpenChange={setProfileOpen} /> : null}
     </div>
   );
 }

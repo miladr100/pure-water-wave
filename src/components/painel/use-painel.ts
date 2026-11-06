@@ -35,10 +35,15 @@ export function refreshEu() {
   return inFlight;
 }
 
-export function usePainelEu() {
+// `enabled: false` for a viewer with no academy account (a pastor in the
+// library), who has nothing to ask the panel.
+export function usePainelEu(enabled = true) {
   const [eu, setEu] = useState<PainelEu | null>(last);
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
     listeners.add(setEu);
     refreshEu().catch(() => {
       // The shell draws without it; the screens report failures.
@@ -46,7 +51,7 @@ export function usePainelEu() {
     return () => {
       listeners.delete(setEu);
     };
-  }, []);
+  }, [enabled]);
 
-  return eu;
+  return enabled ? eu : null;
 }

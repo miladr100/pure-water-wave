@@ -1,16 +1,11 @@
 "use client";
 
-import { useState } from "react";
-
-import { LibraryFeedbackButton } from "@/components/library-feedback-button";
-import { LibraryHeaderNav } from "@/components/library-header-nav";
-import { LibraryMobileMenu } from "@/components/library-mobile-menu";
-import { LibrarySettingsMenu } from "@/components/library-settings-menu";
-import { useLibraryViewer } from "@/components/library-viewer";
-import { BrandLogo } from "@/components/brand-logo";
-import Link from "next/link";
-import { LogoutButton } from "@/components/logout-button";
-
+// The library's header used to live here: logo with the settings menu,
+// title, nav buttons, feedback and logout. Every signed-in reader now gets
+// the shared frame from src/app/biblioteca/layout.tsx (header with the
+// library's menus, sidebar on the computer, bottom bar on the phone), so
+// this component draws nothing. It keeps its props so the library pages
+// that still mount it compile untouched until they are tidied.
 type LibraryHeaderProps = {
   title: string;
   subtitle: string;
@@ -21,73 +16,7 @@ type LibraryHeaderProps = {
   showBackToLibrary?: boolean;
 };
 
-export function LibraryHeader({
-  title,
-  subtitle,
-  fullName,
-  showSupportMaterialsLink = true,
-  showVideosLink = true,
-  showToolsLink = true,
-  showBackToLibrary = false,
-}: LibraryHeaderProps) {
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
-  // Academy accounts keep their settings in the academy profile, so for
-  // them the logo is the way back instead of the settings dialog.
-  const viewer = useLibraryViewer();
-  const backHref = viewer === "tutor" ? "/admin" : "/academia";
-
-  // Academy accounts read the library inside the panel's frame, which has
-  // its own header (see library-member-shell.tsx).
-  if (viewer !== "pastor") {
-    return null;
-  }
-
-  return (
-    <header className="border-b border-border/60 bg-card/80 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-3 gap-y-3 px-4 py-4 sm:px-6 sm:py-5">
-        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-          {viewer === "pastor" ? (
-            <LibrarySettingsMenu
-              fullName={fullName}
-              logoClassName="h-10 w-10"
-              open={settingsOpen}
-              onOpenChange={setSettingsOpen}
-            />
-          ) : (
-            <Link href={backHref} className="shrink-0 rounded-full">
-              <BrandLogo className="h-10 w-10" />
-            </Link>
-          )}
-          <LibraryMobileMenu
-            showSupportMaterialsLink={showSupportMaterialsLink}
-            showVideosLink={showVideosLink}
-            showToolsLink={showToolsLink}
-            showBackToLibrary={showBackToLibrary}
-            onOpenSettings={() => setSettingsOpen(true)}
-            onOpenFeedback={() => setFeedbackOpen(true)}
-          />
-          <div className="min-w-0">
-            <p className="truncate font-display text-xl font-semibold text-primary-deep md:whitespace-normal">
-              {title}
-            </p>
-            <p className="truncate text-sm text-muted-foreground md:whitespace-normal">
-              {subtitle}
-            </p>
-          </div>
-        </div>
-
-        <div className="hidden w-full flex-wrap items-center justify-start gap-2 md:flex xl:w-auto xl:justify-end">
-          <LibraryHeaderNav
-            showSupportMaterialsLink={showSupportMaterialsLink}
-            showVideosLink={showVideosLink}
-            showToolsLink={showToolsLink}
-            showBackToLibrary={showBackToLibrary}
-          />
-          <LibraryFeedbackButton open={feedbackOpen} onOpenChange={setFeedbackOpen} />
-          <LogoutButton />
-        </div>
-      </div>
-    </header>
-  );
+export function LibraryHeader(props: LibraryHeaderProps) {
+  void props;
+  return null;
 }
