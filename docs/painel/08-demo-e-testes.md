@@ -59,12 +59,17 @@ MONGODB_URI=mongodb://127.0.0.1:27117/pww-academy npm run dev
 
 Depois: http://localhost:3000/login com uma das contas acima.
 
-## Preview na Vercel
+## Demo na Vercel
 
-Cada push da branch gera um preview. O preview precisa de um MongoDB
-(variável `MONGODB_URI` do ambiente *Preview* do projeto na Vercel) com o
-seed rodado contra ele — o mesmo `npm run seed:painel` apontando para esse
-banco. Sem banco, o login responde 503.
+**https://pww-painel.vercel.app** — projeto `pww-painel` no time do Victor,
+publicado com `vercel deploy --prod` a partir desta branch, com o mesmo
+MongoDB Atlas de demonstração da academia (`pww-academy-demo`) e o seed
+rodado contra ele. É só para o grupo testar; não tem nada a ver com o
+projeto da Vercel do Milad nem com purewaterwave.org.
+
+O preview automático no projeto do Milad (cada push da branch) fica atrás
+do Vercel Authentication e precisaria de um `MONGODB_URI` próprio no
+ambiente *Preview*; por isso a demo vive no projeto separado.
 
 ## O que foi verificado antes de abrir o PR
 
