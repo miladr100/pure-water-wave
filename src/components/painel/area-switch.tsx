@@ -12,9 +12,12 @@ export const AREA_STORAGE_KEY = "pww_area";
 
 export type Area = "painel" | "academia" | "admin";
 
-export function areaOf(pathname: string): Area {
+// The library is reached from every area and belongs to none, so on its
+// pages no segment is lit.
+export function areaOf(pathname: string): Area | "biblioteca" {
   if (pathname.startsWith("/admin")) return "admin";
   if (pathname.startsWith("/academia")) return "academia";
+  if (pathname.startsWith("/biblioteca")) return "biblioteca";
   return "painel";
 }
 

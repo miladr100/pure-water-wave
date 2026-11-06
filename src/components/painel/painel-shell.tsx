@@ -86,14 +86,28 @@ export function PainelShell({
   const subTabs = area === "admin" ? subTabsFor(pathname, papeis, t) : null;
   const primary = items.slice(0, 5);
   const overflow = items.slice(5);
-  const areaLabel = area === "admin" ? t.areas.admin : area === "academia" ? t.areas.academia : t.areas.painel;
-  const home = area === "admin" ? "/admin" : area === "academia" ? "/academia" : "/painel";
+  const areaLabel =
+    area === "admin"
+      ? t.areas.admin
+      : area === "academia"
+        ? t.areas.academia
+        : area === "biblioteca"
+          ? t.nav.biblioteca
+          : t.areas.painel;
+  const home = area === "admin" ? "/admin" : area === "academia" ? "/academia" : area === "biblioteca" ? "/biblioteca" : "/painel";
 
   const headerTitle =
-    title ?? (area === "admin" ? t.shell.adminTitle : area === "academia" ? ta.header.academyTitle : t.shell.painelTitle);
+    title ??
+    (area === "admin"
+      ? t.shell.adminTitle
+      : area === "academia"
+        ? ta.header.academyTitle
+        : area === "biblioteca"
+          ? t.shell.libraryTitle
+          : t.shell.painelTitle);
   const headerSubtitle =
     subtitle ??
-    (area === "academia"
+    (area === "academia" || area === "biblioteca"
       ? ""
       : area === "admin"
       ? [session.fullName, papeis?.administrador ? t.areas.admin : "Educador(a)"].join(" · ")
@@ -200,7 +214,10 @@ export function PainelShell({
               </nav>
             </div>
           ) : null}
-          <main className="mx-auto w-full max-w-7xl px-4 pb-28 pt-6 sm:px-6 sm:pt-8 lg:pb-12">{children}</main>
+          {/* The library's pages bring their own centred <main>; the shell only leaves room for the bottom bar. */}
+          <main className={area === "biblioteca" ? "pb-24 lg:pb-0" : "mx-auto w-full max-w-7xl px-4 pb-28 pt-6 sm:px-6 sm:pt-8 lg:pb-12"}>
+            {children}
+          </main>
         </div>
       </div>
 

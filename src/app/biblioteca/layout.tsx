@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { LocaleProvider as AcademyLocaleProvider } from "@/components/academy/locale-provider";
+import { LibraryMemberShell } from "@/components/library-member-shell";
 import { LibraryViewerProvider, type LibraryViewer } from "@/components/library-viewer";
 import { LocaleProvider } from "@/components/locale-provider";
 import { getSession as getAcademySession } from "@/lib/academy/auth";
@@ -18,7 +20,17 @@ export default async function BibliotecaLayout({
 
   return (
     <LocaleProvider language={language}>
-      <LibraryViewerProvider viewer={viewer}>{children}</LibraryViewerProvider>
+      <LibraryViewerProvider viewer={viewer}>
+        {academySession ? (
+          // Members and educators get the panel's frame around the library;
+          // the library's own header steps aside for them (LibraryHeader).
+          <AcademyLocaleProvider language={academySession.language}>
+            <LibraryMemberShell session={academySession}>{children}</LibraryMemberShell>
+          </AcademyLocaleProvider>
+        ) : (
+          children
+        )}
+      </LibraryViewerProvider>
     </LocaleProvider>
   );
 }

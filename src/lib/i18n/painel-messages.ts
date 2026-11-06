@@ -9,6 +9,7 @@ export type PainelMessages = {
   shell: {
     painelTitle: string;
     adminTitle: string;
+    libraryTitle: string;
     collapse: string;
     expand: string;
     more: string;
@@ -26,6 +27,11 @@ export type PainelMessages = {
     organizacao: string;
     configuracoes: string;
     perfil: string;
+    biblioteca: string;
+    materiais: string;
+    videos: string;
+    ferramentas: string;
+    ia: string;
   };
   common: {
     loading: string;
@@ -252,6 +258,7 @@ const pt: PainelMessages = {
   shell: {
     painelTitle: "Painel HJ Team",
     adminTitle: "Administração",
+    libraryTitle: "Biblioteca Água Pura",
     collapse: "Recolher",
     expand: "Expandir",
     more: "Mais",
@@ -269,6 +276,11 @@ const pt: PainelMessages = {
     organizacao: "Organização",
     configuracoes: "Configurações",
     perfil: "Perfil",
+    biblioteca: "Biblioteca",
+    materiais: "Materiais",
+    videos: "Vídeos",
+    ferramentas: "Ferramentas",
+    ia: "Fale com a IA",
   },
   common: {
     loading: "Carregando…",

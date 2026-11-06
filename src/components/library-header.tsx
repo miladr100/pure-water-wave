@@ -37,6 +37,12 @@ export function LibraryHeader({
   const viewer = useLibraryViewer();
   const backHref = viewer === "tutor" ? "/admin" : "/academia";
 
+  // Academy accounts read the library inside the panel's frame, which has
+  // its own header (see library-member-shell.tsx).
+  if (viewer !== "pastor") {
+    return null;
+  }
+
   return (
     <header className="border-b border-border/60 bg-card/80 backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-3 gap-y-3 px-4 py-4 sm:px-6 sm:py-5">

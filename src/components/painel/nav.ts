@@ -1,8 +1,12 @@
 import {
   BookOpen,
   Building2,
+  FileText,
   GraduationCap,
   MessageCircleQuestion,
+  PlayCircle,
+  Sparkles,
+  Wrench,
   HandCoins,
   Heart,
   Home,
@@ -17,7 +21,7 @@ import type { AppMessages } from "@/lib/i18n/academy-messages";
 import type { PainelMessages } from "@/lib/i18n/painel-messages";
 import type { Papeis } from "@/lib/hj/types";
 
-export type ShellArea = "painel" | "academia" | "admin";
+export type ShellArea = "painel" | "academia" | "admin" | "biblioteca";
 
 export type NavItem = {
   href: string;
@@ -33,6 +37,16 @@ export type SubTab = { href: string; label: string; exact?: boolean };
 // The sidebar (computer) and bottom bar (phone) of each area. The phone
 // shows the first five; the rest live behind "Mais".
 export function navFor(area: ShellArea, papeis: Papeis | null, t: PainelMessages, ta: AppMessages): NavItem[] {
+  if (area === "biblioteca") {
+    return [
+      { href: "/biblioteca", label: t.nav.biblioteca, icon: Library, match: ["/biblioteca"], exact: true },
+      { href: "/biblioteca/materiais", label: t.nav.materiais, icon: FileText, match: ["/biblioteca/materiais"] },
+      { href: "/biblioteca/videos", label: t.nav.videos, icon: PlayCircle, match: ["/biblioteca/videos"] },
+      { href: "/biblioteca/ferramentas", label: t.nav.ferramentas, icon: Wrench, match: ["/biblioteca/ferramentas"] },
+      { href: "/biblioteca/ia", label: t.nav.ia, icon: Sparkles, match: ["/biblioteca/ia"] },
+    ];
+  }
+
   if (area === "academia") {
     return [
       { href: "/academia", label: ta.header.myCourses, icon: GraduationCap, match: ["/academia"], exact: true },
