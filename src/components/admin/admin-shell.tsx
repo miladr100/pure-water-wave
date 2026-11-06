@@ -1,16 +1,16 @@
 import type { ReactNode } from "react";
 
-import { AppHeader } from "@/components/academy/app-header";
+import { PainelShell } from "@/components/painel/painel-shell";
 import type { SessionPayload } from "@/lib/academy/auth";
 
-// The logged-in frame of purewaterwave.org, as the library pages draw it:
-// header on top, the soft gradient behind, one centred column of content.
+// The logged-in frame of the administration: the HJ Team panel's shell
+// (header with the area switch, sidebar on the computer, bottom bar on the
+// phone) in its "admin" area. The academy's admin pages draw inside it.
 export function AdminShell({ session, children }: { session: SessionPayload; children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">
-      <AppHeader area="admin" session={session} />
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">{children}</main>
-    </div>
+    <PainelShell area="admin" session={session}>
+      {children}
+    </PainelShell>
   );
 }
 

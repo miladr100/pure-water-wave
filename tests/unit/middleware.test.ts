@@ -174,7 +174,7 @@ describe("library branch", () => {
 });
 
 describe("matcher", () => {
-  it("lists the seven protected prefixes", () => {
+  it("lists the eight protected prefixes", () => {
     expect(config.matcher).toEqual([
       "/biblioteca/:path*",
       "/painel/:path*",
@@ -183,6 +183,7 @@ describe("matcher", () => {
       "/admin/:path*",
       "/api/academia/:path*",
       "/api/admin/:path*",
+      "/api/painel/:path*",
     ]);
   });
 });

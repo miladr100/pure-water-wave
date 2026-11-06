@@ -12,7 +12,6 @@ import {
   LogOut,
   Menu,
   MessageCircleQuestion,
-  Shield,
   UserRound,
   Users,
   UserCheck,
@@ -24,6 +23,7 @@ import { AccountMenu } from "@/components/academy/account-menu";
 import { useLocale } from "@/components/academy/locale-provider";
 import { ProfileDialog } from "@/components/academy/profile-dialog";
 import { BrandLogo } from "@/components/brand-logo";
+import { AreaSwitch } from "@/components/painel/area-switch";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -63,7 +63,6 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [profileRequested, setProfileRequested] = useState(false);
   const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
-  const isTutor = session.role === "tutor";
   const home = area === "academy" ? "/academia" : "/admin";
 
   // Open from the menu, or from `?perfil=1` in the URL; closing drops the
@@ -88,7 +87,6 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
           { href: "/academia/cursos", label: t.header.catalog, icon: BookOpen },
           { href: "/academia/perguntas", label: t.header.myQuestions, icon: MessageCircleQuestion },
           { href: "/biblioteca", label: t.header.library, icon: Library },
-          ...(isTutor ? [{ href: "/admin", label: t.header.viewAdmin, icon: Shield }] : []),
         ]
       : [
           { href: "/admin", label: t.header.overview, icon: LayoutDashboard, exact: true },
@@ -118,13 +116,13 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
   }
 
   const headerTitle = title ?? (area === "academy" ? t.header.academyTitle : t.header.adminTitle);
-  const headerSubtitle =
-    subtitle ??
-    (area === "academy" ? t.header.academySubtitle(firstName) : t.header.adminSubtitle(firstName));
+  // The academy's header carries no greeting: the switch beside the logo
+  // says where the person is, and the dashboard greets them.
+  const headerSubtitle = subtitle ?? (area === "academy" ? "" : t.header.adminSubtitle(firstName));
 
   return (
     <header className="sticky top-0 z-30 border-b border-border/60 bg-card/80 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           <Link href={home} className="shrink-0" aria-label={headerTitle}>
             <BrandLogo className="h-10 w-10 shrink-0" />
@@ -188,27 +186,28 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
           </Sheet>
 
           <div className="min-w-0">
-            <p className="truncate font-display text-xl font-semibold text-primary-deep md:whitespace-normal">
-              {headerTitle}
-            </p>
-            <p className="truncate text-sm text-muted-foreground md:whitespace-normal">
-              {headerSubtitle}
-            </p>
+            <p className="truncate font-display text-xl font-semibold text-primary-deep">{headerTitle}</p>
+            {headerSubtitle ? (
+              <p className="truncate text-sm text-muted-foreground md:whitespace-normal">
+                {headerSubtitle}
+              </p>
+            ) : null}
           </div>
+          {area === "academy" ? <AreaSwitch session={session} compact className="ml-1 hidden sm:inline-flex" /> : null}
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <nav className="hidden items-center gap-1 lg:flex">
+          <nav className="hidden items-center gap-0.5 lg:flex">
             {items.map((item) => (
               <Button
                 asChild
                 key={item.href}
                 variant={isActive(item) ? "secondary" : "ghost"}
-                className={cn("gap-2", isActive(item) && "text-primary-deep")}
+                className={cn("gap-2 px-3", isActive(item) && "text-primary-deep")}
               >
-                <Link href={item.href}>
-                  <item.icon className="h-4 w-4" />
-                  {item.label}
+                <Link href={item.href} title={item.label} aria-label={item.label}>
+                  <item.icon className="h-4 w-4 shrink-0" />
+                  <span className={area === "academy" ? "hidden xl:inline" : undefined}>{item.label}</span>
                 </Link>
               </Button>
             ))}
@@ -217,6 +216,11 @@ export function AppHeader({ area, session, title, subtitle, extra }: AppHeaderPr
           <AccountMenu area={area} session={session} onOpenProfile={() => setProfileOpen(true)} />
         </div>
       </div>
+      {area === "academy" ? (
+        <div className="px-4 pb-3 sm:hidden">
+          <AreaSwitch session={session} full />
+        </div>
+      ) : null}
 
       <ProfileDialog session={session} open={profileOpen} onOpenChange={setProfileOpen} />
     </header>

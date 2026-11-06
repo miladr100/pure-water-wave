@@ -13,6 +13,9 @@ export type SessionPayload = {
   fullName: string;
   role: AcademyRole;
   language: UserLanguage;
+  // Site administrator (HJ Team panel): an educator who also grants and
+  // removes the educator/administrator roles. Absent on older tokens.
+  admin?: boolean;
 };
 
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
@@ -51,7 +54,15 @@ export async function verifySessionToken(token: string) {
     throw new Error("Sessão inválida");
   }
 
-  return { userId, login, fullName, role, language } satisfies SessionPayload;
+  // Present only when true, so a token minted before the flag existed
+  // verifies to exactly what it was signed with.
+  const admin = payload.admin === true ? { admin: true } : {};
+
+  return { userId, login, fullName, role, language, ...admin } satisfies SessionPayload;
+}
+
+export function isAdminSession(session: SessionPayload | null) {
+  return session?.role === "tutor" && session.admin === true;
 }
 
 export function isAcademySession(session: SessionPayload | null) {

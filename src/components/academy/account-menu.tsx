@@ -25,7 +25,8 @@ export function AccountMenu({
   session,
   onOpenProfile,
 }: {
-  area: "academy" | "admin";
+  // "painel" reaches the other areas through the switch beside the logo.
+  area: "academy" | "admin" | "painel";
   session: SessionPayload;
   onOpenProfile: () => void;
 }) {
@@ -87,7 +88,7 @@ export function AccountMenu({
             {t.header.myQuestions}
           </DropdownMenuItem>
         ) : null}
-        {isTutor ? (
+        {isTutor && area !== "painel" ? (
           area === "academy" ? (
             <DropdownMenuItem onClick={() => after(() => router.push("/admin"))}>
               <Shield className="mr-2 h-4 w-4" />

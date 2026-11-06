@@ -90,8 +90,10 @@ export async function middleware(request: NextRequest) {
   if (
     pathname.startsWith("/academia") ||
     pathname.startsWith("/admin") ||
+    pathname.startsWith("/painel") ||
     pathname.startsWith("/api/academia/") ||
-    pathname.startsWith("/api/admin/")
+    pathname.startsWith("/api/admin/") ||
+    pathname.startsWith("/api/painel/")
   ) {
     return academyMiddleware(request);
   }
@@ -146,5 +148,6 @@ export const config = {
     "/admin/:path*",
     "/api/academia/:path*",
     "/api/admin/:path*",
+    "/api/painel/:path*",
   ],
 };

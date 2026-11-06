@@ -122,6 +122,7 @@ export async function POST(request: Request) {
       fullName: user.fullName,
       role: user.role,
       language,
+      admin: user.role === "tutor" && user.isAdmin === true,
     });
 
     return response;
