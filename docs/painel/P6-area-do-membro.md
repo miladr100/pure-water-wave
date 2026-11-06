@@ -37,9 +37,12 @@ cada uma limpa:
   perguntas). Rota `/academia`. Nada muda nas telas dela além do switch e do
   menu de conta compartilhado.
 
-Educadores e administradores veem um terceiro segmento, **Administração**
-(`/admin`). A biblioteca fica no menu de conta e no Início do Painel. O switch
-lembra a última área: ao abrir a PWA, a pessoa cai onde parou.
+A **Biblioteca** é o terceiro segmento, para todo mundo (Painel · Academia ·
+Biblioteca); dentro dela a barra lateral traz Biblioteca, Materiais, Vídeos,
+Ferramentas e Fale com a IA. Para educadores e administradores o segmento
+Painel abre a administração (`/admin`): é o mesmo Painel, com mais itens,
+não uma quarta área (decidido em 06/11/2026). O switch lembra a última área:
+ao abrir a PWA, a pessoa cai onde parou.
 
 ## Navegação (barra inferior no celular, barra lateral no computador)
 

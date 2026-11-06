@@ -8,5 +8,9 @@ export default async function PainelInicioPage() {
   if (!session) {
     redirect("/login?next=/painel");
   }
+  // An educator's Painel is the administration: same area, more items.
+  if (session.role === "tutor") {
+    redirect("/admin");
+  }
   return <InicioScreen session={session} />;
 }

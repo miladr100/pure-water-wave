@@ -37,7 +37,7 @@ grupo (Milad, Wang Song, Yeseong) ou do Victor:
 | [P7-dados-e-migracao](P7-dados-e-migracao.md) | Modelo de dados no MongoDB, importação do sistema de testemunho e da planilha | Rascunho |
 | [08-demo-e-testes](08-demo-e-testes.md) | A versão navegável (branch `feat/painel-ui`): o que cobre, contas de demonstração, como rodar e o que foi verificado | Em revisão |
 | [decisoes-pendentes](decisoes-pendentes.md) | Perguntas abertas para o grupo e as premissas adotadas enquanto não há resposta | Vivo |
-| Design: [Painel HJ Team (canvas)](https://claude.ai/artifact/NaRhc2TRnqUnd4LiyBkUCB) | 16 telas no estilo do site: 7 do celular (Painel e Academia), 2 do computador (Painel e Academia do membro), 5 da Administração do educador e 2 exclusivas do administrador; com o switch Painel · Academia · Administração | Para confirmar com o grupo |
+| Design: [Painel HJ Team (canvas)](https://claude.ai/artifact/NaRhc2TRnqUnd4LiyBkUCB) | 16 telas no estilo do site: 7 do celular (Painel e Academia), 2 do computador (Painel e Academia do membro), 5 da administração do educador e 2 exclusivas do administrador. O canvas ainda mostra o switch com três segmentos Painel · Academia · Administração; a versão navegável (08) já segue a decisão posterior: Painel · Academia · Biblioteca | Superado pela versão navegável |
 
 A academia já tem requisitos próprios em `docs/academia/`; aqui ela aparece só
 onde o painel a muda (login, perfil, navegação, quem é "aluno").
@@ -67,3 +67,4 @@ onde o painel a muda (login, perfil, navegação, quem é "aluno").
 | 06/11/2026 | O painel segue o design do site (Fraunces, Plus Jakarta Sans, tokens de `globals.css`, Lucide); a conta do membro tem duas áreas, Painel e Academia, trocadas por um switch no cabeçalho, ao lado do logo; o menu da área fica numa barra lateral no computador e na barra inferior no celular; arrecadação e testemunho são seções separadas, nunca um "relatório" genérico | Victor |
 | 06/11/2026 | Equipes pertencem ao projeto; líquido = dinheiro + pix − despesas (dízimo fora); dois papéis: administrador do site (dá e tira educadores) e educador, com painéis ligeiramente diferentes; requisitos ficam em `docs/painel/` | Victor |
 | 06/11/2026 | Primeira versão navegável em vez de mais mockups: frontend real na branch `feat/painel-ui` com dados de demonstração (`npm run seed:painel`) e preview na Vercel; o grupo testa os fluxos no celular e as correções vão no código (ver 08-demo-e-testes) | Victor |
+| 06/11/2026 | O switch tem três áreas para todo mundo — Painel · Academia · Biblioteca —; a administração não é uma quarta: é o Painel do educador/administrador (`/admin`), com mais itens na barra lateral | Victor |

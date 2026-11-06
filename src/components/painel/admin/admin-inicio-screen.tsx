@@ -29,7 +29,7 @@ export function AdminInicioScreen() {
   return (
     <div className="space-y-6 sm:space-y-8">
       <PainelHeading
-        eyebrow={projeto ? `${projeto.nome} · ${t.common.day(projeto.diaAtual, projeto.totalDias)}` : t.areas.admin}
+        eyebrow={projeto ? `${projeto.nome} · ${t.common.day(projeto.diaAtual, projeto.totalDias)}` : t.areas.painel}
         title={t.admin.homeTitle}
         description={projeto ? fmtDia(projeto.hoje, "longo") : t.common.noProject}
       />

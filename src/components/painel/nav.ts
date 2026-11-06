@@ -52,7 +52,6 @@ export function navFor(area: ShellArea, papeis: Papeis | null, t: PainelMessages
       { href: "/academia", label: ta.header.myCourses, icon: GraduationCap, match: ["/academia"], exact: true },
       { href: "/academia/cursos", label: ta.header.catalog, icon: BookOpen, match: ["/academia/cursos"] },
       { href: "/academia/perguntas", label: ta.header.myQuestions, icon: MessageCircleQuestion, match: ["/academia/perguntas"] },
-      { href: "/biblioteca", label: ta.header.library, icon: Library, match: ["/biblioteca"] },
     ];
   }
 
@@ -64,7 +63,6 @@ export function navFor(area: ShellArea, papeis: Papeis | null, t: PainelMessages
       ...(papeis?.capitao || papeis?.educador
         ? [{ href: "/painel/equipe", label: t.nav.equipe, icon: Users, match: ["/painel/equipe"] }]
         : []),
-      { href: "/biblioteca", label: t.shell.library, icon: Library, match: ["/biblioteca"] },
     ];
   }
 

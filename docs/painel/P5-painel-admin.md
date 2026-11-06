@@ -17,11 +17,12 @@ cabeçalho com navegação, conteúdo centrado, tabelas em cartões no celular.
 
 ## Navegação
 
-A Administração é o terceiro segmento do switch do cabeçalho (Painel ·
-Academia · Administração), visível só para educadores e administradores, com
-o mesmo cabeçalho e estilo do site (ver P6, "Estilo"). O switch fica ao lado
-do logo; o menu da área fica numa **barra lateral** no computador e vira a
-barra inferior no celular (ver P6, "Navegação").
+A administração **não é uma quarta área**: é o Painel do educador e do
+administrador (decidido em 06/11/2026). O switch do cabeçalho tem três
+segmentos para todo mundo — Painel · Academia · Biblioteca — e o Painel de
+quem é educador abre em `/admin`, com os itens abaixo na barra lateral
+(computador) ou na barra inferior (celular). Mesmo cabeçalho e estilo do
+site (ver P6, "Estilo" e "Navegação").
 
 São dois painéis ligeiramente diferentes (decidido em 06/11/2026):
 

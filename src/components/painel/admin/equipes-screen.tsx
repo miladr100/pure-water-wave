@@ -45,7 +45,7 @@ export function EquipesScreen() {
   return (
     <div className="space-y-6">
       <PainelHeading
-        eyebrow={projeto?.nome ?? t.areas.admin}
+        eyebrow={projeto?.nome ?? t.areas.painel}
         title={t.admin.teamsTitle}
         description={projeto ? `${equipes.length} ${t.admin.teams} · ${equipes.reduce((sum, equipe) => sum + equipe.membros.length, 0)} ${t.admin.members}` : t.common.noProject}
         actions={

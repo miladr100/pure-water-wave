@@ -66,7 +66,7 @@ export function ConvidadosScreen({ base }: { base: "/painel/testemunho" | "/admi
   return (
     <div className="space-y-6">
       <PainelHeading
-        eyebrow={admin ? t.areas.admin : t.nav.testemunho}
+        eyebrow={t.nav.testemunho}
         title={t.testemunho.title}
         description={list.data ? t.inicio.guests(list.data.convidados.length) : undefined}
         actions={

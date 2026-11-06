@@ -1,6 +1,6 @@
 "use client";
 
-import { GraduationCap, LayoutDashboard, Shield } from "lucide-react";
+import { GraduationCap, LayoutDashboard, Library } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -10,12 +10,11 @@ import { cn } from "@/lib/utils";
 
 export const AREA_STORAGE_KEY = "pww_area";
 
-export type Area = "painel" | "academia" | "admin";
+export type Area = "painel" | "academia" | "biblioteca";
 
-// The library is reached from every area and belongs to none, so on its
-// pages no segment is lit.
-export function areaOf(pathname: string): Area | "biblioteca" {
-  if (pathname.startsWith("/admin")) return "admin";
+// Three areas. The administration (`/admin`) is the educator's own Painel,
+// not a fourth one: same segment, more items in the sidebar.
+export function areaOf(pathname: string): Area {
   if (pathname.startsWith("/academia")) return "academia";
   if (pathname.startsWith("/biblioteca")) return "biblioteca";
   return "painel";
@@ -48,9 +47,9 @@ export function AreaSwitch({
   const pathname = usePathname() ?? "";
   const current = areaOf(pathname);
   const items: { area: Area; href: string; label: string; icon: typeof LayoutDashboard }[] = [
-    { area: "painel", href: "/painel", label: t.areas.painel, icon: LayoutDashboard },
+    { area: "painel", href: session.role === "tutor" ? "/admin" : "/painel", label: t.areas.painel, icon: LayoutDashboard },
     { area: "academia", href: "/academia", label: t.areas.academia, icon: GraduationCap },
-    ...(session.role === "tutor" ? [{ area: "admin" as const, href: "/admin", label: t.areas.admin, icon: Shield }] : []),
+    { area: "biblioteca", href: "/biblioteca", label: t.areas.biblioteca, icon: Library },
   ];
 
   return (

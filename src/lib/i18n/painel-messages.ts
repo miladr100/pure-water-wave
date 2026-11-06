@@ -5,7 +5,7 @@ import type { UserLanguage } from "@/lib/user-languages";
 // languages fall back to it until the group asks for translations. Every
 // screen reads copy through `usePainelMessages()`.
 export type PainelMessages = {
-  areas: { painel: string; academia: string; admin: string; switchLabel: string };
+  areas: { painel: string; academia: string; biblioteca: string; admin: string; switchLabel: string };
   shell: {
     painelTitle: string;
     adminTitle: string;
@@ -254,7 +254,7 @@ export type PainelMessages = {
 };
 
 const pt: PainelMessages = {
-  areas: { painel: "Painel", academia: "Academia", admin: "Administração", switchLabel: "Área" },
+  areas: { painel: "Painel", academia: "Academia", biblioteca: "Biblioteca", admin: "Administração", switchLabel: "Área" },
   shell: {
     painelTitle: "Painel HJ Team",
     adminTitle: "Administração",

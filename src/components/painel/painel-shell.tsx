@@ -86,31 +86,18 @@ export function PainelShell({
   const subTabs = area === "admin" ? subTabsFor(pathname, papeis, t) : null;
   const primary = items.slice(0, 5);
   const overflow = items.slice(5);
-  const areaLabel =
-    area === "admin"
-      ? t.areas.admin
-      : area === "academia"
-        ? t.areas.academia
-        : area === "biblioteca"
-          ? t.nav.biblioteca
-          : t.areas.painel;
+  // "admin" is the educator's Painel: same area and title, more items.
+  const areaLabel = area === "academia" ? t.areas.academia : area === "biblioteca" ? t.areas.biblioteca : t.areas.painel;
   const home = area === "admin" ? "/admin" : area === "academia" ? "/academia" : area === "biblioteca" ? "/biblioteca" : "/painel";
 
   const headerTitle =
-    title ??
-    (area === "admin"
-      ? t.shell.adminTitle
-      : area === "academia"
-        ? ta.header.academyTitle
-        : area === "biblioteca"
-          ? t.shell.libraryTitle
-          : t.shell.painelTitle);
+    title ?? (area === "academia" ? ta.header.academyTitle : area === "biblioteca" ? t.shell.libraryTitle : t.shell.painelTitle);
   const headerSubtitle =
     subtitle ??
     (area === "academia" || area === "biblioteca"
       ? ""
       : area === "admin"
-      ? [session.fullName, papeis?.administrador ? t.areas.admin : "Educador(a)"].join(" · ")
+      ? [session.fullName, papeis?.administrador ? "Administrador(a)" : "Educador(a)"].join(" · ")
       : eu?.equipe
         ? [eu.equipe.nome, eu.projeto ? `${eu.projeto.nome.split(" – ")[0]}, ${t.common.day(eu.projeto.diaAtual, eu.projeto.totalDias)}` : null]
             .filter(Boolean)
