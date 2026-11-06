@@ -66,6 +66,8 @@ export type AppMessages = {
     notNow: string;
     gotIt: string;
     dismissAria: string;
+    menuHint: string;
+    installed: string;
   };
   pdfCard: {
     readMaterial: string;
@@ -362,11 +364,13 @@ const pt: AppMessages = {
     share: "Compartilhar",
     addToHome: "Adicionar à Tela de Início",
     androidDescription:
-      "Instale a Biblioteca Água Pura no seu celular para acessar os livros com mais rapidez, como um aplicativo.",
-    install: "Instalar biblioteca",
+      "Instale o Água Pura no seu celular e abra direto da tela inicial, como um aplicativo.",
+    install: "Instalar aplicativo",
     notNow: "Agora não",
     gotIt: "Entendi",
     dismissAria: "Fechar aviso de instalação",
+    menuHint: "No menu do navegador, escolha “Instalar aplicativo” ou “Adicionar à tela inicial”.",
+    installed: "Você já está usando o aplicativo instalado.",
   },
   pdfCard: {
     readMaterial: "Ler material",
@@ -684,11 +688,13 @@ const en: AppMessages = {
     share: "Share",
     addToHome: "Add to Home Screen",
     androidDescription:
-      "Install the Pure Water Library on your phone to access the books faster, like an app.",
-    install: "Install library",
+      "Install Pure Water on your phone and open it straight from the home screen, like an app.",
+    install: "Install app",
     notNow: "Not now",
     gotIt: "Got it",
     dismissAria: "Dismiss install prompt",
+    menuHint: "In the browser menu, choose “Install app” or “Add to Home screen”.",
+    installed: "You are already using the installed app.",
   },
   pdfCard: {
     readMaterial: "Read material",
@@ -1004,11 +1010,13 @@ const es: AppMessages = {
     share: "Compartir",
     addToHome: "Añadir a la pantalla de inicio",
     androidDescription:
-      "Instala la Biblioteca Agua Pura en tu celular para acceder a los libros más rápido, como una aplicación.",
-    install: "Instalar biblioteca",
+      "Instala Agua Pura en tu celular y ábrelo directo desde la pantalla de inicio, como una aplicación.",
+    install: "Instalar aplicación",
     notNow: "Ahora no",
     gotIt: "Entendido",
     dismissAria: "Cerrar aviso de instalación",
+    menuHint: "En el menú del navegador, elige “Instalar aplicación” o “Añadir a la pantalla de inicio”.",
+    installed: "Ya estás usando la aplicación instalada.",
   },
   pdfCard: {
     readMaterial: "Leer material",

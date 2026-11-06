@@ -10,7 +10,6 @@ import {
   HandCoins,
   Heart,
   Home,
-  Library,
   Settings,
   Users,
   UsersRound,
@@ -39,7 +38,7 @@ export type SubTab = { href: string; label: string; exact?: boolean };
 export function navFor(area: ShellArea, papeis: Papeis | null, t: PainelMessages, ta: AppMessages): NavItem[] {
   if (area === "biblioteca") {
     return [
-      { href: "/biblioteca", label: t.nav.biblioteca, icon: Library, match: ["/biblioteca"], exact: true },
+      { href: "/biblioteca", label: t.nav.inicio, icon: Home, match: ["/biblioteca"], exact: true },
       { href: "/biblioteca/materiais", label: t.nav.materiais, icon: FileText, match: ["/biblioteca/materiais"] },
       { href: "/biblioteca/videos", label: t.nav.videos, icon: PlayCircle, match: ["/biblioteca/videos"] },
       { href: "/biblioteca/ferramentas", label: t.nav.ferramentas, icon: Wrench, match: ["/biblioteca/ferramentas"] },

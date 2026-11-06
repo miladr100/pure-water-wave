@@ -5,7 +5,6 @@ import { LibraryHeader } from "@/components/library-header";
 import { LibraryPdfCardLoader } from "@/components/library-pdf-card-loader";
 import { LibrarySearch } from "@/components/library-search";
 import { useLocale } from "@/components/locale-provider";
-import { PwaInstallPrompt } from "@/components/pwa-install-prompt";
 import type { SessionPayload } from "@/lib/auth";
 import { getLibraryPdfsByLanguage } from "@/lib/library-pdfs";
 
@@ -36,7 +35,6 @@ export function LibraryDashboard({ session }: LibraryDashboardProps) {
           </p>
         </section>
 
-        <PwaInstallPrompt />
 
         <LibraryAiCta />
         <LibrarySearch />

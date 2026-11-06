@@ -8,6 +8,7 @@ import { ErrorState } from "@/components/academy/error-state";
 import { fmtDate } from "@/components/academy/format";
 import { useLocale } from "@/components/academy/locale-provider";
 import { PhotoDialog } from "@/components/academy/photo-dialog";
+import { InstallAppSection } from "@/components/academy/install-app-section";
 import { ProfileAccount } from "@/components/academy/profile-account";
 import { ProfileDataForm } from "@/components/academy/profile-data-form";
 import { ProfilePreferences } from "@/components/academy/profile-preferences";
@@ -169,6 +170,7 @@ export function ProfileContent({
             {session.role === "tutor" ? null : (
               <ProfileTutor profile={profile} onSaved={handleSaved} />
             )}
+            <InstallAppSection />
       </div>
     </div>
   );

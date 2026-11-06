@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { useLocale } from "@/components/locale-provider";
+import { PwaInstallPrompt } from "@/components/pwa-install-prompt";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -306,6 +307,10 @@ export function LibrarySettingsMenu({
               : t.settings.changePassword}
           </Button>
         </form>
+
+        <Separator />
+
+        <PwaInstallPrompt />
 
         <Separator />
 
