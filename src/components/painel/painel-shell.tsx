@@ -3,12 +3,11 @@
 import { ChevronsLeft, LogOut, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import { AccountMenu } from "@/components/academy/account-menu";
 import { PROFILE_QUERY } from "@/components/academy/app-header";
 import { NotificationsBell } from "@/components/academy/notifications-bell";
-import { ProfileDialog } from "@/components/academy/profile-dialog";
 import { BrandLogo } from "@/components/brand-logo";
 import { LibraryFeedbackButton } from "@/components/library-feedback-button";
 import { LibrarySettingsMenu } from "@/components/library-settings-menu";
@@ -63,20 +62,18 @@ export function PainelShell({
   const searchParams = useSearchParams();
   const [collapsed, toggleCollapsed] = useCollapsed();
   const [moreOpen, setMoreOpen] = useState(false);
-  const [profileRequested, setProfileRequested] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
+  // The profile is a page of its own in each area (the library sends the
+  // person to their panel's). Old `?perfil=1` links land there too.
+  const profileHref =
+    area === "admin" || session?.role === "tutor" ? "/admin/perfil" : area === "academia" ? "/academia/perfil" : "/painel/perfil";
   const wantsProfile = searchParams.get(PROFILE_QUERY) === "1";
-  const profileOpen = profileRequested || wantsProfile;
-  function setProfileOpen(open: boolean) {
-    setProfileRequested(open);
-    if (!open && wantsProfile) {
-      const next = new URLSearchParams(searchParams.toString());
-      next.delete(PROFILE_QUERY);
-      const query = next.toString();
-      router.replace(query ? `${pathname}?${query}` : pathname);
+  useEffect(() => {
+    if (wantsProfile && session) {
+      router.replace(profileHref);
     }
-  }
+  }, [wantsProfile, session, profileHref, router]);
 
   async function handleLogout() {
     setIsLoggingOut(true);
@@ -141,7 +138,7 @@ export function PainelShell({
             {session ? (
               <>
                 <NotificationsBell />
-                <AccountMenu area="painel" session={session} onOpenProfile={() => setProfileOpen(true)} />
+                <AccountMenu area="painel" session={session} onOpenProfile={() => router.push(profileHref)} />
               </>
             ) : (
               <>
@@ -300,7 +297,6 @@ export function PainelShell({
         ) : null}
       </nav>
 
-      {session ? <ProfileDialog session={session} open={profileOpen} onOpenChange={setProfileOpen} /> : null}
     </div>
   );
 }

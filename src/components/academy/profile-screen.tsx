@@ -151,6 +151,8 @@ export function ProfileContent({
   }
 
   return (
+    <div className="space-y-6">
+    <InstallAppSection />
     <div
       className={cn(
         "grid gap-6",
@@ -170,8 +172,8 @@ export function ProfileContent({
             {session.role === "tutor" ? null : (
               <ProfileTutor profile={profile} onSaved={handleSaved} />
             )}
-            <InstallAppSection />
       </div>
+    </div>
     </div>
   );
 }

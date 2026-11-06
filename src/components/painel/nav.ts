@@ -11,6 +11,7 @@ import {
   Heart,
   Home,
   Settings,
+  UserRound,
   Users,
   UsersRound,
   type LucideIcon,
@@ -62,6 +63,7 @@ export function navFor(area: ShellArea, papeis: Papeis | null, t: PainelMessages
       ...(papeis?.capitao || papeis?.educador
         ? [{ href: "/painel/equipe", label: t.nav.equipe, icon: Users, match: ["/painel/equipe"] }]
         : []),
+      { href: "/painel/perfil", label: t.nav.perfil, icon: UserRound, match: ["/painel/perfil"] },
     ];
   }
 

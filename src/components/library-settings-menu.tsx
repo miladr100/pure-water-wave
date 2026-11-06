@@ -239,6 +239,10 @@ export function LibrarySettingsMenu({
           <DialogDescription>{t.settings.description}</DialogDescription>
         </DialogHeader>
 
+        <PwaInstallPrompt />
+
+        <Separator />
+
         <form onSubmit={handleSaveName} className="space-y-3">
           <div className="space-y-2">
             <Label htmlFor="settings-name">{t.settings.name}</Label>
@@ -307,10 +311,6 @@ export function LibrarySettingsMenu({
               : t.settings.changePassword}
           </Button>
         </form>
-
-        <Separator />
-
-        <PwaInstallPrompt />
 
         <Separator />
 
