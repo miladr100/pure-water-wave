@@ -70,7 +70,7 @@ export default async function BibliotecaManualVideosVideoPage({
 
   return (
     <VideoSupportManualVideoPage
-      session={session}
+     
       videoId={video.id}
       previousVideoId={previousVideoId}
       nextVideoId={nextVideoId}

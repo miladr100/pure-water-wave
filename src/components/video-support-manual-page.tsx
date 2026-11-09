@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { ArrowRight, PlayCircle } from "lucide-react";
 
-import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,26 +12,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { SessionPayload } from "@/lib/auth";
 import { getVideoSupportManual } from "@/lib/video-support-manual";
 
-type VideoSupportManualPageProps = {
-  session: SessionPayload;
-};
-
-export function VideoSupportManualPage({ session }: VideoSupportManualPageProps) {
+export function VideoSupportManualPage() {
   const { language, t } = useLocale();
-  const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const videos = getVideoSupportManual(language);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">
-      <LibraryHeader
-        title={t.header.videoManualTitle}
-        subtitle={t.header.videoManualSubtitle(firstName)}
-        fullName={session.fullName}
-        showBackToLibrary
-      />
 
       <main className="mx-auto max-w-7xl px-6 py-10">
         <section className="mb-10">

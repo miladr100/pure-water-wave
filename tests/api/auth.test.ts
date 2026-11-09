@@ -74,7 +74,7 @@ describe("auth", () => {
       expect(response.status).toBe(200);
 
       const body = await readJson<AuthBody>(response);
-      expect(body.redirectTo).toBe("/academia");
+      expect(body.redirectTo).toBe("/painel");
       expect(body.user?.theme).toBe("dark");
       expect(setCookieHeader(response)).toContain(`${SESSION_COOKIE}=`);
       // An academy account can open the library too.
@@ -131,7 +131,7 @@ describe("auth", () => {
 
       const first = await loginWith("hj@example.test", "senha123");
       expect(first.status).toBe(200);
-      expect((await readJson<AuthBody>(first)).redirectTo).toBe("/academia");
+      expect((await readJson<AuthBody>(first)).redirectTo).toBe("/painel");
       expect(setCookieHeader(first)).toContain(`${SESSION_COOKIE}=`);
       expect(setCookieHeader(first)).toContain(`${LIBRARY_COOKIE}=`);
 

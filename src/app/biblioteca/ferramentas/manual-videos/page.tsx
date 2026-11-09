@@ -22,5 +22,5 @@ export default async function BibliotecaManualVideosPage() {
     redirect("/login");
   }
 
-  return <VideoSupportManualPage session={session} />;
+  return <VideoSupportManualPage />;
 }

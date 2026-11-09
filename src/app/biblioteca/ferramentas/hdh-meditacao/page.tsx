@@ -22,5 +22,5 @@ export default async function BibliotecaHdhMeditacaoPage() {
     redirect("/login");
   }
 
-  return <HdhMeditationPage session={session} />;
+  return <HdhMeditationPage />;
 }

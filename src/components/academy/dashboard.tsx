@@ -137,7 +137,7 @@ export function Dashboard({ session }: { session: SessionPayload }) {
             </div>
           </div>
           <Button asChild variant="outline" className="shrink-0 rounded-full">
-            <Link href="/academia?perfil=1">
+            <Link href="/academia/perfil">
               {t.profile.incompleteCta}
               <ArrowRight className="h-4 w-4" />
             </Link>

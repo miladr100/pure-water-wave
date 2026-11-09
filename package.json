@@ -14,7 +14,8 @@
     "seed": "tsx scripts/seed.ts",
     "db:local": "tsx scripts/local-mongo.ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "seed:painel": "tsx scripts/seed-painel.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",

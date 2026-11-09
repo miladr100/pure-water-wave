@@ -22,5 +22,5 @@ export default async function BibliotecaMateriaisPage() {
     redirect("/login");
   }
 
-  return <SupportMaterialsPage session={session} />;
+  return <SupportMaterialsPage />;
 }

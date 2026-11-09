@@ -10,7 +10,6 @@ import {
   NotebookPen,
 } from "lucide-react";
 
-import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,11 +20,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { LIBRARY_TOOLS, type LibraryTool } from "@/lib/library-tools";
-import type { SessionPayload } from "@/lib/auth";
-
-type LibraryToolsPageProps = {
-  session: SessionPayload;
-};
 
 function toolCopy(
   tool: LibraryTool,
@@ -93,19 +87,11 @@ function ToolIcon({ icon }: { icon: LibraryTool["icon"] }) {
   return null;
 }
 
-export function LibraryToolsPage({ session }: LibraryToolsPageProps) {
+export function LibraryToolsPage() {
   const { t } = useLocale();
-  const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">
-      <LibraryHeader
-        title={t.header.toolsTitle}
-        subtitle={t.header.toolsSubtitle(firstName)}
-        fullName={session.fullName}
-        showToolsLink={false}
-        showBackToLibrary
-      />
 
       <main className="mx-auto max-w-7xl px-6 py-10">
         <section className="mb-10">

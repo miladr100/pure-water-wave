@@ -4,17 +4,14 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { ArrowLeft, ChevronLeft, ChevronRight, Lightbulb, Save } from "lucide-react";
 
-import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { SessionPayload } from "@/lib/auth";
 import { formatHdhTitle } from "@/lib/hdh-title";
 import { getHdhMeditationDay } from "@/lib/hdh-meditation";
 
 type HdhMeditationDayPageProps = {
-  session: SessionPayload;
   dayId: number;
   previousDayId: number | null;
   nextDayId: number | null;
@@ -30,14 +27,12 @@ function emptyAnswers(count: number) {
 }
 
 export function HdhMeditationDayPage({
-  session,
   dayId,
   previousDayId,
   nextDayId,
 }: HdhMeditationDayPageProps) {
   const { language, t } = useLocale();
   const day = getHdhMeditationDay(dayId, language);
-  const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const [answers, setAnswers] = useState(() =>
     emptyAnswers(day?.questions.length ?? 0),
   );
@@ -130,12 +125,6 @@ export function HdhMeditationDayPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-50 via-background to-background dark:from-background">
-      <LibraryHeader
-        title={t.header.hdhTitle}
-        subtitle={t.header.hdhSubtitle(firstName)}
-        fullName={session.fullName}
-        showBackToLibrary
-      />
 
       <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">

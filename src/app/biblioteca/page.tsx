@@ -26,5 +26,5 @@ export default async function BibliotecaPage() {
     redirect("/login");
   }
 
-  return <LibraryDashboard session={session} />;
+  return <LibraryDashboard />;
 }

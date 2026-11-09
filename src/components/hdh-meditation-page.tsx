@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
-import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,17 +13,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { SessionPayload } from "@/lib/auth";
 import { getHdhMeditationDays } from "@/lib/hdh-meditation";
 import { formatHdhTitle } from "@/lib/hdh-title";
 
-type HdhMeditationPageProps = {
-  session: SessionPayload;
-};
-
-export function HdhMeditationPage({ session }: HdhMeditationPageProps) {
+export function HdhMeditationPage() {
   const { language, t } = useLocale();
-  const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const [savedDayIds, setSavedDayIds] = useState<Set<number>>(new Set());
   const days = getHdhMeditationDays(language);
 
@@ -60,12 +53,6 @@ export function HdhMeditationPage({ session }: HdhMeditationPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">
-      <LibraryHeader
-        title={t.header.hdhTitle}
-        subtitle={t.header.hdhSubtitle(firstName)}
-        fullName={session.fullName}
-        showBackToLibrary
-      />
 
       <main className="mx-auto max-w-7xl px-6 py-10">
         <section className="mb-10">

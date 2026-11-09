@@ -21,5 +21,5 @@ export default async function BibliotecaFerramentasPage() {
     redirect("/login");
   }
 
-  return <LibraryToolsPage session={session} />;
+  return <LibraryToolsPage />;
 }

@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 
 import { AdminShell } from "@/components/admin/admin-shell";
-import { Overview } from "@/components/admin/overview";
+import { AdminInicioScreen } from "@/components/painel/admin/admin-inicio-screen";
 import { getSession } from "@/lib/academy/auth";
 
-export default async function AdminOverviewPage() {
+export default async function AdminHomePage() {
   const session = await getSession();
   if (!session) {
     redirect("/login");
@@ -12,7 +12,7 @@ export default async function AdminOverviewPage() {
 
   return (
     <AdminShell session={session}>
-      <Overview />
+      <AdminInicioScreen />
     </AdminShell>
   );
 }

@@ -64,6 +64,9 @@ export function clearSessionCookies(response: NextResponse) {
   }
 }
 
+// Where each kind of account lands after signing in: the HJ Team panel
+// for members (their Painel), its administration for educators, the
+// library for pastors.
 export function redirectFor(role: "student" | "tutor" | "pastor" | "hjteam") {
   if (role === "tutor") {
     return "/admin";
@@ -71,5 +74,5 @@ export function redirectFor(role: "student" | "tutor" | "pastor" | "hjteam") {
   if (role === "pastor") {
     return "/biblioteca";
   }
-  return "/academia";
+  return "/painel";
 }

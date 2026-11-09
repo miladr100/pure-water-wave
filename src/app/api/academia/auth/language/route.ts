@@ -55,6 +55,7 @@ export async function PATCH(request: Request) {
       login: session.login,
       fullName: session.fullName,
       role: session.role,
+      ...(session.admin ? { admin: true } : {}),
       language,
     });
 

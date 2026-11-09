@@ -22,5 +22,5 @@ export default async function BibliotecaJuramentoDaFamiliaPage() {
     redirect("/login");
   }
 
-  return <FamilyPledgePage session={session} />;
+  return <FamilyPledgePage />;
 }

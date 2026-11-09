@@ -12,7 +12,6 @@ import {
   Target,
 } from "lucide-react";
 
-import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,13 +26,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { SessionPayload } from "@/lib/auth";
 import type { UserLanguage } from "@/lib/user-languages";
 import { cn } from "@/lib/utils";
-
-type HjJournalPageProps = {
-  session: SessionPayload;
-};
 
 type JournalDay = {
   date: string;
@@ -109,9 +103,8 @@ const emptyFields = {
   rating: null as number | null,
 };
 
-export function HjJournalPage({ session }: HjJournalPageProps) {
+export function HjJournalPage() {
   const { language, t } = useLocale();
-  const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const [date, setDate] = useState(todayIsoDate);
   const [dayNumber, setDayNumber] = useState(1);
   const [days, setDays] = useState<JournalDay[]>([]);
@@ -271,12 +264,6 @@ export function HjJournalPage({ session }: HjJournalPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-50 via-background to-background dark:from-background">
-      <LibraryHeader
-        title={t.header.journalTitle}
-        subtitle={t.header.journalSubtitle(firstName)}
-        fullName={session.fullName}
-        showBackToLibrary
-      />
 
       <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
         <form onSubmit={handleSave} className="space-y-6">

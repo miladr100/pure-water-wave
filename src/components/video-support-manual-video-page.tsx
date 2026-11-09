@@ -10,7 +10,6 @@ import {
   MessageCircleQuestion,
 } from "lucide-react";
 
-import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
 import {
   Accordion,
@@ -19,7 +18,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import type { SessionPayload } from "@/lib/auth";
 import { getYoutubeWatchUrl } from "@/lib/support-materials";
 import {
   getVideoSupportChapter,
@@ -27,20 +25,17 @@ import {
 } from "@/lib/video-support-manual";
 
 type VideoSupportManualVideoPageProps = {
-  session: SessionPayload;
   videoId: number;
   previousVideoId: number | null;
   nextVideoId: number | null;
 };
 
 export function VideoSupportManualVideoPage({
-  session,
   videoId,
   previousVideoId,
   nextVideoId,
 }: VideoSupportManualVideoPageProps) {
   const { language, t } = useLocale();
-  const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const video = getVideoSupportChapter(videoId, language);
   const chapters = getVideoSupportManual(language);
 
@@ -63,12 +58,6 @@ export function VideoSupportManualVideoPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-50 via-background to-background dark:from-background">
-      <LibraryHeader
-        title={t.header.videoManualTitle}
-        subtitle={t.header.videoManualSubtitle(firstName)}
-        fullName={session.fullName}
-        showBackToLibrary
-      />
 
       <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">

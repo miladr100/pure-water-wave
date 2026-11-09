@@ -67,7 +67,7 @@ export default async function BibliotecaHdhMeditacaoDayPage({
 
   return (
     <HdhMeditationDayPage
-      session={session}
+     
       dayId={day.id}
       previousDayId={previousDayId}
       nextDayId={nextDayId}

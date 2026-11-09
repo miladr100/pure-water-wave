@@ -210,7 +210,7 @@ describe("accounts created by educators", () => {
 
       const signedIn = await loginWith("hj@example.test", result.temporaryPassword!);
       expect(signedIn.status).toBe(200);
-      expect((await readJson<LoginBody>(signedIn)).redirectTo).toBe("/academia");
+      expect((await readJson<LoginBody>(signedIn)).redirectTo).toBe("/painel");
     });
 
     it("creates an educator as a tutor who lands in the panel", async () => {

@@ -50,6 +50,9 @@ const academyUserSchema = new Schema(
       default: "student",
       required: true,
     },
+    // HJ Team panel: a site administrator (always also an educator, role
+    // tutor) who grants and removes the educator/administrator roles.
+    isAdmin: { type: Boolean, default: false },
     // Tutor-side follow-up: any note the tutor left about this student.
     tutorNotes: { type: String, default: "" },
     assignedTutorId: { type: Schema.Types.ObjectId, ref: "AcademyUser", default: null },

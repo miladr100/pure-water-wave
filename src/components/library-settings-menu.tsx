@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { useLocale } from "@/components/locale-provider";
+import { PwaInstallPrompt } from "@/components/pwa-install-prompt";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -237,6 +238,10 @@ export function LibrarySettingsMenu({
           <DialogTitle>{t.settings.title}</DialogTitle>
           <DialogDescription>{t.settings.description}</DialogDescription>
         </DialogHeader>
+
+        <PwaInstallPrompt />
+
+        <Separator />
 
         <form onSubmit={handleSaveName} className="space-y-3">
           <div className="space-y-2">
