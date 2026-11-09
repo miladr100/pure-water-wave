@@ -21,7 +21,7 @@ fechar.
 | 12 | **Sugestões:** os textos e prazos (7 dias, 14 dias) estão bons? Quem os mantém? | Milad | Administrador edita em Configurações. | P4 |
 | 13 | **Ficha em PDF:** continua sendo anexada pelo membro, ou só pelo educador? | Wang Song | Membro anexa; educador pode substituir. | P4 |
 | 14 | **Dados de exemplo:** importar os 908 convidados e as 39 equipes do sistema de Wang Song para um ambiente de testes? | Wang Song | Sim, só em testes. | P7 |
-| 15 | **Nome e domínio:** o painel se chama "Painel HJ Team"? Fica em purewaterwave.org/painel? Nome da PWA instalada? | Milad, Yeseong | "Painel HJ Team", `/painel`, PWA "Pure Water Wave". | P6 |
+| 15 | **Nome e domínio:** o painel se chama "Painel HJ Team"? Fica em purewaterwave.org/painel? Nome da PWA instalada? | Milad, Yeseong | "Painel HJ Team", `/painel`; a PWA se chama "Água Pura" (nome do site) e começa em `/login` — implementado assim em 09/11. | P6 |
 | 16 | **Login do site:** o botão Login leva membros a `/painel` e pastores a `/biblioteca`; o site público não muda. OK? | Milad | Sim. | P1 |
 | 17 | ~~**Educador = administrador?**~~ **Decidido 06/11 (Victor):** dois papéis e dois painéis ligeiramente diferentes; o administrador administra o site e é quem adiciona e remove educadores. | — | Ver P1 e P5. | P1, P5 |
 | 18 | **Lembretes:** push/e-mail às 20h e resumo do capitão às 22h, fuso de São Paulo? | Yeseong | Sim, configurável por projeto. | P3, P6 |

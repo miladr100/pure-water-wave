@@ -120,6 +120,11 @@ celular (390 px), com cada tipo de conta:
   no link direto) e aparece como desbloqueado para a Ana. Excluir atividade
   com tentativas, aula com progresso ou curso com inscritos é recusado.
 
+PWA (09/11): instalada e aberta em um emulador Pixel 9 (Chrome, WebAPK) e em
+um simulador iPhone 17 Pro (Safari, "Adicionar à Tela de Início"): o app se
+chama "Água Pura", abre em `/login` e um membro já logado cai direto no
+Painel, em tela cheia, com a barra inferior acima do indicador do iPhone.
+
 Suite automática: `npm run typecheck`, `eslint` (pastas do CI) e `npm test`
 (451 testes, MongoDB em memória): regras de RM, datas e jornada em
 `tests/unit/hj-*.test.ts`; rotas do painel e da administração em
@@ -127,8 +132,7 @@ Suite automática: `npm run typecheck`, `eslint` (pastas do CI) e `npm test`
 
 ## Fora desta versão
 
-Lembretes e notificações push (P6), PWA com ícone e `start_url` do painel,
-exportação da contabilidade, tradução en/es do painel (os textos estão em
+Lembretes e notificações push (P6), exportação da contabilidade, tradução en/es do painel (os textos estão em
 `src/lib/i18n/painel-messages.ts`, só em português), upload de PDF na
 Biblioteca administrável (hoje só por link), ambiente `dev` próprio na Vercel
 e no Atlas (hoje o demo é o projeto `pww-painel`), e-mail de boas-vindas
