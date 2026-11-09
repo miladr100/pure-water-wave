@@ -59,9 +59,14 @@ de volta; a escolha é lembrada por conta. Em telas menores ela vira a
 estreita.
 
 ```
-Painel:    Início · Arrecadação · Testemunho · Perfil            (membro)
-           Início · Arrecadação · Equipe · Testemunho · Perfil   (capitão)
-Academia:  Meus cursos · Catálogo · Perguntas · Perfil           (as telas de hoje)
+Painel:    Início · Arrecadação · Testemunho                     (membro)
+           Início · Arrecadação · Equipe · Testemunho            (capitão)
+Academia:  Meus cursos · Cursos · Minhas perguntas               (as telas de hoje)
+Biblioteca: Início · Materiais · Vídeos · Ferramentas · Fale com a IA
+
+O perfil não fica na barra: abre pelo avatar no canto superior direito
+(menu Meu perfil · Sair) e é uma página, com "Instalar no celular" no topo
+(decidido em 09/11/2026).
 ```
 
 "Arrecadação" abre o relatório de RM do dia e o histórico; "Testemunho" abre

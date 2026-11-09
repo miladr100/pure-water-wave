@@ -90,6 +90,9 @@ export type AppMessages = {
     ahaTestimonialsTitle: string;
     emptyDownloads: string;
     emptyVideos: string;
+    extraBooksTitle: string;
+    extraVideosTitle: string;
+    openLink: string;
     swipeHint: string;
     downloadPdf: string;
     downloadSubtitle: string;
@@ -395,6 +398,9 @@ const pt: AppMessages = {
     ahaTestimonialsTitle: "Testemunhos sobre Ahá",
     emptyDownloads: "Nenhum material para download ainda.",
     emptyVideos: "Nenhum vídeo disponível ainda.",
+    extraBooksTitle: "Outros livros",
+    extraVideosTitle: "Outros vídeos",
+    openLink: "Abrir",
     swipeHint: "Deslize ou use as setas",
     downloadPdf: "Baixar PDF",
     downloadSubtitle: "Material para download (PDF)",
@@ -717,6 +723,9 @@ const en: AppMessages = {
     ahaTestimonialsTitle: "Testimonies on Ahá",
     emptyDownloads: "No downloadable materials yet.",
     emptyVideos: "No videos available yet.",
+    extraBooksTitle: "More books",
+    extraVideosTitle: "More videos",
+    openLink: "Open",
     swipeHint: "Swipe or use the arrows",
     downloadPdf: "Download PDF",
     downloadSubtitle: "Downloadable material (PDF)",
@@ -1041,6 +1050,9 @@ const es: AppMessages = {
     ahaTestimonialsTitle: "Testimonios sobre Ahá",
     emptyDownloads: "Aún no hay materiales para descargar.",
     emptyVideos: "Aún no hay videos disponibles.",
+    extraBooksTitle: "Otros libros",
+    extraVideosTitle: "Otros videos",
+    openLink: "Abrir",
     swipeHint: "Desliza o usa las flechas",
     downloadPdf: "Descargar PDF",
     downloadSubtitle: "Material para descargar (PDF)",

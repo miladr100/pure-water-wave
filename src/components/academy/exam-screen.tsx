@@ -78,7 +78,7 @@ export function ExamScreen({ slug, examId, isTutor }: { slug: string; examId: st
   const title = exam.scope === "final" ? t.course.finalActivity : t.course.moduleActivity;
   const subtitle =
     exam.scope === "final"
-      ? exam.courseTitle
+      ? t.course.finalSubtitle
       : `${t.course.module(exam.moduleNumber ?? 0)}${exam.moduleTitle ? ` · ${exam.moduleTitle}` : ""}`;
 
   async function submit() {

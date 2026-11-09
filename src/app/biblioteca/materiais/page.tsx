@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { SupportMaterialsPage } from "@/components/support-materials-page";
 import { getSession, isSystemUserSession } from "@/lib/auth";
+import { listPublishedExtras } from "@/lib/biblioteca/itens";
 
 export const metadata: Metadata = {
   title: "Material de apoio — Biblioteca Água Pura",
@@ -22,5 +23,7 @@ export default async function BibliotecaMateriaisPage() {
     redirect("/login");
   }
 
-  return <SupportMaterialsPage />;
+  const extras = await listPublishedExtras(session.language);
+
+  return <SupportMaterialsPage extraDownloads={extras.materiais} />;
 }

@@ -84,7 +84,9 @@ export function CourseComplete({ slug }: { slug: string }) {
         <h1 className="relative mt-2 font-display text-3xl font-semibold sm:text-4xl">
           {t.course.completedTitle}
         </h1>
-        <p className="relative mt-3 text-primary-foreground/85">{t.course.completedBody}</p>
+        <p className="relative mt-3 text-primary-foreground/85">
+          {course.unlocks.length > 0 ? t.course.completedBody : t.course.completedBodyNoUnlocks}
+        </p>
         <div className="relative mt-6 flex flex-wrap justify-center gap-2 text-sm">
           <span className="rounded-full bg-primary-foreground/15 px-4 py-1.5">
             {t.common.lessons(course.lessonCount)}

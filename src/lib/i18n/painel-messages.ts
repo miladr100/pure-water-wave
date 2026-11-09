@@ -39,6 +39,7 @@ export type PainelMessages = {
     retry: string;
     save: string;
     saving: string;
+    edit: string;
     cancel: string;
     close: string;
     back: string;
@@ -250,6 +251,41 @@ export type PainelMessages = {
     settingsBody: string;
     academyTitle: string;
     academyBody: string;
+    arrecadacaoSection: string;
+    testemunhoSection: string;
+    noTestemunhoProject: string;
+    guestsByTeam: string;
+    recentEvents: string;
+    noRecentEvents: string;
+  };
+  biblioteca: {
+    title: string;
+    description: string;
+    add: string;
+    editItem: string;
+    tipos: Record<"livro" | "material" | "video", string>;
+    tipo: string;
+    idioma: string;
+    titulo: string;
+    subtitulo: string;
+    url: string;
+    urlHint: string;
+    urlVideo: string;
+    urlVideoHint: string;
+    thumbnail: string;
+    published: string;
+    hidden: string;
+    hide: string;
+    publish: string;
+    saved: string;
+    remove: string;
+    removed: string;
+    empty: string;
+    shipped: string;
+    shippedHint: string;
+    addedBooks: string;
+    addedVideos: string;
+    open: string;
   };
 };
 
@@ -288,6 +324,7 @@ const pt: PainelMessages = {
     retry: "Tentar de novo",
     save: "Salvar",
     saving: "Salvando…",
+    edit: "Editar",
     cancel: "Cancelar",
     close: "Fechar",
     back: "Voltar",
@@ -499,6 +536,41 @@ const pt: PainelMessages = {
     settingsBody: "Lembretes, horários e integrações ficam aqui quando forem definidos com o grupo.",
     academyTitle: "Academia",
     academyBody: "A administração da academia continua como está: alunos, cursos, perguntas e correções.",
+    arrecadacaoSection: "Arrecadação",
+    testemunhoSection: "Testemunho",
+    noTestemunhoProject: "Não há um projeto de testemunho ativo.",
+    guestsByTeam: "Convidados por equipe",
+    recentEvents: "Últimos acontecimentos",
+    noRecentEvents: "Nenhum acontecimento registrado ainda.",
+  },
+  biblioteca: {
+    title: "Biblioteca",
+    description: "Livros, materiais e vídeos que aparecem na biblioteca para pastores, membros e educadores. Os que vêm com o site ficam listados abaixo; aqui você adiciona novos por link.",
+    add: "Adicionar à biblioteca",
+    editItem: "Editar item",
+    tipos: { livro: "Livros", material: "Materiais", video: "Vídeos" },
+    tipo: "Tipo",
+    idioma: "Idioma",
+    titulo: "Título",
+    subtitulo: "Subtítulo",
+    url: "Link do arquivo",
+    urlHint: "Um PDF ou documento acessível por link (Google Drive, Bunny, site). Abre em uma nova aba.",
+    urlVideo: "Link do vídeo",
+    urlVideoHint: "YouTube (a miniatura vem sozinha) ou outro link de vídeo.",
+    thumbnail: "Link da miniatura (opcional)",
+    published: "Publicado na biblioteca",
+    hidden: "Oculto",
+    hide: "Ocultar",
+    publish: "Publicar",
+    saved: "Item salvo",
+    remove: "Apagar da biblioteca",
+    removed: "Item apagado",
+    empty: "Nada adicionado ainda neste tipo. Use \"Adicionar à biblioteca\".",
+    shipped: "Já na biblioteca (vem com o site)",
+    shippedHint: "Estes itens fazem parte do código do site e mudam em uma atualização, não por aqui.",
+    addedBooks: "Outros livros",
+    addedVideos: "Outros vídeos",
+    open: "Abrir",
   },
 };
 

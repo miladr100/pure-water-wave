@@ -56,7 +56,9 @@ function VideoTrackSection({
   );
 }
 
-export function SupportVideosPage() {
+// `extraVideos`: videos added from Administração › Biblioteca, shown in a
+// track of their own after the shipped ones.
+export function SupportVideosPage({ extraVideos = [] }: { extraVideos?: SupportVideo[] }) {
   const { language, t } = useLocale();
   const studyVideos = getSupportVideosByLanguage(language);
   const kit1SupportVideos = getKit1SupportVideos(language);
@@ -116,6 +118,14 @@ export function SupportVideosPage() {
           videos={ahaTestimonials}
           emptyMessage={t.support.emptyVideos}
         />
+        {extraVideos.length > 0 ? (
+          <VideoTrackSection
+            title={t.support.extraVideosTitle}
+            hint={t.support.videosHint}
+            videos={extraVideos}
+            emptyMessage={t.support.emptyVideos}
+          />
+        ) : null}
       </main>
     </div>
   );

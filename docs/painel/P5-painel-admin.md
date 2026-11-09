@@ -28,11 +28,14 @@ São dois painéis ligeiramente diferentes (decidido em 06/11/2026):
 
 ```
 Educador:       Início · Arrecadação · Testemunho · Pessoas · Academia · Equipes
-Administrador:  Início · Arrecadação · Testemunho · Pessoas · Academia · Organização · Configurações
+Administrador:  Início · Arrecadação · Testemunho · Pessoas · Academia · Equipes · Biblioteca · Organização · Configurações
 ```
 
 O administrador vê as mesmas telas do dia a dia que o educador. O que só ele
-tem: **Organização** (projetos, equipes, programas e turmas, produtos),
+tem: **Biblioteca** (`/admin/biblioteca`: adicionar, ocultar, editar e remover
+livros, materiais e vídeos por link, que aparecem na biblioteca de pastores,
+membros e educadores no idioma escolhido — decidido em 09/11/2026),
+**Organização** (projetos, equipes, programas e turmas, produtos),
 **Configurações**, e em **Pessoas** as abas Educadores, Administradores e
 Pastores, onde dá e tira esses papéis. Para o educador, "Equipes" é um item de
 menu próprio (montar equipes do projeto ativo) e Pessoas tem só Membros.

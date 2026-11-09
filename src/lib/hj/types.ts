@@ -270,10 +270,15 @@ export type AdminHjInicio = {
     liquidoHojeCents: number;
     liquidoCents: number;
   }[];
+  // The testimony drive running today (a project of type "testemunho"),
+  // with the guests of every team as they stand.
   testemunho: {
+    projeto: ProjetoResumo | null;
     convidados: number;
     porEtapa: Record<ConvidadoEtapa, number>;
     alertas: number;
+    porEquipe: { id: string; nome: string; programa: HjPrograma; convidados: number; alertas: number; sistema1: number; jardim: number }[];
+    recentes: { id: string; convidado: PessoaRef; tipo: AcontecimentoTipo; texto: string; data: string; autor: PessoaRef }[];
   };
 };
 

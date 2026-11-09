@@ -136,6 +136,8 @@ export type AppMessages = {
     viewResult: string;
     completedTitle: string;
     completedBody: string;
+    completedBodyNoUnlocks: string;
+    finalSubtitle: string;
     unlocksTitle: string;
     courseLockedTitle: string;
     courseLockedBody: string;
@@ -568,6 +570,8 @@ const pt: AppMessages = {
     viewResult: "Ver resultado",
     completedTitle: "Parabéns, você concluiu o curso!",
     completedBody: "Continue sua jornada com os cursos que acabaram de se abrir para você.",
+    completedBodyNoUnlocks: "Você assistiu todas as aulas e passou em todas as atividades. Continue explorando os cursos disponíveis.",
+    finalSubtitle: "Revisão de todos os módulos",
     unlocksTitle: "Novos cursos desbloqueados",
     courseLockedTitle: "Este curso ainda está bloqueado",
     courseLockedBody: "Conclua um dos cursos abaixo para desbloqueá-lo.",
@@ -634,7 +638,7 @@ const pt: AppMessages = {
     retry: "Refazer atividade",
     nextLesson: "Próxima aula",
     finalActivity: "Ir para a atividade final",
-    viewCourse: "Ver o curso",
+    viewCourse: "Concluir o curso",
     unansweredError: "Responda todas as perguntas obrigatórias antes de enviar.",
     locked: "Esta atividade ainda está bloqueada.",
   },
@@ -1007,6 +1011,8 @@ const en: AppMessages = {
     viewResult: "View result",
     completedTitle: "Congratulations, you completed the course!",
     completedBody: "Keep going with the courses that just opened for you.",
+    completedBodyNoUnlocks: "You watched every lesson and passed every activity. Keep exploring the available courses.",
+    finalSubtitle: "Review of every module",
     unlocksTitle: "Newly unlocked courses",
     courseLockedTitle: "This course is still locked",
     courseLockedBody: "Complete one of the courses below to unlock it.",
@@ -1073,7 +1079,7 @@ const en: AppMessages = {
     retry: "Retake activity",
     nextLesson: "Next lesson",
     finalActivity: "Go to the final activity",
-    viewCourse: "View the course",
+    viewCourse: "Finish the course",
     unansweredError: "Answer every required question before submitting.",
     locked: "This activity is still locked.",
   },
@@ -1446,6 +1452,8 @@ const es: AppMessages = {
     viewResult: "Ver resultado",
     completedTitle: "¡Felicitaciones, completaste el curso!",
     completedBody: "Sigue tu camino con los cursos que se acaban de abrir para ti.",
+    completedBodyNoUnlocks: "Viste todas las clases y aprobaste todas las actividades. Sigue explorando los cursos disponibles.",
+    finalSubtitle: "Repaso de todos los módulos",
     unlocksTitle: "Nuevos cursos desbloqueados",
     courseLockedTitle: "Este curso todavía está bloqueado",
     courseLockedBody: "Completa uno de los cursos de abajo para desbloquearlo.",
@@ -1512,7 +1520,7 @@ const es: AppMessages = {
     retry: "Repetir actividad",
     nextLesson: "Siguiente clase",
     finalActivity: "Ir a la actividad final",
-    viewCourse: "Ver el curso",
+    viewCourse: "Terminar el curso",
     unansweredError: "Responde todas las preguntas obligatorias antes de enviar.",
     locked: "Esta actividad todavía está bloqueada.",
   },

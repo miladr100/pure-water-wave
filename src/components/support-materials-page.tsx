@@ -3,11 +3,13 @@
 import { SupportDownloadCard } from "@/components/support-download-card";
 import { useLocale } from "@/components/locale-provider";
 import { SupportMaterialsEmpty } from "@/components/support-materials-carousel";
-import { getSupportDownloadsByLanguage } from "@/lib/support-materials";
+import { getSupportDownloadsByLanguage, type SupportDownload } from "@/lib/support-materials";
 
-export function SupportMaterialsPage() {
+// `extraDownloads`: items added from Administração › Biblioteca, after the
+// ones that ship with the site.
+export function SupportMaterialsPage({ extraDownloads = [] }: { extraDownloads?: SupportDownload[] }) {
   const { language, t } = useLocale();
-  const downloads = getSupportDownloadsByLanguage(language);
+  const downloads = [...getSupportDownloadsByLanguage(language), ...extraDownloads];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">

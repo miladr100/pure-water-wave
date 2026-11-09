@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { SupportVideosPage } from "@/components/support-videos-page";
 import { getSession, isSystemUserSession } from "@/lib/auth";
+import { listPublishedExtras } from "@/lib/biblioteca/itens";
 
 export const metadata: Metadata = {
   title: "Vídeos — Biblioteca Água Pura",
@@ -21,5 +22,7 @@ export default async function BibliotecaVideosPage() {
     redirect("/login");
   }
 
-  return <SupportVideosPage />;
+  const extras = await listPublishedExtras(session.language);
+
+  return <SupportVideosPage extraVideos={extras.videos} />;
 }

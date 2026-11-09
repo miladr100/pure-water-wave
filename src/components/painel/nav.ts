@@ -10,8 +10,8 @@ import {
   HandCoins,
   Heart,
   Home,
+  Library,
   Settings,
-  UserRound,
   Users,
   UsersRound,
   type LucideIcon,
@@ -63,7 +63,6 @@ export function navFor(area: ShellArea, papeis: Papeis | null, t: PainelMessages
       ...(papeis?.capitao
         ? [{ href: "/painel/equipe", label: t.nav.equipe, icon: Users, match: ["/painel/equipe"] }]
         : []),
-      { href: "/painel/perfil", label: t.nav.perfil, icon: UserRound, match: ["/painel/perfil"] },
     ];
   }
 
@@ -87,6 +86,7 @@ export function navFor(area: ShellArea, papeis: Papeis | null, t: PainelMessages
   ];
   if (papeis?.administrador) {
     base.push(
+      { href: "/admin/biblioteca", label: t.nav.biblioteca, icon: Library, match: ["/admin/biblioteca"] },
       { href: "/admin/organizacao", label: t.nav.organizacao, icon: Building2, match: ["/admin/organizacao"] },
       { href: "/admin/configuracoes", label: t.nav.configuracoes, icon: Settings, match: ["/admin/configuracoes"] },
     );

@@ -24,12 +24,19 @@ MongoDB (nada é mock no navegador):
   (membros, educadores, pastores, nova conta, importar CSV); Equipes (criar,
   editar, capitão, membros — ninguém em duas equipes do mesmo projeto);
   Academia (a administração da academia como estava).
-- **Administrador(a)**: tudo acima, mais dar e tirar os papéis de educador e
-  administrador em Pessoas, e Organização (projetos, dias de descanso, metas
+- **Administrador(a)**: tudo acima, mais o Início com o geral da arrecadação
+  e o geral dos convidados, a **Biblioteca** (adicionar livros, materiais e
+  vídeos por link, que aparecem para pastores, membros e educadores), dar e
+  tirar os papéis de educador e administrador em Pessoas, e Organização (projetos, dias de descanso, metas
   por programa, regra da nova meta, copiar as equipes do projeto anterior).
 
-O switch **Painel | Academia | Administração** fica ao lado do logo em todas
-as áreas; a academia continua como estava.
+O switch **Painel · Academia · Biblioteca** fica ao lado do logo para quem tem
+conta da academia (pastores veem só a Biblioteca, sem switch); o perfil abre
+pelo avatar no canto superior direito. A academia segue as regras da
+FFPUM: módulos abrem em ordem quando a atividade do módulo anterior é
+aprovada (nota mínima 70 por padrão, tentativas ilimitadas, a melhor vale),
+a atividade do módulo abre depois de todas as aulas, a final depois de todos
+os módulos, e o vídeo não deixa pular para a frente do que já foi visto.
 
 ## Contas de demonstração
 
@@ -96,10 +103,24 @@ celular (390 px), com cada tipo de conta:
 - Yeseong: tornar Carlos educador e administrador e tirar os dois → não pode
   tirar o próprio papel → novo projeto de dezembro copiando as 4 equipes →
   tirar Luana da Equipe 01 e criar a Equipe 03 com ela como capitã → apagar
-  uma equipe com relatórios é recusado.
+  uma equipe com relatórios é recusado → Início com os dois gerais →
+  Biblioteca: adicionar livro e vídeo, ocultar e publicar; Ana e o pastor
+  veem os itens na biblioteca; David recebe 404 em `/admin/biblioteca`.
+- Academia (09/11): David cria o curso "Fundamentos da Fé (teste)" pela
+  interface — módulos, aulas no YouTube com material, atividade do módulo com
+  os cinco tipos de pergunta, atividade final, publicar. Ana se inscreve: o
+  módulo 2 e a atividade final nascem bloqueados (também na API: 403), a
+  atividade do módulo abre quando a aula termina, reprova com 0 % e vê a
+  revisão (resposta certa, explicação do verdadeiro/falso, escrita
+  "aguardando revisão"), refaz e aprova, o módulo 2 abre, conclui a aula 2,
+  aprova a final com 50 % (nota mínima 50) e vê a tela de conclusão. David
+  revisa a resposta escrita e responde a pergunta da aula; Ana vê os dois.
+  Um segundo curso com pré-requisito some para o Carlos (403 `course_locked`
+  no link direto) e aparece como desbloqueado para a Ana. Excluir atividade
+  com tentativas, aula com progresso ou curso com inscritos é recusado.
 
 Suite automática: `npm run typecheck`, `eslint` (pastas do CI) e `npm test`
-(440 testes, MongoDB em memória): regras de RM, datas e jornada em
+(451 testes, MongoDB em memória): regras de RM, datas e jornada em
 `tests/unit/hj-*.test.ts`; rotas do painel e da administração em
 `tests/api/painel-*.test.ts` e `tests/api/admin-hj.test.ts`.
 

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { LibraryDashboard } from "@/components/library-dashboard";
 import { getSession, isSystemUserSession } from "@/lib/auth";
+import { listPublishedExtras } from "@/lib/biblioteca/itens";
 
 export const metadata: Metadata = {
   title: "Biblioteca — Água Pura",
@@ -26,5 +27,8 @@ export default async function BibliotecaPage() {
     redirect("/login");
   }
 
-  return <LibraryDashboard />;
+  // Books added from Administração › Biblioteca join the shipped ones.
+  const extras = await listPublishedExtras(session.language);
+
+  return <LibraryDashboard extraBooks={extras.livros} />;
 }
