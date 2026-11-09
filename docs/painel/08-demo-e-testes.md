@@ -129,5 +129,7 @@ Suite automática: `npm run typecheck`, `eslint` (pastas do CI) e `npm test`
 
 Lembretes e notificações push (P6), PWA com ícone e `start_url` do painel,
 exportação da contabilidade, tradução en/es do painel (os textos estão em
-`src/lib/i18n/painel-messages.ts`, só em português), testes automáticos das
-rotas `/api/painel` e `/api/admin/hj`.
+`src/lib/i18n/painel-messages.ts`, só em português), upload de PDF na
+Biblioteca administrável (hoje só por link), ambiente `dev` próprio na Vercel
+e no Atlas (hoje o demo é o projeto `pww-painel`), e-mail de boas-vindas
+(Resend) para contas novas.
