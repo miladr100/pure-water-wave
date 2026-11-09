@@ -29,16 +29,17 @@ const ogDescription =
 const ogImage =
   "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/062a1507-f67a-4d17-a837-07298dfd864f/id-preview-4435ff7c--cf8a61b8-da7c-405a-8496-391f50a552e5.lovable.app-1780430246026.png";
 
-const libraryAppName = "Biblioteca Água Pura";
+// The installed app's name on the home screen (see app/manifest.ts).
+const installedAppName = "Água Pura";
 
 export const metadata: Metadata = {
   title: siteTitle,
   description: siteDescription,
-  applicationName: libraryAppName,
+  applicationName: installedAppName,
   authors: [{ name: "Água Pura" }],
   appleWebApp: {
     capable: true,
-    title: libraryAppName,
+    title: installedAppName,
     statusBarStyle: "default",
   },
   icons: {
