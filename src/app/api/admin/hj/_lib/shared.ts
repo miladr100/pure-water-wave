@@ -4,10 +4,8 @@ import { daysBetween } from "@/lib/hj/dates";
 import { media, novaMeta, recorde } from "@/lib/hj/rm";
 import {
   countsAsResult,
-  oid,
   ref,
   reportsOf,
-  sameId,
   usersById,
   type EquipeDoc,
   type PanelContext,
@@ -60,7 +58,12 @@ export async function buildGrid(projeto: ProjetoDoc): Promise<Grid> {
   const porMembro = new Map<string, RelatorioDoc[]>();
   for (const item of relatorios) {
     const key = String(item.membroId);
-    porMembro.set(key, [...(porMembro.get(key) ?? []), item]);
+    const list = porMembro.get(key);
+    if (list) {
+      list.push(item);
+    } else {
+      porMembro.set(key, [item]);
+    }
   }
 
   const linhas: ResultadoLinha[] = [];
@@ -118,12 +121,4 @@ export function metaTotal(projeto: ProjetoDoc) {
   return (projeto.metasPrograma ?? []).reduce((sum, item) => sum + item.metaCents, 0);
 }
 
-// An educator sees the teams they follow; an administrator all of them.
-export function teamsVisible(context: PanelContext, equipes: EquipeDoc[]) {
-  if (context.papeis.administrador) {
-    return equipes;
-  }
-  return equipes.filter((equipe) => sameId(equipe.educadorId, context.user._id) || sameId(equipe.capitaoId, context.user._id));
-}
 
-export { oid };

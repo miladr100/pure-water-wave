@@ -36,3 +36,4 @@ fechar.
 - O site público não muda; só quem entra vê o painel.
 - Nada de IA na primeira versão (sugestões por regra).
 - Ordem de entrega: P1+P2 → P3 (RM) → P6 (PWA) → P4 (testemunho) → P5 completo.
+- Papéis mudam no banco na hora; o cookie de sessão (7 dias) só acompanha no próximo login ou quando a pessoa edita o perfil. Tirar alguém de educador não derruba a sessão dele na academia até lá — aceito por enquanto (ver P1).

@@ -1,30 +1,16 @@
 "use client";
 
 import { SupportDownloadCard } from "@/components/support-download-card";
-import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
 import { SupportMaterialsEmpty } from "@/components/support-materials-carousel";
 import { getSupportDownloadsByLanguage } from "@/lib/support-materials";
-import type { SessionPayload } from "@/lib/auth";
 
-type SupportMaterialsPageProps = {
-  session: SessionPayload;
-};
-
-export function SupportMaterialsPage({ session }: SupportMaterialsPageProps) {
+export function SupportMaterialsPage() {
   const { language, t } = useLocale();
-  const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const downloads = getSupportDownloadsByLanguage(language);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">
-      <LibraryHeader
-        title={t.header.supportTitle}
-        subtitle={t.header.supportSubtitle(firstName)}
-        fullName={session.fullName}
-        showSupportMaterialsLink={false}
-        showBackToLibrary
-      />
 
       <main className="mx-auto max-w-7xl px-6 py-10">
         <section className="mb-10">

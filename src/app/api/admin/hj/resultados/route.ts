@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { serverError } from "@/lib/academy/http";
-import { projetoResumo, ref } from "@/lib/hj/data";
+import { projetoResumo } from "@/lib/hj/data";
 import { HJ_PROGRAMAS, type AdminResultados, type HjPrograma } from "@/lib/hj/types";
 
 import { allProjects, buildGrid, educatorContext, metaTotal, porPrograma, projectFor } from "../_lib/shared";
@@ -84,7 +84,6 @@ export async function GET(request: Request) {
           .sort((a, b) => a.nome.localeCompare(b.nome, "pt")),
       },
     };
-    void ref;
     return NextResponse.json(body);
   } catch (error) {
     return serverError("Erro ao carregar resultados", error, "Não foi possível carregar os resultados");

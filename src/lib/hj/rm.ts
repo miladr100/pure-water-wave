@@ -32,7 +32,10 @@ export function novaMeta(
     return Math.max(metaPadraoCents, regra.minimoCents);
   }
   const step = Math.max(1, Math.round(regra.arredondarCents));
-  const alvo = Math.ceil((mediaCents * regra.fator) / step) * step;
+  // Whole cents first: 50000 × 1.1 is 55000.00000000001 in floating point,
+  // which would otherwise round an exact multiple up a whole step.
+  const produto = Math.round(mediaCents * regra.fator);
+  const alvo = Math.ceil(produto / step) * step;
   return Math.max(regra.minimoCents, alvo);
 }
 
@@ -54,8 +57,12 @@ export function fmtReais(cents: number, options: { centavos?: boolean } = {}) {
 }
 
 // "1.250" / "1250,50" / "R$ 1.250,50" typed by a person → cents, or null.
+// A lone dot followed by one or two digits ("350.50", as a numeric keypad
+// types it) is a decimal mark, not a thousands separator.
 export function parseReais(text: string): number | null {
-  const cleaned = text.replace(/[R$\s]/g, "").replace(/\./g, "").replace(",", ".");
+  const compact = text.replace(/[R$\s]/g, "");
+  const dotDecimal = !compact.includes(",") && /^\d*\.\d{1,2}$/.test(compact);
+  const cleaned = dotDecimal ? compact : compact.replace(/\./g, "").replace(",", ".");
   if (cleaned === "" || cleaned === "-") {
     return null;
   }

@@ -308,6 +308,7 @@ export async function PATCH(request: Request) {
         login: session.login,
         fullName: profile.fullName,
         role: session.role,
+        ...(session.admin ? { admin: true } : {}),
         language: profile.language,
       });
       response.cookies.set(getSessionCookieOptions(token));

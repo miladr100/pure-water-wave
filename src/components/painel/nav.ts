@@ -60,7 +60,7 @@ export function navFor(area: ShellArea, papeis: Papeis | null, t: PainelMessages
       { href: "/painel", label: t.nav.inicio, icon: Home, match: ["/painel"], exact: true },
       { href: "/painel/arrecadacao", label: t.nav.arrecadacao, icon: HandCoins, match: ["/painel/arrecadacao"] },
       { href: "/painel/testemunho", label: t.nav.testemunho, icon: Heart, match: ["/painel/testemunho"] },
-      ...(papeis?.capitao || papeis?.educador
+      ...(papeis?.capitao
         ? [{ href: "/painel/equipe", label: t.nav.equipe, icon: Users, match: ["/painel/equipe"] }]
         : []),
       { href: "/painel/perfil", label: t.nav.perfil, icon: UserRound, match: ["/painel/perfil"] },

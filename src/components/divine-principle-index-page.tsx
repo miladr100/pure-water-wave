@@ -9,12 +9,10 @@ import {
   ListTree,
 } from "lucide-react";
 
-import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
 import { TextSpeechControls } from "@/components/text-speech-controls";
 import { Button } from "@/components/ui/button";
 import { useDeviceSpeech } from "@/hooks/use-device-speech";
-import type { SessionPayload } from "@/lib/auth";
 import {
   divinePrincipleHref,
   type DivinePrincipleView,
@@ -22,16 +20,13 @@ import {
 import { getLibraryPdfReaderPath } from "@/lib/library-pdfs";
 
 type DivinePrincipleIndexPageProps = {
-  session: SessionPayload;
   view: DivinePrincipleView;
 };
 
 export function DivinePrincipleIndexPage({
-  session,
   view,
 }: DivinePrincipleIndexPageProps) {
   const { language, t } = useLocale();
-  const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const isRoot = view.id === "";
   const speech = useDeviceSpeech({
     title: view.title,
@@ -42,12 +37,6 @@ export function DivinePrincipleIndexPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">
-      <LibraryHeader
-        title={t.header.dpIndexTitle}
-        subtitle={t.header.dpIndexSubtitle(firstName)}
-        fullName={session.fullName}
-        showBackToLibrary
-      />
 
       <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">

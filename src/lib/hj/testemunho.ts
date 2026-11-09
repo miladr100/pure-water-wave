@@ -36,6 +36,12 @@ export function alertaDe(guest: Jornada, hoje: string): ConvidadoAlerta | null {
     return null;
   }
 
+  // Three weeks of silence in Sistema 1 is its own alert; a week anywhere
+  // is "sem contato".
+  if (guest.etapa === "sistema1" && guest.ultimoContato && daysApart(guest.ultimoContato, hoje) >= DIAS_SISTEMA1_PARADO) {
+    return { tipo: "sistema1_parado", texto: `Sistema 1 parado há ${daysApart(guest.ultimoContato, hoje)} dias` };
+  }
+
   if (guest.ultimoContato && daysApart(guest.ultimoContato, hoje) >= DIAS_SEM_CONTATO) {
     const dias = daysApart(guest.ultimoContato, hoje);
     return { tipo: "sem_contato", texto: `sem contato há ${dias} dias` };
@@ -50,13 +56,6 @@ export function alertaDe(guest: Jornada, hoje: string): ConvidadoAlerta | null {
         tipo: "gateway_parado",
         texto: `Gateway há ${daysApart(guest.datas.gateway, hoje)} dias`,
       };
-    }
-  }
-
-  if (guest.etapa === "sistema1" && guest.ultimoContato) {
-    const parado = daysApart(guest.ultimoContato, hoje);
-    if (parado >= DIAS_SISTEMA1_PARADO) {
-      return { tipo: "sistema1_parado", texto: `Sistema 1 parado há ${parado} dias` };
     }
   }
 

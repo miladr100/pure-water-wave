@@ -159,21 +159,19 @@ export async function loadContext(session: SessionPayload): Promise<PanelContext
   return { session, user, hoje: todayInBrazil(), projeto, equipe, papeis };
 }
 
-// Teams the person may act on as a follower: their own as captain, the
-// ones they educate, all of them as administrator.
+// Teams whose members a person may follow: their own as captain; every
+// team of the project as educator or administrator (docs/painel/P4:
+// "educador/administrador, todos"). Validating a report is narrower — see
+// canValidate.
 export async function teamsInScope(context: PanelContext, projetoId?: Types.ObjectId | null) {
   const filter: Record<string, unknown> = {};
   if (projetoId) {
     filter.projetoId = projetoId;
   }
-  if (context.papeis.administrador) {
+  if (context.papeis.administrador || context.papeis.educador) {
     return (await HjEquipe.find(filter).lean()) as EquipeDoc[];
   }
-  const clauses: Record<string, unknown>[] = [{ capitaoId: context.user._id }];
-  if (context.papeis.educador) {
-    clauses.push({ educadorId: context.user._id });
-  }
-  return (await HjEquipe.find({ ...filter, $or: clauses }).lean()) as EquipeDoc[];
+  return (await HjEquipe.find({ ...filter, capitaoId: context.user._id }).lean()) as EquipeDoc[];
 }
 
 // Who may validate a member's report: the team's captain (but not their

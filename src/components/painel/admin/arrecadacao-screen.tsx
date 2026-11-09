@@ -322,7 +322,7 @@ function RelatoriosDoDia({ projeto }: { projeto: ProjetoResumo }) {
   const [data, setData] = useState(projeto.hoje);
   const [pendentes, setPendentes] = useState(false);
   const list = useApi<{ relatorios: RelatorioRow[]; podeValidar: Record<string, boolean> }>(
-    pendentes ? "/api/admin/hj/relatorios?estado=enviado" : `/api/admin/hj/relatorios?data=${data}`,
+    `/api/admin/hj/relatorios?projeto=${projeto.id}&${pendentes ? "estado=enviado" : `data=${data}`}`,
   );
 
   return (
@@ -378,7 +378,13 @@ function exportCsv(data: AdminResultados) {
     (linha.totalCents / 100).toFixed(2),
     ...dias.map((dia) => (linha.porDia[dia] ? (linha.porDia[dia].liquidoCents / 100).toFixed(2) : "")),
   ]);
-  const csv = [header, ...lines].map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(";")).join("\n");
+  // A cell that starts like a formula (=, +, -, @) gets a leading apostrophe
+  // so a spreadsheet shows it as text instead of evaluating it.
+  const safe = (cell: unknown) => {
+    const text = String(cell);
+    return /^[=+\-@]/.test(text) ? `'${text}` : text;
+  };
+  const csv = [header, ...lines].map((row) => row.map((cell) => `"${safe(cell).replace(/"/g, '""')}"`).join(";")).join("\n");
   const blob = new Blob([`﻿${csv}`], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");

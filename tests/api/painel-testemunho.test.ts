@@ -10,7 +10,7 @@ import type { Acontecimento, ConvidadoDetalhe, ConvidadoRow } from "@/lib/hj/typ
 
 import { jsonRequest, params, readJson } from "../helpers/api";
 import { clearDb, startDb, stopDb } from "../helpers/db";
-import { createAdmin, createConvidado, createMember, createTeamSetup, hoje, signInAsPanel } from "../helpers/hj";
+import { createAdmin, createConvidado, createEquipe, createMember, createTeamSetup, hoje, signInAsPanel } from "../helpers/hj";
 import { resetNextHeaders } from "../helpers/next-headers";
 
 type ErrorBody = { error: string; code?: string };
@@ -51,11 +51,14 @@ describe("guests", () => {
     expect((await readJson<ErrorBody>(await create({ nome: "J" }))).code).toBe("NAME_REQUIRED");
   });
 
-  it("scope: a member sees only their own, the captain the team's, the admin everyone's", async () => {
-    const { membro, capita, colega } = await createTeamSetup();
-    const stranger = await createMember("De outra equipe");
+  it("scope: a member sees only their own, the captain the team's, educators every team's, the admin everyone's", async () => {
+    const { membro, capita, colega, educador, projeto } = await createTeamSetup();
+    const stranger = await createMember("Sem equipe");
+    const other = await createMember("De outra equipe");
+    await createEquipe(projeto._id, { nome: "Equipe 02", programa: "HJR", membroIds: [other._id] });
     await createConvidado(membro._id, { nome: "Do membro" });
     await createConvidado(colega._id, { nome: "Do colega" });
+    await createConvidado(other._id, { nome: "Da outra equipe" });
     await createConvidado(stranger._id, { nome: "De fora" });
 
     await signInAsPanel(membro);
@@ -66,10 +69,27 @@ describe("guests", () => {
     expect((await readJson<{ convidados: ConvidadoRow[] }>(await list("todos"))).convidados.map((c) => c.nome).sort()).toEqual(["Do colega", "Do membro"]);
     expect((await readJson<{ convidados: ConvidadoRow[] }>(await list("meus"))).convidados).toEqual([]);
 
+    // The educator follows every team of the project (not the one of
+    // someone without a team), whichever team they personally educate.
+    resetNextHeaders();
+    await signInAsPanel(educador);
+    expect((await readJson<{ convidados: ConvidadoRow[] }>(await list())).convidados.map((c) => c.nome).sort()).toEqual(["Da outra equipe", "Do colega", "Do membro"]);
+
     resetNextHeaders();
     const admin = await createAdmin();
     await signInAsPanel(admin);
-    expect((await readJson<{ convidados: ConvidadoRow[] }>(await list())).convidados).toHaveLength(3);
+    expect((await readJson<{ convidados: ConvidadoRow[] }>(await list())).convidados).toHaveLength(4);
+  });
+
+  it("a plain member cannot file a guest under a teammate; the captain can", async () => {
+    const { membro, capita, colega } = await createTeamSetup();
+    await signInAsPanel(membro);
+    expect((await readJson<ErrorBody>(await create({ nome: "Intruso", responsavelId: colega._id.toString() }))).code).toBe("OUTSIDE_SCOPE");
+
+    resetNextHeaders();
+    await signInAsPanel(capita);
+    const ok = await create({ nome: "Convidado do colega", responsavelId: colega._id.toString() });
+    expect(ok.status).toBe(201);
   });
 
   it("a member cannot open or edit another member's guest", async () => {

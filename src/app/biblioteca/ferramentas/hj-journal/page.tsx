@@ -22,5 +22,5 @@ export default async function BibliotecaHjJournalPage() {
     redirect("/login");
   }
 
-  return <HjJournalPage session={session} />;
+  return <HjJournalPage />;
 }

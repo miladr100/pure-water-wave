@@ -60,5 +60,5 @@ export default async function BibliotecaPrincipioDivinoIndexadoPage({
     notFound();
   }
 
-  return <DivinePrincipleIndexPage session={session} view={view} />;
+  return <DivinePrincipleIndexPage view={view} />;
 }

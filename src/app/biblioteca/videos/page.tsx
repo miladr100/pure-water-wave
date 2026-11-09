@@ -21,5 +21,5 @@ export default async function BibliotecaVideosPage() {
     redirect("/login");
   }
 
-  return <SupportVideosPage session={session} />;
+  return <SupportVideosPage />;
 }

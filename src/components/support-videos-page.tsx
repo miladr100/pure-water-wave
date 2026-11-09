@@ -1,7 +1,6 @@
 "use client";
 
 import { SupportVideoCard } from "@/components/support-video-card";
-import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
 import {
   SupportMaterialsCarousel,
@@ -18,11 +17,6 @@ import {
   getSupportVideosByLanguage,
   type SupportVideo,
 } from "@/lib/support-materials";
-import type { SessionPayload } from "@/lib/auth";
-
-type SupportVideosPageProps = {
-  session: SessionPayload;
-};
 
 function VideoTrackSection({
   title,
@@ -62,9 +56,8 @@ function VideoTrackSection({
   );
 }
 
-export function SupportVideosPage({ session }: SupportVideosPageProps) {
+export function SupportVideosPage() {
   const { language, t } = useLocale();
-  const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const studyVideos = getSupportVideosByLanguage(language);
   const kit1SupportVideos = getKit1SupportVideos(language);
   const subregion2Videos = getSupportSubregion2Videos(language);
@@ -74,13 +67,6 @@ export function SupportVideosPage({ session }: SupportVideosPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">
-      <LibraryHeader
-        title={t.header.videosTitle}
-        subtitle={t.header.videosSubtitle(firstName)}
-        fullName={session.fullName}
-        showVideosLink={false}
-        showBackToLibrary
-      />
 
       <main className="mx-auto max-w-7xl px-6 py-10">
         <section className="mb-10">

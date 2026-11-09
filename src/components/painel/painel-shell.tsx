@@ -6,7 +6,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { AccountMenu } from "@/components/academy/account-menu";
-import { PROFILE_QUERY } from "@/components/academy/app-header";
 import { NotificationsBell } from "@/components/academy/notifications-bell";
 import { BrandLogo } from "@/components/brand-logo";
 import { LibraryFeedbackButton } from "@/components/library-feedback-button";
@@ -28,6 +27,9 @@ import {
 } from "@/components/ui/sheet";
 import type { SessionPayload } from "@/lib/academy/auth";
 import { cn } from "@/lib/utils";
+
+// Old links open the profile with `?perfil=1`; the shell sends them to the page.
+const PROFILE_QUERY = "perfil";
 
 // The logged-in frame of the HJ Team panel and its administration: the
 // site's header with the area switch beside the logo, a sidebar on the

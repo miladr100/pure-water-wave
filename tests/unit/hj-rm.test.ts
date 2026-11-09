@@ -53,6 +53,12 @@ describe("novaMeta", () => {
     expect(novaMeta(0, regra, 20000, 0)).toBe(30000);
   });
 
+  it("does not let floating point push an exact multiple up a step", () => {
+    // 500 × 1.1 is 55000.00000000001 in JS; the goal must stay R$ 550.
+    expect(novaMeta(50000, { ...regra, fator: 1.1 }, 30000, 4)).toBe(55000);
+    expect(novaMeta(100000, { ...regra, fator: 1.1 }, 30000, 4)).toBe(110000);
+  });
+
   it("survives a zero rounding step", () => {
     expect(novaMeta(41000, { ...regra, arredondarCents: 0 }, 30000, 1)).toBe(53300);
   });
@@ -65,6 +71,14 @@ describe("parseReais", () => {
     expect(parseReais("35,50")).toBe(3550);
     expect(parseReais("R$ 1.250,75")).toBe(125075);
     expect(parseReais(" 0 ")).toBe(0);
+  });
+
+  it("takes a lone dot with up to two decimals as the decimal mark", () => {
+    expect(parseReais("350.50")).toBe(35050);
+    expect(parseReais("350.5")).toBe(35050);
+    expect(parseReais("1.250")).toBe(125000);
+    expect(parseReais("1.250.000")).toBe(125000000);
+    expect(parseReais("1.250,5")).toBe(125050);
   });
 
   it("refuses garbage and negatives", () => {

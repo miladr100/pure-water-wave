@@ -108,11 +108,30 @@ export async function POST(request: Request) {
       validadoEm: null,
     };
 
-    const saved = (await HjRelatorio.findOneAndUpdate(
-      { projetoId: projeto._id, membroId: user._id, data },
-      { $set: values },
-      { upsert: true, new: true },
-    ).lean()) as RelatorioDoc;
+    // The write repeats the "not validated" condition so a validation that
+    // lands between the check above and here is kept, not overwritten; a
+    // first send that races another first send falls back to the same
+    // guarded update instead of a duplicate-key error.
+    let saved: RelatorioDoc | null = null;
+    if (!existing) {
+      try {
+        saved = (await HjRelatorio.create(values)).toObject() as RelatorioDoc;
+      } catch (error) {
+        if ((error as { code?: number }).code !== 11000) {
+          throw error;
+        }
+      }
+    }
+    if (!saved) {
+      saved = (await HjRelatorio.findOneAndUpdate(
+        { projetoId: projeto._id, membroId: user._id, data, estado: { $ne: "validado" } },
+        { $set: values },
+        { new: true },
+      ).lean()) as RelatorioDoc | null;
+    }
+    if (!saved) {
+      return jsonError("Este dia já foi validado; fale com o capitão para alterar", 409, { code: "ALREADY_VALIDATED" });
+    }
 
     const users = await usersById([user._id]);
     const row: RelatorioRow = relatorioRow(saved, users, new Map([[equipe._id.toString(), equipe]]));

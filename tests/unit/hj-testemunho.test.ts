@@ -41,8 +41,9 @@ describe("alertaDe", () => {
     expect(alertaDe(guest("gateway", "2026-11-05", { gateway: "2026-11-01", fichaAssinada: "2026-11-02" }), hoje)).toBeNull();
   });
 
-  it("no contact in three weeks stalls Sistema 1 (but a week already fires sem_contato first)", () => {
-    expect(alertaDe(guest("sistema1", "2026-10-10", {}, 5), hoje)?.tipo).toBe("sem_contato");
+  it("three weeks of silence in Sistema 1 is its own alert; a week is the generic one", () => {
+    expect(alertaDe(guest("sistema1", "2026-10-10", {}, 5), hoje)).toEqual({ tipo: "sistema1_parado", texto: "Sistema 1 parado há 27 dias" });
+    expect(alertaDe(guest("sistema1", "2026-10-28", {}, 5), hoje)?.tipo).toBe("sem_contato");
     expect(alertaDe(guest("sistema1", "2026-11-03", {}, 5), hoje)).toBeNull();
   });
 

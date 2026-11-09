@@ -51,7 +51,9 @@ describe("who may enter the administration", () => {
     await signInAsPanel(educador);
     expect((await getInicio(jsonRequest("/api/admin/hj/inicio"))).status).toBe(200);
     expect((await papeis(membro._id.toString(), { educador: true })).status).toBe(404);
-    expect((await newProject({ nome: "x", tipo: "arrecadacao", inicio: hoje, fim: hoje })).status).toBe(404);
+    expect((await newProject({ nome: "RM", tipo: "arrecadacao", inicio: hoje, fim: hoje })).status).toBe(404);
+    const { projeto } = await (async () => ({ projeto: await createProjeto({ nome: "Outro" }) }))();
+    expect((await editProject(projeto._id.toString(), { nome: "Mexido" })).status).toBe(404);
   });
 });
 
@@ -209,6 +211,7 @@ describe("projects", () => {
     expect((await readJson<ErrorBody>(await newProject({ nome: "RM", tipo: "arrecadacao", inicio: "2026-12-10", fim: "2026-12-01" }))).code).toBe("INVALID_PERIOD");
     expect((await readJson<ErrorBody>(await newProject({ nome: "RM", tipo: "festa", inicio: "2026-12-01", fim: "2026-12-10" }))).code).toBe("INVALID_TYPE");
     expect((await readJson<ErrorBody>(await newProject({ nome: "RM", tipo: "arrecadacao", inicio: "2026-12-01", fim: "2026-12-10", regraNovaMeta: { fator: 9 } }))).code).toBe("INVALID_FACTOR");
+    expect((await readJson<ErrorBody>(await newProject({ nome: "RM", tipo: "arrecadacao", inicio: "2026-12-01", fim: "2026-12-10", regraNovaMeta: null }))).code).toBe("INVALID_RULE");
 
     const projeto = await createProjeto();
     const edited = await editProject(projeto._id.toString(), { nome: "Renomeado", ativo: false });

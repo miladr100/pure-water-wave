@@ -77,6 +77,9 @@ export function validateProject(body: Partial<ProjetoBody>, current: ProjetoDoc 
     }));
   }
   if (body.regraNovaMeta !== undefined) {
+    if (body.regraNovaMeta === null || typeof body.regraNovaMeta !== "object") {
+      return { ok: false, response: jsonError("Regra da nova meta inválida", 400, { code: "INVALID_RULE" }) };
+    }
     const base = current?.regraNovaMeta ?? { fator: 1.3, arredondarCents: 5000, minimoCents: 30000 };
     const fator = Number(body.regraNovaMeta.fator ?? base.fator);
     if (!Number.isFinite(fator) || fator < 1 || fator > 3) {

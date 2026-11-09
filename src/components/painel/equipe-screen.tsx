@@ -8,7 +8,7 @@ import { PainelHeading } from "@/components/painel/painel-shell";
 import { usePainelMessages } from "@/components/painel/use-painel";
 import { RelatorioLinha } from "@/components/painel/validacao";
 import { fmtDia } from "@/lib/hj/dates";
-import type { EquipePainel, RelatorioRow } from "@/lib/hj/types";
+import type { EquipePainel } from "@/lib/hj/types";
 import { cn } from "@/lib/utils";
 
 // The captain's team: who sent today, what waits for validation, and each
@@ -37,10 +37,7 @@ export function EquipeScreen() {
   const { equipe, projeto, hoje, membros, pendentes, historico, totalHojeCents, podeValidar } = team.data;
   const enviados = membros.filter((membro) => membro.hoje && membro.hoje.estado !== "devolvido").length;
 
-  function onChanged(row: RelatorioRow) {
-    void row;
-    team.reload();
-  }
+  const onChanged = () => team.reload();
 
   return (
     <div className="space-y-6 sm:space-y-8">

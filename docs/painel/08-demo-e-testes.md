@@ -20,7 +20,7 @@ MongoDB (nada é mock no navegador):
 - **Educador(a)** (`/admin`): visão geral (por programa e por equipe),
   Arrecadação com as abas Resultados (a planilha, membro × dia, com filtros e
   CSV), Relatórios do dia (validação das equipes que acompanha), Metas e
-  Contabilidade (dinheiro × pix); Testemunho das suas equipes; Pessoas
+  Contabilidade (dinheiro × pix); Testemunho de todas as equipes; Pessoas
   (membros, educadores, pastores, nova conta, importar CSV); Equipes (criar,
   editar, capitão, membros — ninguém em duas equipes do mesmo projeto);
   Academia (a administração da academia como estava).
@@ -85,8 +85,8 @@ celular (390 px), com cada tipo de conta:
   o do Pedro com motivo → histórico → convidados "da equipe" → não consegue
   validar o próprio relatório (fica para o educador).
 - David: visão geral → relatórios do dia (só valida as equipes HJA) →
-  testemunho só das suas equipes → Pessoas sem botões de papel →
-  Organização responde 404 (página e API).
+  testemunho de todas as equipes do projeto (valida só as suas) → Pessoas
+  sem botões de papel → Organização responde 404 (página e API).
 - Yeseong: tornar Carlos educador e administrador e tirar os dois → não pode
   tirar o próprio papel → novo projeto de dezembro copiando as 4 equipes →
   tirar Luana da Equipe 01 e criar a Equipe 03 com ela como capitã → apagar

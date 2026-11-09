@@ -4,28 +4,21 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Pause, Play, Square, Volume2 } from "lucide-react";
 
-import { LibraryHeader } from "@/components/library-header";
 import { useLocale } from "@/components/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { SessionPayload } from "@/lib/auth";
 import {
   getFamilyPledgeAudioUrl,
   getFamilyPledgeItems,
   type FamilyPledgeScript,
 } from "@/lib/family-pledge";
 
-type FamilyPledgePageProps = {
-  session: SessionPayload;
-};
-
 function hasKoreanAudio(script: FamilyPledgeScript) {
   return script === "hangul" || script === "romanized";
 }
 
-export function FamilyPledgePage({ session }: FamilyPledgePageProps) {
+export function FamilyPledgePage() {
   const { language, t } = useLocale();
-  const firstName = session.fullName.trim().split(/\s+/)[0] ?? session.fullName;
   const [script, setScript] = useState<FamilyPledgeScript>("locale");
   const [playingNumber, setPlayingNumber] = useState<number | null>(null);
   const [playingAll, setPlayingAll] = useState(false);
@@ -121,12 +114,6 @@ export function FamilyPledgePage({ session }: FamilyPledgePageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">
-      <LibraryHeader
-        title={t.header.familyPledgeTitle}
-        subtitle={t.header.familyPledgeSubtitle(firstName)}
-        fullName={session.fullName}
-        showBackToLibrary
-      />
 
       <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
