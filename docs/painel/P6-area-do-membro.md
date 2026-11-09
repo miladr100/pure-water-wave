@@ -39,7 +39,8 @@ cada uma limpa:
 
 A **Biblioteca** é o terceiro segmento para quem tem conta da academia
 (Painel · Academia · Biblioteca); dentro dela a barra lateral traz
-Biblioteca, Materiais, Vídeos, Ferramentas e Fale com a IA. Um **pastor** só
+Início, Materiais, Vídeos e Ferramentas (Fale com a IA só aparece quando a
+IA estiver configurada — `OPENAI_API_KEY`). Um **pastor** só
 tem a biblioteca: vê a mesma moldura (barra lateral no computador, barra
 inferior no celular, com as seções da biblioteca) com os menus próprios da
 biblioteca e **sem o switch** — Painel e Academia não existem para ele. Para educadores e administradores o segmento
@@ -62,7 +63,7 @@ estreita.
 Painel:    Início · Arrecadação · Testemunho                     (membro)
            Início · Arrecadação · Equipe · Testemunho            (capitão)
 Academia:  Meus cursos · Cursos · Minhas perguntas               (as telas de hoje)
-Biblioteca: Início · Materiais · Vídeos · Ferramentas · Fale com a IA
+Biblioteca: Início · Materiais · Vídeos · Ferramentas (· Fale com a IA, só com a IA configurada)
 
 O perfil não fica na barra: abre pelo avatar no canto superior direito
 (menu Meu perfil · Sair) e é uma página, com "Instalar no celular" no topo
