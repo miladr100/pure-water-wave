@@ -325,14 +325,25 @@ export function convidadoRow(
   };
 }
 
-// Members a follower may see guests of: themselves plus everyone in the
-// teams in their scope.
+// Members a person may see guests of: themselves, everyone in the teams
+// they follow (captain, educator), everyone at all for an administrator.
+// `equipes` also carries the person's own team, so their guests show it.
 export async function membersInScope(context: PanelContext) {
   const ids = new Set<string>([context.user._id.toString()]);
-  const equipes = await teamsInScope(context, context.projeto?._id ?? null);
-  for (const equipe of equipes) {
+  const followed = await teamsInScope(context, context.projeto?._id ?? null);
+  for (const equipe of followed) {
     for (const id of equipe.membroIds) {
       ids.add(String(id));
+    }
+  }
+  const equipes = [...followed];
+  if (context.equipe && !equipes.some((equipe) => sameId(equipe._id, context.equipe!._id))) {
+    equipes.push(context.equipe);
+  }
+  if (context.papeis.administrador) {
+    const everyone = (await AcademyUser.find().select("_id").lean()) as { _id: Types.ObjectId }[];
+    for (const user of everyone) {
+      ids.add(user._id.toString());
     }
   }
   return { ids, equipes };

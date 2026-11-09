@@ -41,11 +41,11 @@ export async function GET() {
         textReviews: { $elemMatch: { reviewed: false, reflection: false } },
       }),
       AcademyUser.find({ role: "student" })
-        .sort({ createdAt: -1 })
+        .sort({ createdAt: -1, _id: -1 })
         .limit(8)
         .select(USER_ROW_FIELDS)
         .lean() as Promise<UserDoc[]>,
-      Question.find({ status: "open" }).sort({ createdAt: -1 }).limit(8).lean() as Promise<
+      Question.find({ status: "open" }).sort({ createdAt: -1, _id: -1 }).limit(8).lean() as Promise<
         QuestionDoc[]
       >,
     ]);
