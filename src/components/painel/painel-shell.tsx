@@ -49,6 +49,8 @@ export function PainelShell({
   // A pastor reads the library in the same frame, with the library's own
   // menus and no area switch: the library is all they have.
   pastor?: { fullName: string };
+  // whether "Fale com a IA" is configured (library area only)
+  aiChat?: boolean;
   title?: string;
   subtitle?: string;
   // Drawn between the header and the content (the educator's "viewing as
@@ -89,7 +91,7 @@ export function PainelShell({
   }
 
   const papeis = eu?.papeis ?? null;
-  const items = navFor(area, papeis, t, ta);
+  const items = navFor(area, papeis, t, ta, { aiChat });
   const subTabs = area === "admin" ? subTabsFor(pathname, papeis, t) : null;
   const primary = items.slice(0, 5);
   const overflow = items.slice(5);

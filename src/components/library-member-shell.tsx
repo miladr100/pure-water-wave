@@ -15,10 +15,12 @@ import type { SessionPayload } from "@/lib/academy/auth";
 export function LibraryMemberShell({
   session,
   pastor,
+  aiChat,
   children,
 }: {
   session?: SessionPayload;
   pastor?: { fullName: string };
+  aiChat?: boolean;
   children: ReactNode;
 }) {
   const pathname = usePathname() ?? "";
@@ -26,7 +28,7 @@ export function LibraryMemberShell({
     return <>{children}</>;
   }
   return (
-    <PainelShell area="biblioteca" session={session} pastor={pastor}>
+    <PainelShell area="biblioteca" session={session} pastor={pastor} aiChat={aiChat}>
       {children}
     </PainelShell>
   );

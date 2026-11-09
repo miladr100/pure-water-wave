@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { LibraryAiChat } from "@/components/library-ai-chat";
+import { aiChatEnabled } from "@/lib/ai-chat";
 import { getSession, isSystemUserSession } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -20,6 +21,11 @@ export default async function BibliotecaIaPage() {
 
   if (!isSystemUserSession(session)) {
     redirect("/login");
+  }
+
+  // Hidden until the model is configured (see lib/ai-chat.ts).
+  if (!aiChatEnabled()) {
+    redirect("/biblioteca");
   }
 
   return <LibraryAiChat session={session} />;

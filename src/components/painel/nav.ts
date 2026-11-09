@@ -36,15 +36,20 @@ export type SubTab = { href: string; label: string; exact?: boolean };
 
 // The sidebar (computer) and bottom bar (phone) of each area. The phone
 // shows the first five; the rest live behind "Mais".
-export function navFor(area: ShellArea, papeis: Papeis | null, t: PainelMessages, ta: AppMessages): NavItem[] {
+export type NavOptions = { aiChat?: boolean };
+
+export function navFor(area: ShellArea, papeis: Papeis | null, t: PainelMessages, ta: AppMessages, options: NavOptions = {}): NavItem[] {
   if (area === "biblioteca") {
-    return [
+    const items: NavItem[] = [
       { href: "/biblioteca", label: t.nav.inicio, icon: Home, match: ["/biblioteca"], exact: true },
       { href: "/biblioteca/materiais", label: t.nav.materiais, icon: FileText, match: ["/biblioteca/materiais"] },
       { href: "/biblioteca/videos", label: t.nav.videos, icon: PlayCircle, match: ["/biblioteca/videos"] },
       { href: "/biblioteca/ferramentas", label: t.nav.ferramentas, icon: Wrench, match: ["/biblioteca/ferramentas"] },
-      { href: "/biblioteca/ia", label: t.nav.ia, icon: Sparkles, match: ["/biblioteca/ia"] },
     ];
+    if (options.aiChat) {
+      items.push({ href: "/biblioteca/ia", label: t.nav.ia, icon: Sparkles, match: ["/biblioteca/ia"] });
+    }
+    return items;
   }
 
   if (area === "academia") {
