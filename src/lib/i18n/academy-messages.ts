@@ -380,10 +380,13 @@ export type AppMessages = {
     lessonDescription: string;
     lessonDuration: string;
     lessonVideo: string;
-    providerYoutube: string;
     providerBunny: string;
-    youtubeIdHint: string;
     bunnyIdHint: string;
+    pickLibraryVideo: string;
+    libraryVideoSearch: string;
+    libraryVideoNone: string;
+    libraryVideoLoading: string;
+    bunnyNotConfigured: string;
     uploadVideo: string;
     uploading: (pct: number) => string;
     processing: string;
@@ -815,10 +818,13 @@ const pt: AppMessages = {
     lessonDescription: "Descrição",
     lessonDuration: "Duração (min)",
     lessonVideo: "Vídeo",
-    providerYoutube: "YouTube",
-    providerBunny: "Bunny Stream (privado)",
-    youtubeIdHint: "Cole o link ou o ID do vídeo no YouTube.",
-    bunnyIdHint: "GUID do vídeo na biblioteca Bunny Stream, ou envie o arquivo.",
+    providerBunny: "Vídeo (Bunny Stream)",
+    bunnyIdHint: "Escolha um vídeo que já está na biblioteca, cole o GUID ou envie o arquivo.",
+    pickLibraryVideo: "Escolher da biblioteca",
+    libraryVideoSearch: "Buscar vídeo…",
+    libraryVideoNone: "Nenhum vídeo encontrado.",
+    libraryVideoLoading: "Carregando a biblioteca…",
+    bunnyNotConfigured: "Bunny Stream não está configurado neste ambiente.",
     uploadVideo: "Enviar vídeo",
     uploading: (pct) => `Enviando... ${pct}%`,
     processing: "Processando no Bunny...",
@@ -1256,10 +1262,13 @@ const en: AppMessages = {
     lessonDescription: "Description",
     lessonDuration: "Duration (min)",
     lessonVideo: "Video",
-    providerYoutube: "YouTube",
-    providerBunny: "Bunny Stream (private)",
-    youtubeIdHint: "Paste the YouTube link or video ID.",
-    bunnyIdHint: "Video GUID in the Bunny Stream library, or upload the file.",
+    providerBunny: "Video (Bunny Stream)",
+    bunnyIdHint: "Pick a video already in the library, paste its GUID or upload the file.",
+    pickLibraryVideo: "Pick from the library",
+    libraryVideoSearch: "Search videos…",
+    libraryVideoNone: "No video found.",
+    libraryVideoLoading: "Loading the library…",
+    bunnyNotConfigured: "Bunny Stream is not configured in this environment.",
     uploadVideo: "Upload video",
     uploading: (pct) => `Uploading... ${pct}%`,
     processing: "Processing on Bunny...",
@@ -1697,10 +1706,13 @@ const es: AppMessages = {
     lessonDescription: "Descripción",
     lessonDuration: "Duración (min)",
     lessonVideo: "Video",
-    providerYoutube: "YouTube",
-    providerBunny: "Bunny Stream (privado)",
-    youtubeIdHint: "Pega el enlace o el ID del video de YouTube.",
-    bunnyIdHint: "GUID del video en la biblioteca Bunny Stream, o sube el archivo.",
+    providerBunny: "Video (Bunny Stream)",
+    bunnyIdHint: "Elige un video que ya está en la biblioteca, pega el GUID o sube el archivo.",
+    pickLibraryVideo: "Elegir de la biblioteca",
+    libraryVideoSearch: "Buscar video…",
+    libraryVideoNone: "No se encontró ningún video.",
+    libraryVideoLoading: "Cargando la biblioteca…",
+    bunnyNotConfigured: "Bunny Stream no está configurado en este ambiente.",
     uploadVideo: "Subir video",
     uploading: (pct) => `Subiendo... ${pct}%`,
     processing: "Procesando en Bunny...",

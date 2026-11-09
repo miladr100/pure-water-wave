@@ -10,7 +10,7 @@ export type VideoProvider = (typeof VIDEO_PROVIDERS)[number];
 // Stream is the private, token-signed option the FFPUM academy uses.
 const videoSchema = new Schema(
   {
-    provider: { type: String, enum: VIDEO_PROVIDERS, default: "youtube" },
+    provider: { type: String, enum: VIDEO_PROVIDERS, default: "bunny" },
     youtubeId: { type: String, default: "" },
     bunnyVideoId: { type: String, default: "" },
   },

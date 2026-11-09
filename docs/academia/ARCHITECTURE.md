@@ -160,7 +160,7 @@ recuperação de senha ficam sempre no tema claro.
 
 ## Vídeo
 
-Aulas no YouTube tocam com a IFrame API (progresso lido a cada segundo,
+Toda aula nova é Bunny (decisão de 09/11/2026; o YouTube fica só para dados antigos). Aulas no YouTube tocam com a IFrame API (progresso lido a cada segundo,
 teto de adiantamento aplicado com `seekTo`). Aulas no Bunny tocam HLS
 assinado num `<video>` (hls.js) com o teto aplicado no scrubber, nos botões
 ±10 s e no evento `seeking` do elemento. Educadores veem tudo sem teto e sem

@@ -70,7 +70,9 @@ type SeedLesson = {
   chapter?: number;
   title: Localized;
   description: Localized;
-  youtubeId: string | null;
+  // A video in the FFPUM Bunny Stream library (the shared one).
+  bunnyVideoId: string;
+  durationMinutes?: number;
 };
 
 type SeedModule = {
@@ -93,7 +95,7 @@ type SeedCourse = {
     prerequisiteSlugs?: string[];
   };
   modules: SeedModule[];
-  lessonDefaults: { durationMinutes: number; published: boolean; provider: "youtube" | "bunny" };
+  lessonDefaults: { durationMinutes: number; published: boolean };
   lessons: SeedLesson[];
   activities: SeedActivity[];
 };
@@ -198,8 +200,8 @@ async function seedCourse(data: SeedCourse) {
           moduleId: moduleId(moduleNumberFor(lesson, data.modules)),
           title: normalizeLocalized(lesson.title),
           description: normalizeLocalized(lesson.description),
-          durationMinutes: data.lessonDefaults.durationMinutes,
-          video: { provider: data.lessonDefaults.provider, youtubeId: lesson.youtubeId ?? "", bunnyVideoId: "" },
+          durationMinutes: lesson.durationMinutes ?? data.lessonDefaults.durationMinutes,
+          video: { provider: "bunny", youtubeId: "", bunnyVideoId: lesson.bunnyVideoId },
           materials: [],
           published: data.lessonDefaults.published,
         },

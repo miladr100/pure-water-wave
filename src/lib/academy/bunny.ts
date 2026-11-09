@@ -115,3 +115,52 @@ export async function getVideo(guid: string) {
     resolutions: video.availableResolutions ?? null,
   };
 }
+
+export type LibraryVideo = {
+  guid: string;
+  title: string;
+  durationMinutes: number;
+  state: "ready" | "processing" | "error";
+  // The Bunny collection's name, or "" for videos outside a collection.
+  collection: string;
+};
+
+// The library's videos, newest first, so an educator can pick one that is
+// already there instead of pasting its GUID. Collections become group labels.
+export async function listLibraryVideos(): Promise<LibraryVideo[]> {
+  const headers = { AccessKey: apiKey() };
+  const collectionsRes = await fetch(`${API}/library/${libraryId()}/collections?itemsPerPage=100`, { headers });
+  const collections = new Map<string, string>();
+  if (collectionsRes.ok) {
+    const json = (await collectionsRes.json()) as { items?: { guid: string; name: string }[] };
+    for (const item of json.items ?? []) {
+      collections.set(item.guid, item.name);
+    }
+  }
+
+  const videos: LibraryVideo[] = [];
+  for (let page = 1; page <= 5; page += 1) {
+    const res = await fetch(`${API}/library/${libraryId()}/videos?page=${page}&itemsPerPage=100&orderBy=date`, { headers });
+    if (!res.ok) {
+      throw new Error(`bunny_list_failed_${res.status}`);
+    }
+    const json = (await res.json()) as {
+      items: { guid: string; title: string; length?: number; status: number; collectionId?: string | null }[];
+      totalItems: number;
+    };
+    for (const item of json.items) {
+      videos.push({
+        guid: item.guid,
+        title: item.title,
+        durationMinutes: Math.max(1, Math.round((item.length ?? 0) / 60)),
+        state: item.status === 5 ? "error" : item.status >= 3 ? "ready" : "processing",
+        collection: item.collectionId ? (collections.get(item.collectionId) ?? "") : "",
+      });
+    }
+    if (videos.length >= json.totalItems || json.items.length === 0) {
+      break;
+    }
+  }
+
+  return videos;
+}

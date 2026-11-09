@@ -1,7 +1,10 @@
 {
   "course": {
     "slug": "vida-de-fe",
-    "title": { "pt": "Vida de Fé", "es": "Vida de Fe" },
+    "title": {
+      "pt": "Vida de Fé",
+      "es": "Vida de Fe"
+    },
     "description": {
       "pt": "Dois encontros para pôr em prática o que o Kit 1 ensinou. Abre ao concluir o Princípio Divino — Kit 1.",
       "es": "Dos encuentros para poner en práctica lo que enseñó el Kit 1. Se abre al concluir el Principio Divino — Kit 1."
@@ -12,32 +15,51 @@
     "order": 2,
     "coverUrl": "/assets/young-1.jpeg",
     "speaker": "",
-    "prerequisiteSlugs": ["principio-divino-kit-1"]
+    "prerequisiteSlugs": [
+      "principio-divino-kit-1"
+    ]
   },
   "modules": [
-    { "number": 1, "title": { "pt": "Fundamentos da vida de fé", "es": "Fundamentos de la vida de fe" } }
+    {
+      "number": 1,
+      "title": {
+        "pt": "Fundamentos da vida de fé",
+        "es": "Fundamentos de la vida de fe"
+      }
+    }
   ],
-  "lessonDefaults": { "durationMinutes": 25, "published": true, "provider": "youtube" },
+  "lessonDefaults": {
+    "durationMinutes": 25,
+    "published": true
+  },
   "lessons": [
     {
       "number": 1,
       "module": 1,
-      "title": { "pt": "Viver com a mente original", "es": "Vivir con la mente original" },
+      "title": {
+        "pt": "Viver com a mente original",
+        "es": "Vivir con la mente original"
+      },
       "description": {
         "pt": "Revisitar a introdução geral com a pergunta: como a mente original orienta as decisões de cada dia?",
         "es": "Volver a la introducción general con la pregunta: ¿cómo orienta la mente original las decisiones de cada día?"
       },
-      "youtubeId": "WNBzectoJPU"
+      "bunnyVideoId": "78f48bbf-164e-4529-8077-7cb5068a64ec",
+      "durationMinutes": 22
     },
     {
       "number": 2,
       "module": 1,
-      "title": { "pt": "Harmonia entre mente e corpo", "es": "Armonía entre mente y cuerpo" },
+      "title": {
+        "pt": "Harmonia entre mente e corpo",
+        "es": "Armonía entre mente y cuerpo"
+      },
       "description": {
         "pt": "O Princípio da Criação aplicado à vida pessoal: a união de mente e corpo como primeira bênção.",
         "es": "El Principio de la Creación aplicado a la vida personal: la unidad entre mente y cuerpo como primera bendición."
       },
-      "youtubeId": "-fwCMLda1z4"
+      "bunnyVideoId": "182ef36d-0026-42a0-925a-6e490d707d21",
+      "durationMinutes": 30
     }
   ],
   "activities": [
@@ -60,10 +82,34 @@
             "es": "¿Por medio de qué realiza el ser humano la primera bendición?"
           },
           "options": [
-            { "text": { "pt": "Acumulando conhecimento", "es": "Acumulando conocimiento" }, "correct": false },
-            { "text": { "pt": "Da união de mente e corpo tendo Deus como centro", "es": "De la unidad entre mente y cuerpo teniendo a Dios como centro" }, "correct": true },
-            { "text": { "pt": "Dominando os anjos", "es": "Dominando a los ángeles" }, "correct": false },
-            { "text": { "pt": "Vivendo isolado do mundo", "es": "Viviendo aislado del mundo" }, "correct": false }
+            {
+              "text": {
+                "pt": "Acumulando conhecimento",
+                "es": "Acumulando conocimiento"
+              },
+              "correct": false
+            },
+            {
+              "text": {
+                "pt": "Da união de mente e corpo tendo Deus como centro",
+                "es": "De la unidad entre mente y cuerpo teniendo a Dios como centro"
+              },
+              "correct": true
+            },
+            {
+              "text": {
+                "pt": "Dominando os anjos",
+                "es": "Dominando a los ángeles"
+              },
+              "correct": false
+            },
+            {
+              "text": {
+                "pt": "Vivendo isolado do mundo",
+                "es": "Viviendo aislado del mundo"
+              },
+              "correct": false
+            }
           ]
         },
         {

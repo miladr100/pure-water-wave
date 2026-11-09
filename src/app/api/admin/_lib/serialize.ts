@@ -240,7 +240,7 @@ export function adminLesson(lesson: LessonDoc, hasProgress: boolean): AdminLesso
     description: lesson.description ?? { pt: "", en: "", es: "" },
     durationMinutes: lesson.durationMinutes ?? 0,
     video: {
-      provider: lesson.video?.provider ?? "youtube",
+      provider: lesson.video?.provider ?? "bunny",
       youtubeId: lesson.video?.youtubeId ?? "",
       bunnyVideoId: lesson.video?.bunnyVideoId ?? "",
     },

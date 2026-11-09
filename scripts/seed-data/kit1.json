@@ -73,8 +73,7 @@
   ],
   "lessonDefaults": {
     "durationMinutes": 25,
-    "published": true,
-    "provider": "youtube"
+    "published": true
   },
   "lessons": [
     {
@@ -84,7 +83,6 @@
         "pt": "Introdução Geral",
         "es": "Introducción General"
       },
-      "youtubeId": "WNBzectoJPU",
       "youtubeIdEs": "QbLgx_qku_A",
       "description": {
         "pt": "A mente original e a mente má em conflito dentro de nós: a origem do sofrimento e a missão da nova verdade.",
@@ -182,7 +180,9 @@
             "es": "Al conocer la dirección de vida presentada por la nueva verdad y actuar de acuerdo con la mente original, los conflictos internos se resuelven, proporcionando verdadera paz y felicidad."
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "785139dd-c0cc-4d6f-9e48-04cd2ce219bc",
+      "durationMinutes": 33
     },
     {
       "number": 2,
@@ -191,7 +191,6 @@
         "pt": "Princípio da Criação (Parte 1)",
         "es": "Principio de la creación (Parte 1)"
       },
-      "youtubeId": "-fwCMLda1z4",
       "youtubeIdEs": "b2EKnJRqDAQ",
       "description": {
         "pt": "Conhecer Deus pelos elementos comuns da Sua criação: características duais, ação de dar e receber e as Três Bênçãos.",
@@ -445,7 +444,9 @@
             "es": "El invitado debe entender que, según el Principio Divino, la vida en la tierra es un período temporal y decisivo de crecimiento en el que el ser humano desarrolla su carácter, forma su amor verdadero y cumple su responsabilidad personal. Cada día es una oportunidad para perfeccionar mente y cuerpo centrados en el bien. Esta vida no es el final, sino una etapa de preparación para la continuación de la existencia en el mundo espiritual, donde el ser humano vive eternamente según el resultado de lo que construyó en su vida terrenal. Por eso, lo más importante no es lo material ni la duración de la vida, sino cómo se vivió, qué carácter se formó y qué tipo de amor se cultivó."
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "f40c768a-bb86-49f5-9315-5dca84a5fce1",
+      "durationMinutes": 90
     },
     {
       "number": 3,
@@ -454,7 +455,6 @@
         "pt": "A Queda do Homem",
         "es": "La Caída del Hombre"
       },
-      "youtubeId": "uCIHiJlXyqw",
       "youtubeIdEs": "ZF-LhCP95Ps",
       "description": {
         "pt": "O relato simbólico do Éden: quem era a serpente, o que foi o fruto e como a Queda inseriu a linhagem de Satanás na humanidade.",
@@ -765,7 +765,9 @@
             "es": "El invitado debe aprender que, aunque Dios sea todopoderoso, Él otorgó al ser humano una parte de ese poder mediante la \"porción de responsabilidad\", lo que significa que fuimos creados con libertad real para crecer, elegir y desarrollar nuestra madurez espiritual. Si Dios interviniera directamente en todo, el ser humano perdería su voluntad y no podría alcanzar el propósito de ser un ser libre y responsable. Por eso, el amor de Dios respeta nuestra libertad para que podamos perfeccionarnos voluntariamente y convertirnos en verdaderos hijos con mérito propio."
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "21dd8752-fa74-4df5-a19c-a4183c758e25",
+      "durationMinutes": 77
     },
     {
       "number": 4,
@@ -774,7 +776,6 @@
         "pt": "Consumação da História Humana (Escatologia)",
         "es": "Consumación de la Historia Humana (Escatología)"
       },
-      "youtubeId": "vLA-nv_dnM4",
       "youtubeIdEs": "nrWNfsdhHl8",
       "description": {
         "pt": "Por que Deus não desiste da restauração e o que são de fato os Últimos Dias: o fim da era do mal, não um dia de calamidades.",
@@ -895,7 +896,9 @@
             "es": "Invita a reflexionar sobre qué actitud tendría la persona frente a la verdad y el cambio espiritual en cada época."
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "95318048-ead9-4c84-ba5b-9ee9e5de6a7d",
+      "durationMinutes": 62
     },
     {
       "number": 5,
@@ -904,7 +907,6 @@
         "pt": "A Missão do Messias",
         "es": "La Misión del Mesías"
       },
-      "youtubeId": "9_1Bz3_JTLc",
       "youtubeIdEs": "W-sJRPuprPE",
       "description": {
         "pt": "Jesus veio realizar o Reino do Céu na terra; por que foi à cruz e o que ficou para a Segunda Vinda.",
@@ -1044,7 +1046,9 @@
             "es": "El invitado debe entender que la Biblia no es un libro de \"historias inmutables\", sino un mapa vivo. Si seguimos leyendo las Escrituras de la misma manera que los fariseos las leían —enfocándonos solo en la letra y la tradición— corremos el riesgo de rechazar al Señor nuevamente cuando Él regrese. La Biblia nos llama a tener una fe dinámica, humilde y profundamente conectada con el sufrimiento y la esperanza de Dios."
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "8879678c-ed16-4a94-b4b4-d4bbe7fbf9ec",
+      "durationMinutes": 72
     },
     {
       "number": 6,
@@ -1053,7 +1057,6 @@
         "pt": "Ressurreição",
         "es": "Resurrección"
       },
-      "youtubeId": "e1QOVtz6dCA",
       "youtubeIdEs": "78_dg5JR5xA",
       "description": {
         "pt": "Vida e morte espirituais: ressurreição é o espírito passar do domínio de Satanás para o domínio do amor de Deus.",
@@ -1174,7 +1177,9 @@
             "es": "La voluntad de Dios es absoluta y busca establecer el Reino de los Cielos en la Tierra."
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "e257b015-5a4c-4e70-8f6b-4014002a761b",
+      "durationMinutes": 76
     },
     {
       "number": 7,
@@ -1183,7 +1188,6 @@
         "pt": "Predestinação",
         "es": "Predestinación"
       },
-      "youtubeId": "HRv9im01yuc",
       "youtubeIdEs": "FdNqHIshqSU",
       "description": {
         "pt": "A Vontade de Deus é absoluta, mas o seu cumprimento depende da Porção de Responsabilidade Humana.",
@@ -1247,7 +1251,9 @@
             "es": "Asumir la responsabilidad por tu vida: En este contexto, queda más claro que nuestra vida no está predestinada a seguir un camino determinado, sino que es el resultado de nuestras acciones conscientes. Reflexiona sobre tu compromiso contigo mismo, con tus valores y con el propósito que sientes que Dios tiene para ti. Estás llamado a ser una parte activa de ese propósito."
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "1b9d36d0-1de1-4ae6-a1b5-a613ae4fe618",
+      "durationMinutes": 29
     },
     {
       "number": 8,
@@ -1256,7 +1262,6 @@
         "pt": "Cristologia",
         "es": "Cristologia"
       },
-      "youtubeId": "3Hxd7yc4LAQ",
       "youtubeIdEs": "Q1V1WzOtry4",
       "description": {
         "pt": "O valor da pessoa que cumpriu a finalidade da criação, o valor de Jesus e o significado de renascer.",
@@ -1377,7 +1382,9 @@
             "es": ""
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "c01d8ae3-db24-45c7-a819-a4c948077c15",
+      "durationMinutes": 36
     },
     {
       "number": 9,
@@ -1386,7 +1393,6 @@
         "pt": "Princípios da Restauração",
         "es": "Princípios de la Restauración"
       },
-      "youtubeId": "7FCeFKcD9a8",
       "youtubeIdEs": "rd5WKAoJlRo",
       "description": {
         "pt": "O trabalho de Deus para restaurar o ser humano decaído: indenização, Fundamento de Fé e Fundamento de Substância.",
@@ -1545,7 +1551,9 @@
             "es": "La construcción del Fundamento de la Sustancia es un proceso de transformación. No se trata solo de eliminar comportamientos negativos, sino de transformar profundamente nuestra naturaleza y vivir de acuerdo con el propósito original de Dios. Esto requiere un compromiso diario con la fe, el cambio interior y la materialización de la palabra de Dios en nuestras acciones. Al hacer esto, estarás más alineado con el plan divino y más cerca de lo que Dios desea realizar en tu vida."
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "66d334d7-3ae4-4ab8-8afc-2886baab945d",
+      "durationMinutes": 44
     },
     {
       "number": 10,
@@ -1554,7 +1562,6 @@
         "pt": "A Família de Adão",
         "es": "La Familia de Adán"
       },
-      "youtubeId": "Rs8jHayliGY",
       "youtubeIdEs": "o7uuSLBjMh8",
       "description": {
         "pt": "Abel estabelece o Fundamento de Fé; a falha de Caim adia a providência até Noé.",
@@ -1656,7 +1663,9 @@
             "es": ""
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "8981f45f-b279-49e2-841c-2eae91c43ebc",
+      "durationMinutes": 32
     },
     {
       "number": 11,
@@ -1665,7 +1674,6 @@
         "pt": "A Família de Noé",
         "es": "La Família de Noé"
       },
-      "youtubeId": "EYppiYu0dS4",
       "youtubeIdEs": "baSebczWrjw",
       "description": {
         "pt": "Noé constrói a arca durante 120 anos e realiza o Fundamento de Fé; o erro de Cam abre caminho a Satanás.",
@@ -1767,7 +1775,9 @@
             "es": "Es importante resaltar la necesidad de examinar nuestros propios pensamientos, reflexionando si, en alguna medida, aún nos asemejamos a la actitud de Cam, y si nos hemos vigilado al respecto. La prueba de la desnudez no tenía como objetivo la desnudez en sí, sino que fue una ocasión providencial utilizada por Dios para probar el corazón y el pensamiento de Cam, revelando si aún permanecían raíces de la naturaleza caída o si ya había alcanzado un estado de purificación."
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "96baceee-a326-42b8-995e-1fe93ee6316e",
+      "durationMinutes": 34
     },
     {
       "number": 12,
@@ -1776,7 +1786,6 @@
         "pt": "A Família de Abraão",
         "es": "La Familia de Abraham"
       },
-      "youtubeId": "dW_MkYRxmow",
       "youtubeIdEs": "dks15dQKXJE",
       "description": {
         "pt": "A oferta não dividida de Abraão, a oferta de Isaque e a vitória de Jacó sobre Esaú.",
@@ -1859,7 +1868,9 @@
             "es": ""
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "d87286cf-d27e-43f0-bac2-77957c9233fe",
+      "durationMinutes": 48
     },
     {
       "number": 13,
@@ -1868,7 +1879,6 @@
         "pt": "A providência centrada em Moisés",
         "es": "La providencia centrada en Moisés"
       },
-      "youtubeId": "Yah9cPvCmEM",
       "youtubeIdEs": "xlVr42sc5DA",
       "description": {
         "pt": "Os três cursos de Moisés para levar Israel a Canaã e por que Josué o substituiu.",
@@ -1951,7 +1961,9 @@
             "es": "Transmita al invitado que el fundamento de substancia se establece cuando existe unidad de corazón con el líder elegido por Dios, lo que permite reparar los errores del pasado y avanzar en la providencia, como ocurrió con Josué y la segunda generación que lograron la victoria al entrar en Canaán, no solo por su capacidad individual, sino por la confianza absoluta de “seguir juntos, incluso frente a la muerte”."
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "7050bdf5-a442-4640-a691-bd3c9f3f995e",
+      "durationMinutes": 63
     },
     {
       "number": 14,
@@ -1960,7 +1972,6 @@
         "pt": "A Providência centrada em Jesus",
         "es": "La Providencia centrada en Jesús"
       },
-      "youtubeId": "wdg1QMAFws0",
       "youtubeIdEs": "NxMEj4l7wK8",
       "description": {
         "pt": "A dúvida de João Batista, a descrença do povo e como Jesus restaurou espiritualmente o fundamento após a cruz.",
@@ -2043,7 +2054,9 @@
             "es": "Invita al participante a reflexionar si realmente se está preparando para recibir la Segunda Venida. ¿Está alineando no solo su corazón, sino también su vida diaria con este propósito?"
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "6a0f87ab-2a33-4f19-bf04-4151ae748f61",
+      "durationMinutes": 43
     },
     {
       "number": 15,
@@ -2052,7 +2065,6 @@
         "pt": "Paralelo Histórico",
         "es": "Paralelos Históricos"
       },
-      "youtubeId": "lMqfkxzWGQg",
       "youtubeIdEs": "8WPlkmWjleo",
       "description": {
         "pt": "Por que a história se repete: os períodos providenciais paralelos entre Israel e o cristianismo.",
@@ -2135,7 +2147,9 @@
             "es": "Invita al participante a compartir qué está haciendo en su vida para prepararse para la Segunda Venida, o qué acciones concretas pretende tomar a partir de ahora."
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "2fcbd708-787f-4e35-9f9d-d61442fae533",
+      "durationMinutes": 49
     },
     {
       "number": 16,
@@ -2144,7 +2158,6 @@
         "pt": "A Segunda Vinda",
         "es": "La Segunda Llegada"
       },
-      "youtubeId": "pLLQIZzRncM",
       "youtubeIdEs": "jX_V-vzP_Vk",
       "description": {
         "pt": "Quando, como e onde Cristo retorna: nascido em carne, entre 1918 e 1930, num país do Oriente.",
@@ -2303,7 +2316,9 @@
             "es": "Recibir al Señor de la Segunda Venida, más que un evento externo, implica una actitud interna. Es preguntarme si realmente estoy dispuesto a cambiar, a revisar mis ideas, a salir de lo conocido. Porque no se trata solo de creer, sino de actuar y transformar mi vida en algo coherente con esa verdad."
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "bbdca816-53a5-41ab-abcb-181906d0456c",
+      "durationMinutes": 60
     },
     {
       "number": 17,
@@ -2312,7 +2327,6 @@
         "pt": "Conclusão",
         "es": "Conclusión"
       },
-      "youtubeId": "pLLQIZzRncM",
       "youtubeIdEs": "jX_V-vzP_Vk",
       "description": {
         "pt": "Viver segundo os Princípios originais de Deus: pureza sexual e um corpo preservado como templo de Deus.",
@@ -2330,7 +2344,9 @@
             "es": "Al concluir este estudio, percibimos la importancia de orientar nuestras vidas de acuerdo con los Principios originales de Dios. a) La importancia de una vida de Pureza Sexual: La importancia de la pureza sexual es destacada en el Principio Divino, pues la Caída del ser humano, resultante de la relación ilícita entre un ángel y los primeros antepasados humanos (Adán y Eva), trajo una inmensa tristeza y sufrimiento a Dios y a la humanidad. Al comprender plenamente este contenido, se hace evidente la gravedad de una vida promiscua, que repite los mismos errores de la Caída. De esta manera, es de suma importancia orientar nuestras vidas con base en el principio de la pureza sexual. b) La importancia de vivir sin alcohol, drogas y cigarrillos: A través del Principio Divino, aprendemos que nuestro cuerpo es el templo de Dios (1 Cor. 3:16). Por lo tanto, comprendemos que al perjudicar nuestro cuerpo por medio del consumo de alcohol, drogas y cigarrillos, estamos descuidando los Principios originales con los cuales fuimos creados por Dios. De esta manera, se vuelve esencial apartarse de estos vicios, que impiden nuestra jornada hacia una vida plena y feliz. Al preservar nuestro cuerpo como un templo sagrado, buscamos honrar los principios fundamentales que rigen nuestra existencia."
           }
         }
-      ]
+      ],
+      "bunnyVideoId": "bbdca816-53a5-41ab-abcb-181906d0456c",
+      "durationMinutes": 60
     }
   ],
   "activities": [

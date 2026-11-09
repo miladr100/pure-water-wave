@@ -73,7 +73,13 @@ Novas (opcionais):
 | `BUNNY_STREAM_LIBRARY_ID`, `BUNNY_STREAM_API_KEY`, `BUNNY_STREAM_CDN_HOST`, `BUNNY_STREAM_TOKEN_KEY`, `BUNNY_URL_TTL_SECONDS` | Só para aulas com vídeo privado no Bunny Stream (ver 4). |
 | `SEED_TUTOR_EMAIL`, `SEED_TUTOR_PASSWORD`, `SEED_TUTOR_NAME`, `SEED_STUDENT_EMAIL`, `SEED_STUDENT_PASSWORD` | Só para `npm run seed`. |
 
-## 4. Vídeo — YouTube ou Bunny Stream
+## 4. Vídeo — Bunny Stream (YouTube só para dados antigos)
+
+Desde 09/11/2026 a academia usa a mesma biblioteca Bunny Stream da academia
+da FFPUM (4 variáveis `BUNNY_STREAM_*`, já no projeto `pww-painel`). O diálogo
+da aula lista os vídeos que já estão na biblioteca (`GET /api/admin/videos`),
+aceita o GUID ou envia o arquivo por TUS. O que segue descreve os dois
+provedores como o código ainda os conhece.
 
 **YouTube** não precisa de nada: no editor de aulas, cole o link. Um vídeo
 "não listado" continua acessível a quem tiver o link, e o YouTube pode

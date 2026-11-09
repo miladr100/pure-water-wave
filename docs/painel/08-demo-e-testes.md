@@ -107,7 +107,8 @@ celular (390 px), com cada tipo de conta:
   Biblioteca: adicionar livro e vídeo, ocultar e publicar; Ana e o pastor
   veem os itens na biblioteca; David recebe 404 em `/admin/biblioteca`.
 - Academia (09/11): David cria o curso "Fundamentos da Fé (teste)" pela
-  interface — módulos, aulas no YouTube com material, atividade do módulo com
+  interface — módulos, aulas com vídeo da biblioteca Bunny Stream (a mesma da
+  FFPUM: escolher da lista, colar o GUID ou enviar o arquivo) e material, atividade do módulo com
   os cinco tipos de pergunta, atividade final, publicar. Ana se inscreve: o
   módulo 2 e a atividade final nascem bloqueados (também na API: 403), a
   atividade do módulo abre quando a aula termina, reprova com 0 % e vê a
