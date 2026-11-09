@@ -144,7 +144,7 @@ export function HjJournalPage() {
   );
 
   const loadEntry = useCallback(
-    async (nextDayNumber?: number) => {
+    async function loadEntry(nextDayNumber?: number) {
       setIsLoading(true);
       setError(null);
       setInfo(null);

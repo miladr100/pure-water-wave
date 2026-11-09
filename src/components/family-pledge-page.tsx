@@ -25,6 +25,16 @@ export function FamilyPledgePage() {
   const items = getFamilyPledgeItems(script, language);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const queueRef = useRef<number[]>([]);
+  // Scripts without Korean audio cannot be playing: the state is adjusted
+  // during render and the audio element is silenced in an effect below.
+  const [seenScript, setSeenScript] = useState(script);
+  if (seenScript !== script) {
+    setSeenScript(script);
+    if (!hasKoreanAudio(script)) {
+      setPlayingAll(false);
+      setPlayingNumber(null);
+    }
+  }
 
   const stopAudio = () => {
     queueRef.current = [];
@@ -106,10 +116,17 @@ export function FamilyPledgePage() {
   }, []);
 
   useEffect(() => {
-    if (!hasKoreanAudio(script)) {
-      stopAudio();
+    if (hasKoreanAudio(script)) {
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    queueRef.current = [];
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+    }
   }, [script]);
 
   return (

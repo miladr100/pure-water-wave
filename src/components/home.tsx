@@ -782,7 +782,7 @@ export default function Home() {
                   >
                     <Quote className="h-6 w-6 text-primary/50" />
                     <blockquote className="mt-3 text-foreground/90 leading-relaxed text-[15px]">
-                      "{t.quote}"
+                      &ldquo;{t.quote}&rdquo;
                     </blockquote>
                     <figcaption className="mt-5 flex items-center gap-3">
                       <img

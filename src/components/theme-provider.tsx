@@ -4,7 +4,7 @@ import {
   createContext,
   useContext,
   useEffect,
-  useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { usePathname } from "next/navigation";
@@ -24,6 +24,26 @@ type ThemeContextValue = {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
+// The stored theme is an external store: localStorage plus a local event so
+// that setTheme() re-renders every subscriber in this tab.
+const listeners = new Set<() => void>();
+
+function subscribeTheme(onChange: () => void) {
+  listeners.add(onChange);
+  window.addEventListener("storage", onChange);
+  return () => {
+    listeners.delete(onChange);
+    window.removeEventListener("storage", onChange);
+  };
+}
+
+function readStoredTheme(): AppTheme {
+  const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+  return isAppTheme(stored) ? stored : "light";
+}
+
+const serverTheme = (): AppTheme => "light";
+
 function applyTheme(theme: AppTheme, pathname: string) {
   const enableDark = resolveTheme(theme) === "dark" && isLibraryThemePath(pathname);
   document.documentElement.classList.toggle("dark", enableDark);
@@ -31,28 +51,18 @@ function applyTheme(theme: AppTheme, pathname: string) {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname() ?? "/";
-  const [theme, setThemeState] = useState<AppTheme>("light");
-  const [ready, setReady] = useState(false);
+  const theme = useSyncExternalStore(subscribeTheme, readStoredTheme, serverTheme);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-    const initial = isAppTheme(stored) ? stored : "light";
-    setThemeState(initial);
-    setReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!ready) {
-      return;
-    }
-
     applyTheme(theme, pathname);
-  }, [pathname, ready, theme]);
+  }, [pathname, theme]);
 
   function setTheme(next: AppTheme) {
-    setThemeState(next);
     window.localStorage.setItem(THEME_STORAGE_KEY, next);
     applyTheme(next, pathname);
+    for (const listener of listeners) {
+      listener();
+    }
   }
 
   return (

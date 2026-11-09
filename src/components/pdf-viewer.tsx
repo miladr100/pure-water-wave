@@ -60,7 +60,8 @@ export function PdfViewer({
 }: PdfViewerProps) {
   const { t } = useLocale();
   const pdfRef = useRef<PDFDocumentProxy | null>(null);
-  const [pageNumber, setPageNumber] = useState(1);
+  const startPage = initialPage && initialPage > 0 ? initialPage : 1;
+  const [pageNumber, setPageNumber] = useState(startPage);
   const [numPages, setNumPages] = useState(0);
   const [scale, setScale] = useState(1.1);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -71,13 +72,21 @@ export function PdfViewer({
   const [isSearching, setIsSearching] = useState(false);
   const [pageHighlightLayout, setPageHighlightLayout] =
     useState<PageHighlightLayout | null>(null);
-  const [pageInput, setPageInput] = useState("1");
+  const [pageInput, setPageInput] = useState(String(startPage));
+  // The page box follows the page the reader is on.
+  const [seenPageNumber, setSeenPageNumber] = useState(pageNumber);
+  if (seenPageNumber !== pageNumber) {
+    setSeenPageNumber(pageNumber);
+    setPageInput(String(pageNumber));
+  }
   const [pdfData, setPdfData] = useState<Uint8Array | null>(null);
   const pendingInitialSearch = useRef(initialQuery?.trim() || "");
   const onUnrecoverableErrorRef = useRef(onUnrecoverableError);
   const preferFullFetch = isAppleTouchDevice();
 
-  onUnrecoverableErrorRef.current = onUnrecoverableError;
+  useEffect(() => {
+    onUnrecoverableErrorRef.current = onUnrecoverableError;
+  }, [onUnrecoverableError]);
 
   const documentOptions = useMemo(
     () => ({
@@ -101,26 +110,11 @@ export function PdfViewer({
   }, [pdf.id, pdfData, preferFullFetch]);
 
   useEffect(() => {
-    setPageNumber(initialPage && initialPage > 0 ? initialPage : 1);
-    setNumPages(0);
-    setLoadError(null);
-    setSearchQuery(initialQuery ?? "");
-    setActiveQuery("");
-    setSearchResults([]);
-    setCurrentResultIndex(0);
-    setPageHighlightLayout(null);
-    setPageInput(initialPage && initialPage > 0 ? String(initialPage) : "1");
-    pendingInitialSearch.current = initialQuery?.trim() || "";
-    pdfRef.current = null;
-  }, [pdf.id, initialPage, initialQuery]);
-
-  useEffect(() => {
     if (!preferFullFetch) {
       return;
     }
 
     const controller = new AbortController();
-    setPdfData(null);
 
     void (async () => {
       try {
@@ -222,10 +216,6 @@ export function PdfViewer({
       cancelled = true;
     };
   }, [activeQuery, pageNumber, searchResults, currentResultIndex, numPages]);
-
-  useEffect(() => {
-    setPageInput(String(pageNumber));
-  }, [pageNumber]);
 
   function commitPageInput() {
     const parsed = Number.parseInt(pageInput, 10);

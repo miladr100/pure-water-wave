@@ -122,9 +122,11 @@ export function LibrarySettingsMenu({
   const [isSavingPassword, setIsSavingPassword] = useState(false);
   const [isUpdatingLanguage, setIsUpdatingLanguage] = useState(false);
 
-  useEffect(() => {
+  const [seenFullName, setSeenFullName] = useState(fullName);
+  if (seenFullName !== fullName) {
+    setSeenFullName(fullName);
     setName(fullName);
-  }, [fullName]);
+  }
 
   async function handleSaveName(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

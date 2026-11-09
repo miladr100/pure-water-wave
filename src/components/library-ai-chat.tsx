@@ -37,15 +37,11 @@ export function LibraryAiChat({ session }: LibraryAiChatProps) {
   const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    setMessages((current) => {
-      if (current.length === 1 && current[0]?.id === "welcome") {
-        return [{ ...current[0], content: t.aiChat.welcome }];
-      }
-
-      return current;
-    });
-  }, [language, t.aiChat.welcome]);
+  // The welcome line is rendered in the current language, whatever language
+  // the chat was opened in.
+  const shownMessages = messages.map((message) =>
+    message.id === "welcome" ? { ...message, content: t.aiChat.welcome } : message,
+  );
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -159,7 +155,7 @@ export function LibraryAiChat({ session }: LibraryAiChatProps) {
         </div>
 
         <div className="flex-1 space-y-4 overflow-y-auto pb-4">
-          {messages.map((message) => (
+          {shownMessages.map((message) => (
             <div
               key={message.id}
               className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}

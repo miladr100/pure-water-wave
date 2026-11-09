@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { ArrowLeft, ChevronLeft, ChevronRight, Lightbulb, Save } from "lucide-react";
 
@@ -37,50 +37,72 @@ export function HdhMeditationDayPage({
     emptyAnswers(day?.questions.length ?? 0),
   );
   const [inspiration, setInspiration] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  // The day whose entry is on screen; loading until it is the current one.
+  const [loadedDayId, setLoadedDayId] = useState<number | null>(null);
+  const isLoading = day ? loadedDayId !== day.id : false;
   const [isSaving, setIsSaving] = useState(false);
   const [info, setInfo] = useState("");
   const [error, setError] = useState("");
 
-  const loadEntry = useCallback(async () => {
+  // Loads the saved entry for the day on screen; a day change cancels the
+  // previous load so a slow answer never lands on another day.
+  useEffect(() => {
     if (!day) {
       return;
     }
 
-    setIsLoading(true);
-    setError("");
-    setInfo("");
+    let ignore = false;
 
-    try {
-      const response = await fetch(
-        `/api/biblioteca/hdhreflection?dayId=${day.id}`,
-      );
-      const data = (await response.json()) as {
-        entry?: ReflectionEntry | null;
-        error?: string;
-      };
-
-      if (!response.ok) {
-        throw new Error(data.error ?? t.hdh.loadFailed);
+    async function fetchEntry() {
+      if (!day) {
+        return;
       }
 
-      const savedAnswers = data.entry?.answers ?? [];
-      setAnswers(
-        day.questions.map((_, index) => savedAnswers[index] ?? ""),
-      );
-      setInspiration(data.entry?.inspiration ?? "");
-    } catch {
-      setError(t.hdh.loadFailed);
-      setAnswers(emptyAnswers(day.questions.length));
-      setInspiration("");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [day, t.hdh.loadFailed]);
+      try {
+        const response = await fetch(
+          `/api/biblioteca/hdhreflection?dayId=${day.id}`,
+        );
+        const data = (await response.json()) as {
+          entry?: ReflectionEntry | null;
+          error?: string;
+        };
 
-  useEffect(() => {
-    void loadEntry();
-  }, [loadEntry]);
+        if (!response.ok) {
+          throw new Error(data.error ?? t.hdh.loadFailed);
+        }
+
+        if (ignore) {
+          return;
+        }
+
+        const savedAnswers = data.entry?.answers ?? [];
+        setError("");
+        setInfo("");
+        setAnswers(
+          day.questions.map((_, index) => savedAnswers[index] ?? ""),
+        );
+        setInspiration(data.entry?.inspiration ?? "");
+      } catch {
+        if (ignore) {
+          return;
+        }
+
+        setError(t.hdh.loadFailed);
+        setAnswers(emptyAnswers(day.questions.length));
+        setInspiration("");
+      } finally {
+        if (!ignore) {
+          setLoadedDayId(day.id);
+        }
+      }
+    }
+
+    void fetchEntry();
+
+    return () => {
+      ignore = true;
+    };
+  }, [day, t.hdh.loadFailed]);
 
   if (!day) {
     return null;

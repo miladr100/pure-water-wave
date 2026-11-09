@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import {
   buildSpeechChunks,
@@ -12,6 +12,11 @@ import {
 import type { UserLanguage } from "@/lib/user-languages";
 
 type SpeechStatus = "idle" | "playing" | "paused";
+
+// Speech support never changes while the page lives, so there is nothing to
+// subscribe to; the server simply does not have it.
+const noSubscription = () => () => {};
+const noSpeechOnServer = () => false;
 
 type UseDeviceSpeechOptions = {
   title: string;
@@ -27,16 +32,21 @@ export function useDeviceSpeech({
   resetKey,
 }: UseDeviceSpeechOptions) {
   const [status, setStatus] = useState<SpeechStatus>("idle");
-  const [supported, setSupported] = useState(false);
+  const supported = useSyncExternalStore(noSubscription, isSpeechSynthesisSupported, noSpeechOnServer);
   const [activeParagraph, setActiveParagraph] = useState<number | null>(null);
+  // A new text or language resets the reader (state adjusted during render,
+  // the speech engine stopped in an effect below).
+  const resetToken = `${resetKey ?? ""}\u0000${language}`;
+  const [seenResetToken, setSeenResetToken] = useState(resetToken);
+  if (seenResetToken !== resetToken) {
+    setSeenResetToken(resetToken);
+    setStatus("idle");
+    setActiveParagraph(null);
+  }
 
   const chunksRef = useRef<SpeechChunk[]>([]);
   const indexRef = useRef(0);
   const cancelledRef = useRef(false);
-
-  useEffect(() => {
-    setSupported(isSpeechSynthesisSupported());
-  }, []);
 
   const cancelSpeech = useCallback(() => {
     cancelledRef.current = true;
@@ -47,7 +57,7 @@ export function useDeviceSpeech({
   }, []);
 
   const speakFrom = useCallback(
-    (startIndex: number) => {
+    function speakFrom(startIndex: number) {
       if (!isSpeechSynthesisSupported()) {
         return;
       }
@@ -144,9 +154,9 @@ export function useDeviceSpeech({
   }, [cancelSpeech]);
 
   useEffect(() => {
-    stop();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resetKey, language]);
+    cancelSpeech();
+    indexRef.current = 0;
+  }, [resetToken, cancelSpeech]);
 
   useEffect(() => {
     return () => {

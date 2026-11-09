@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { Loader2 } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand-logo";
@@ -20,6 +20,11 @@ type PdfViewerLoaderProps = {
 
 type PdfViewerComponent = typeof import("@/components/pdf-viewer").PdfViewer;
 
+// Whether this device wants the native viewer is a property of the browser,
+// not state: read once on the client, never on the server.
+const noSubscription = () => () => {};
+const neverNativeOnServer = () => false;
+
 export function PdfViewerLoader({
   pdf,
   session,
@@ -27,29 +32,35 @@ export function PdfViewerLoader({
   initialQuery,
 }: PdfViewerLoaderProps) {
   const { t } = useLocale();
-  const [mode, setMode] = useState<"loading" | "pdfjs" | "native">("loading");
+  const nativePreferred = useSyncExternalStore(noSubscription, shouldUseNativePdfViewer, neverNativeOnServer);
+  const [forcedNative, setForcedNative] = useState(false);
   const [ViewerComponent, setViewerComponent] =
     useState<PdfViewerComponent | null>(null);
   const handleUnrecoverableError = useCallback(() => {
-    setMode("native");
+    setForcedNative(true);
   }, []);
 
   useEffect(() => {
-    if (shouldUseNativePdfViewer()) {
-      setMode("native");
+    if (nativePreferred) {
       return;
     }
 
+    let cancelled = false;
     void import("@/components/pdf-viewer")
       .then((module) => {
-        setViewerComponent(() => module.PdfViewer);
-        setMode("pdfjs");
+        if (!cancelled) setViewerComponent(() => module.PdfViewer);
       })
       .catch((error) => {
         console.error("Erro ao carregar o leitor de PDF:", error);
-        setMode("native");
+        if (!cancelled) setForcedNative(true);
       });
-  }, []);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [nativePreferred]);
+
+  const mode = nativePreferred || forcedNative ? "native" : ViewerComponent ? "pdfjs" : "loading";
 
   if (mode === "native") {
     return (
@@ -64,6 +75,8 @@ export function PdfViewerLoader({
   if (mode === "pdfjs" && ViewerComponent) {
     return (
       <ViewerComponent
+        // A different book or starting point is a fresh viewer.
+        key={`${pdf.id}:${initialPage ?? ""}:${initialQuery ?? ""}`}
         pdf={pdf}
         session={session}
         initialPage={initialPage}
