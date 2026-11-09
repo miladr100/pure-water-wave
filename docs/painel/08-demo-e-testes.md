@@ -39,15 +39,21 @@ as áreas; a academia continua como estava.
 |---|---|
 | `ana.membro@purewaterwave.test` | membro da Equipe 01 – HJA (tem um dia devolvido para corrigir) |
 | `bia.capita@purewaterwave.test` | capitã da Equipe 01 – HJA |
-| `david.educador@purewaterwave.test` | educador das equipes HJA |
-| `marcos.educador@purewaterwave.test` | educador da Equipe 01 – HJR |
-| `yeseong.admin@purewaterwave.test` | administrador (e educador da Equipe 01 – PW) |
+| `david.educador@purewaterwave.test` | educador (equipes ímpares de HJ Academy) |
+| `fernanda.educadora@purewaterwave.test` | educadora (equipes pares de HJ Academy) |
+| `marcos.educador@purewaterwave.test` · `paulo.educador@…` | educadores de HJ Rang |
+| `larissa.educadora@purewaterwave.test` | educadora de Pure Water e UPA |
+| `yeseong.admin@purewaterwave.test` | administrador (e educador de Pure Water) |
+| `pastor.teste@purewaterwave.test` (senha `teste123`) · `pr.joao@…` · `pra.marcia@…` · `pr.renato@…` · `pr.sergio@…` | pastores: só a biblioteca |
 
-Mais 20 membros nas quatro equipes, relatórios dos dias já passados do mês
-corrente (validados, enviados e alguns devolvidos) e 15 convidados em todas
-as etapas. O script apaga e recria tudo o que é `hj_*` e as contas
-`@purewaterwave.test` do painel; as contas da academia (`tutor@`, `aluno@`)
-ficam.
+O seed tem o tamanho do HJ Team de verdade: **13 equipes** (HJ Academy 4,
+HJ Rang 5, Pure Water 3, UPA 1), **76 membros** com nomes gerados, 6
+educadores, 5 pastores, ~430 relatórios dos dias já passados do mês
+corrente (validados, enviados e alguns devolvidos) e ~80 convidados em
+todas as etapas. Os nomes e números saem de um gerador determinístico, então
+rodar de novo dá sempre o mesmo resultado. O script apaga e recria tudo o
+que é `hj_*` e as contas `@purewaterwave.test` (painel e pastores); as
+contas da academia (`tutor@`, `aluno@`, `hjteam.teste@`) ficam.
 
 ## Rodar localmente
 
