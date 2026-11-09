@@ -138,7 +138,10 @@ export async function listLibraryVideos(): Promise<LibraryVideo[]> {
     }
   }
 
+  // Pages are cut by upload date; two videos with the same timestamp can
+  // straddle a page boundary and come back twice, so dedupe by guid.
   const videos: LibraryVideo[] = [];
+  const seen = new Set<string>();
   for (let page = 1; page <= 5; page += 1) {
     const res = await fetch(`${API}/library/${libraryId()}/videos?page=${page}&itemsPerPage=100&orderBy=date`, { headers });
     if (!res.ok) {
@@ -149,6 +152,10 @@ export async function listLibraryVideos(): Promise<LibraryVideo[]> {
       totalItems: number;
     };
     for (const item of json.items) {
+      if (seen.has(item.guid)) {
+        continue;
+      }
+      seen.add(item.guid);
       videos.push({
         guid: item.guid,
         title: item.title,
@@ -157,7 +164,7 @@ export async function listLibraryVideos(): Promise<LibraryVideo[]> {
         collection: item.collectionId ? (collections.get(item.collectionId) ?? "") : "",
       });
     }
-    if (videos.length >= json.totalItems || json.items.length === 0) {
+    if (seen.size >= json.totalItems || json.items.length === 0) {
       break;
     }
   }
