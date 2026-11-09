@@ -28,6 +28,8 @@ fechar.
 | 19 | **Chatbot de WhatsApp:** o bot do Wang Song entra na primeira versão? | Wang Song, Yeseong | Não; PWA primeiro; bot depois se fizer falta. | — |
 | 20 | **Backups e ambiente:** Mongo Atlas de quem (conta do Milad)? Quem tem acesso? | Milad | Atlas na conta do site; `dev`/`qa` em clusters free separados. | P7 |
 
+| 21 | **Validação do próprio relatório:** o capitão valida o da sua equipe; o dele mesmo, quem valida? **Premissa adotada 09/11 (Victor/Claude):** o capitão não valida o próprio relatório — o educador da equipe (ou um administrador) valida. | Yeseong | Implementado assim na versão navegável; muda em uma linha se o grupo preferir. | P3 |
+
 ## Premissas gerais
 
 - Interface em português do Brasil, com en/es pelos catálogos existentes.

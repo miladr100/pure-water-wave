@@ -47,7 +47,7 @@ export async function GET(request: Request) {
     const podeValidar = Object.fromEntries(
       rows.map((row) => {
         const equipe = byId.get(row.equipe.id);
-        return [row.id, Boolean(equipe && canValidate(context, equipe))];
+        return [row.id, Boolean(equipe && canValidate(context, equipe, row.membro.id))];
       }),
     );
 

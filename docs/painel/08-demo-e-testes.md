@@ -57,7 +57,8 @@ MONGODB_URI=mongodb://127.0.0.1:27117/pww-academy npm run seed:painel
 MONGODB_URI=mongodb://127.0.0.1:27117/pww-academy npm run dev
 ```
 
-Depois: http://localhost:3000/login com uma das contas acima.
+Depois: http://localhost:3000/login com uma das contas acima. Membros caem
+no Painel, educadores na administração, pastores na biblioteca.
 
 ## Demo na Vercel
 
@@ -81,7 +82,8 @@ celular (390 px), com cada tipo de conta:
   Gateway, conferência e ficha, editar → a página da equipe explica que é da
   capitã.
 - Bia: início com o cartão da equipe → validar o relatório da Ana → devolver
-  o do Pedro com motivo → histórico → convidados "da equipe".
+  o do Pedro com motivo → histórico → convidados "da equipe" → não consegue
+  validar o próprio relatório (fica para o educador).
 - David: visão geral → relatórios do dia (só valida as equipes HJA) →
   testemunho só das suas equipes → Pessoas sem botões de papel →
   Organização responde 404 (página e API).
@@ -91,7 +93,9 @@ celular (390 px), com cada tipo de conta:
   uma equipe com relatórios é recusado.
 
 Suite automática: `npm run typecheck`, `eslint` (pastas do CI) e `npm test`
-(381 testes, MongoDB em memória).
+(440 testes, MongoDB em memória): regras de RM, datas e jornada em
+`tests/unit/hj-*.test.ts`; rotas do painel e da administração em
+`tests/api/painel-*.test.ts` e `tests/api/admin-hj.test.ts`.
 
 ## Fora desta versão
 

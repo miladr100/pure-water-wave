@@ -34,7 +34,7 @@ export function EquipeScreen() {
     return <LoadingBlock />;
   }
 
-  const { equipe, projeto, hoje, membros, pendentes, historico, totalHojeCents } = team.data;
+  const { equipe, projeto, hoje, membros, pendentes, historico, totalHojeCents, podeValidar } = team.data;
   const enviados = membros.filter((membro) => membro.hoje && membro.hoje.estado !== "devolvido").length;
 
   function onChanged(row: RelatorioRow) {
@@ -89,7 +89,7 @@ export function EquipeScreen() {
               ) : (
                 <ul className="divide-y divide-border/60">
                   {pendentes.map((row) => (
-                    <RelatorioLinha key={row.id} row={row} canValidate onChanged={onChanged} />
+                    <RelatorioLinha key={row.id} row={row} canValidate={podeValidar[row.id] ?? false} onChanged={onChanged} />
                   ))}
                 </ul>
               )}
@@ -150,7 +150,7 @@ export function EquipeScreen() {
           ) : (
             <ul className="divide-y divide-border/60">
               {historico.map((row) => (
-                <RelatorioLinha key={row.id} row={row} canValidate onChanged={onChanged} />
+                <RelatorioLinha key={row.id} row={row} canValidate={podeValidar[row.id] ?? false} onChanged={onChanged} />
               ))}
             </ul>
           )}

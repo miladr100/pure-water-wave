@@ -240,6 +240,9 @@ export type EquipePainel = {
   // sent, waiting for the captain
   pendentes: RelatorioRow[];
   historico: RelatorioRow[];
+  // report id → whether this person may validate it (a captain does not
+  // validate their own report; the educator does)
+  podeValidar: Record<string, boolean>;
 };
 
 // ---------- educator / administrator side ----------

@@ -28,7 +28,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return jsonError("Não encontrado", 404);
     }
     const equipe = (await HjEquipe.findById(relatorio.equipeId).lean()) as EquipeDoc | null;
-    if (!equipe || !canValidate(context, equipe)) {
+    if (!equipe || !canValidate(context, equipe, relatorio.membroId)) {
       return jsonError("Não encontrado", 404);
     }
 

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { jsonError, serverError } from "@/lib/academy/http";
 import { media, novaMeta } from "@/lib/hj/rm";
 import {
+  canValidate,
   countsAsResult,
   equipeResumo,
   projetoResumo,
@@ -74,6 +75,9 @@ export async function GET() {
         .sort((a, b) => b.data.localeCompare(a.data) || b.enviadoEm.getTime() - a.enviadoEm.getTime())
         .slice(0, 60)
         .map((item) => relatorioRow(item, users, equipes)),
+      podeValidar: Object.fromEntries(
+        relatorios.map((item) => [item._id.toString(), canValidate(result.context, equipe, item.membroId)]),
+      ),
     };
 
     return NextResponse.json(body);

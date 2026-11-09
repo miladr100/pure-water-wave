@@ -383,7 +383,8 @@ function exportCsv(data: AdminResultados) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `resultados-${data.projeto?.nome.replace(/\s+/g, "-").toLowerCase() ?? "rm"}.csv`;
+  const slug = (data.projeto?.nome ?? "rm").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-+|-+$/g, "").toLowerCase();
+  link.download = `resultados-${slug || "rm"}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }

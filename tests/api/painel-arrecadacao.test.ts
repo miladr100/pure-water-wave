@@ -157,6 +157,19 @@ describe("the captain's validation", () => {
     expect((await validar(report._id.toString(), { acao: "validar" })).status).toBe(404);
   });
 
+  it("a captain does not validate their own report; the educator does", async () => {
+    const { capita, educador, projeto, equipe } = await createTeamSetup();
+    const own = await createRelatorio(projeto._id, equipe._id, capita._id);
+    await signInAsPanel(capita);
+    expect((await validar(own._id.toString(), { acao: "validar" })).status).toBe(404);
+    const team = await readJson<EquipePainel>(await getEquipe());
+    expect(team.podeValidar[own._id.toString()]).toBe(false);
+
+    resetNextHeaders();
+    await signInAsPanel(educador);
+    expect((await validar(own._id.toString(), { acao: "validar" })).status).toBe(200);
+  });
+
   it("the team's educator and an administrator may validate too", async () => {
     const { membro, educador, projeto, equipe } = await createTeamSetup();
     const report = await createRelatorio(projeto._id, equipe._id, membro._id);
@@ -186,6 +199,7 @@ describe("the captain's validation", () => {
     expect(ofMember.hoje?.liquidoCents).toBe(50000);
     expect(ofMember.metaCents).toBe(65000);
     expect(team.membros.find((m) => m.id === colega._id.toString())?.hoje).toBeNull();
+    expect(team.podeValidar[team.pendentes[0].id]).toBe(true);
 
     resetNextHeaders();
     await signInAsPanel(membro);

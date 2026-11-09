@@ -176,12 +176,16 @@ export async function teamsInScope(context: PanelContext, projetoId?: Types.Obje
   return (await HjEquipe.find({ ...filter, $or: clauses }).lean()) as EquipeDoc[];
 }
 
-export function canValidate(context: PanelContext, equipe: EquipeDoc) {
-  return (
-    context.papeis.administrador ||
-    sameId(equipe.capitaoId, context.user._id) ||
-    (context.papeis.educador && sameId(equipe.educadorId, context.user._id))
-  );
+// Who may validate a member's report: the team's captain (but not their
+// own — the educator does that), the team's educator, any administrator.
+export function canValidate(context: PanelContext, equipe: EquipeDoc, membroId: Types.ObjectId | string) {
+  if (context.papeis.administrador) {
+    return true;
+  }
+  if (context.papeis.educador && sameId(equipe.educadorId, context.user._id)) {
+    return true;
+  }
+  return sameId(equipe.capitaoId, context.user._id) && !sameId(membroId, context.user._id);
 }
 
 // ---------- shaping ----------
