@@ -13,7 +13,7 @@ import { LibrarySettingsMenu } from "@/components/library-settings-menu";
 import { LogoutButton } from "@/components/logout-button";
 import { AreaSwitch } from "@/components/painel/area-switch";
 import { useLocale } from "@/components/academy/locale-provider";
-import { isActive, navFor, subTabsFor, type ShellArea } from "@/components/painel/nav";
+import { isActive, moduloOf, navFor, subTabsFor, type ShellArea } from "@/components/painel/nav";
 import { useCollapsed } from "@/components/painel/use-collapsed";
 import { usePainelEu, usePainelMessages } from "@/components/painel/use-painel";
 import { Button } from "@/components/ui/button";
@@ -89,12 +89,15 @@ export function PainelShell({
   }
 
   const papeis = eu?.papeis ?? null;
-  const items = navFor(area, papeis, t, ta);
+  const aba = searchParams.get("aba");
+  const items = navFor(area, papeis, t, ta, { pathname, modulos: eu?.modulos ?? null });
+  // The sidebar is the module's; "admin" is the educator's side of it.
+  const modulo = area === "academia" ? "academia" : area === "biblioteca" ? "biblioteca" : moduloOf(pathname);
   const subTabs = area === "admin" ? subTabsFor(pathname, papeis, t) : null;
   const primary = items.slice(0, 5);
   const overflow = items.slice(5);
   // "admin" is the educator's Painel: same area and title, more items.
-  const areaLabel = area === "academia" ? t.areas.academia : area === "biblioteca" ? t.areas.biblioteca : t.areas.painel;
+  const areaLabel = modulo === "rm" ? t.areas.rm : modulo === "testemunho" ? t.areas.testemunho : modulo === "academia" ? t.areas.academia : modulo === "biblioteca" ? t.areas.biblioteca : t.areas.painel;
   const home = area === "admin" ? "/admin" : area === "academia" ? "/academia" : area === "biblioteca" ? "/biblioteca" : "/painel";
 
   const headerTitle =
@@ -172,7 +175,7 @@ export function PainelShell({
           </p>
           <nav aria-label={areaLabel} className="flex flex-col gap-1">
             {items.map((item) => {
-              const active = isActive(item, pathname);
+              const active = isActive(item, pathname, aba);
               return (
                 <Link
                   key={item.href}
@@ -242,7 +245,7 @@ export function PainelShell({
         className="fixed inset-x-0 bottom-0 z-30 flex border-t border-border/60 bg-card/95 px-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] pt-1 backdrop-blur lg:hidden"
       >
         {primary.map((item) => {
-          const active = isActive(item, pathname);
+          const active = isActive(item, pathname, aba);
           return (
             <Link
               key={item.href}
@@ -265,7 +268,7 @@ export function PainelShell({
                 type="button"
                 className={cn(
                   "flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-0.5 py-1.5 text-[10px] font-medium leading-tight tracking-tight text-muted-foreground",
-                  overflow.some((item) => isActive(item, pathname)) && "bg-secondary text-primary-deep",
+                  overflow.some((item) => isActive(item, pathname, aba)) && "bg-secondary text-primary-deep",
                 )}
               >
                 <MoreHorizontal className="h-5 w-5" aria-hidden />
@@ -279,7 +282,7 @@ export function PainelShell({
               <nav className="flex flex-col gap-1 pb-4">
                 {overflow.map((item) => (
                   <SheetClose asChild key={item.href}>
-                    <Button asChild variant={isActive(item, pathname) ? "secondary" : "ghost"} className="h-11 justify-start gap-3">
+                    <Button asChild variant={isActive(item, pathname, aba) ? "secondary" : "ghost"} className="h-11 justify-start gap-3">
                       <Link href={item.href}>
                         <item.icon className="h-4 w-4" />
                         {item.label}

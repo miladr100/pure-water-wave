@@ -8,6 +8,7 @@ import { photoUrlOf } from "@/lib/academy/profile";
 import { alertaDe } from "@/lib/hj/testemunho";
 import type {
   ConvidadoDatas,
+  Modulos,
   PessoaRow,
   ConvidadoRow,
   DiaResumo,
@@ -25,6 +26,7 @@ import { HjConvidado } from "@/models/hj-convidado";
 import { HjEquipe } from "@/models/hj-equipe";
 import { HjProjeto } from "@/models/hj-projeto";
 import { HjRelatorio } from "@/models/hj-relatorio";
+import { hjConfiguracao } from "@/models/hj-configuracao";
 
 // Everything the panel's routes share: who the person is inside the
 // panel (member, captain, educator, administrator), which teams they may
@@ -198,6 +200,20 @@ export async function loadContext(session: SessionPayload): Promise<PanelContext
   };
 
   return { session, user, hoje: todayInBrazil(), projeto, equipe, papeis };
+}
+
+// Which modules a person sees in the switch. RM needs a running project
+// only for members; educators always see both. The testimony module
+// follows the administrator's setting: automatic (a drive is running),
+// always, or hidden (docs/painel/decisoes-pendentes.md, Milad 13/11).
+export async function modulosDe(context: PanelContext): Promise<Modulos> {
+  if (context.papeis.educador) {
+    return { rm: true, testemunho: true };
+  }
+  const config = await hjConfiguracao();
+  const testemunho =
+    config.modulos.testemunho === "visivel" ? true : config.modulos.testemunho === "oculto" ? false : (await activeProject("testemunho")) !== null;
+  return { rm: true, testemunho };
 }
 
 // Teams whose members a person may follow: their own as captain; every

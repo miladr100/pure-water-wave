@@ -10,6 +10,21 @@ export type HjPrograma = (typeof HJ_PROGRAMAS)[number];
 
 export const PROJETO_TIPOS = ["arrecadacao", "testemunho"] as const;
 
+// The testimony module: shown to members while a testimony drive runs
+// ("auto"), always, or never. Educators always see it.
+export const MODULO_TESTEMUNHO_MODOS = ["auto", "visivel", "oculto"] as const;
+export type ModuloTestemunhoModo = (typeof MODULO_TESTEMUNHO_MODOS)[number];
+
+export type Modulos = { rm: boolean; testemunho: boolean };
+
+export type ConfiguracoesAdmin = {
+  modulos: { testemunho: ModuloTestemunhoModo };
+  projetoTestemunho: ProjetoResumo | null;
+  testemunhoVisivelParaMembros: boolean;
+};
+
+export type ConfiguracoesBody = { modulos?: { testemunho?: ModuloTestemunhoModo } };
+
 // Mission areas: região → país → local (a "centro de testemunho").
 export const AREA_TIPOS = ["regiao", "pais", "local"] as const;
 export type AreaTipo = (typeof AREA_TIPOS)[number];

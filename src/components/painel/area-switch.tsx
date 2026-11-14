@@ -1,24 +1,19 @@
 "use client";
 
-import { GraduationCap, LayoutDashboard, Library } from "lucide-react";
+import { GraduationCap, HandCoins, Heart, LayoutDashboard, Library } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { usePainelMessages } from "@/components/painel/use-painel";
+import { moduloOf, type Modulo } from "@/components/painel/nav";
+import { usePainelEu, usePainelMessages } from "@/components/painel/use-painel";
 import type { SessionPayload } from "@/lib/academy/auth";
 import { cn } from "@/lib/utils";
 
 export const AREA_STORAGE_KEY = "pww_area";
 
-export type Area = "painel" | "academia" | "biblioteca";
+export type Area = Modulo;
 
-// Three areas. The administration (`/admin`) is the educator's own Painel,
-// not a fourth one: same segment, more items in the sidebar.
-export function areaOf(pathname: string): Area {
-  if (pathname.startsWith("/academia")) return "academia";
-  if (pathname.startsWith("/biblioteca")) return "biblioteca";
-  return "painel";
-}
+export const areaOf = moduloOf;
 
 export function rememberArea(area: Area) {
   try {
@@ -28,8 +23,10 @@ export function rememberArea(area: Area) {
   }
 }
 
-// The segmented control that moves between the member's two areas (and
-// the administration for educators). Beside the logo on every screen.
+// The segmented control between the five modules: Painel, Restauração
+// Material, Testemunho, Academia, Biblioteca (Milad, 13/11/2026). The
+// testimony segment appears to members only while the administrator
+// shows it (a drive is running, or forced on); educators always see it.
 export function AreaSwitch({
   session,
   className,
@@ -44,12 +41,19 @@ export function AreaSwitch({
   compact?: boolean;
 }) {
   const t = usePainelMessages();
+  const eu = usePainelEu();
   const pathname = usePathname() ?? "";
   const current = areaOf(pathname);
-  const items: { area: Area; href: string; label: string; icon: typeof LayoutDashboard }[] = [
-    { area: "painel", href: session.role === "tutor" ? "/admin" : "/painel", label: t.areas.painel, icon: LayoutDashboard },
-    { area: "academia", href: "/academia", label: t.areas.academia, icon: GraduationCap },
-    { area: "biblioteca", href: "/biblioteca", label: t.areas.biblioteca, icon: Library },
+  const tutor = session.role === "tutor";
+  const showTestemunho = tutor || eu === null || eu.modulos.testemunho;
+  const items: { area: Area; href: string; label: string; short: string; icon: typeof LayoutDashboard }[] = [
+    { area: "painel", href: tutor ? "/admin" : "/painel", label: t.areas.painel, short: t.areas.painel, icon: LayoutDashboard },
+    { area: "rm", href: tutor ? "/admin/arrecadacao" : "/painel/arrecadacao", label: t.areas.rm, short: t.areas.rmShort, icon: HandCoins },
+    ...(showTestemunho
+      ? [{ area: "testemunho" as const, href: tutor ? "/admin/testemunho" : "/painel/testemunho", label: t.areas.testemunho, short: t.areas.testemunho, icon: Heart }]
+      : []),
+    { area: "academia", href: tutor ? "/admin/academia" : "/academia", label: t.areas.academia, short: t.areas.academia, icon: GraduationCap },
+    { area: "biblioteca", href: "/biblioteca", label: t.areas.biblioteca, short: t.areas.biblioteca, icon: Library },
   ];
 
   return (
@@ -68,14 +72,15 @@ export function AreaSwitch({
             title={item.label}
             onClick={() => rememberArea(item.area)}
             className={cn(
-              "inline-flex h-9 items-center justify-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold text-muted-foreground transition",
-              full && "flex-1",
-              compact && "px-3 xl:px-3.5",
+              "inline-flex h-9 min-w-0 items-center justify-center gap-1.5 rounded-full px-3 text-[13px] font-semibold text-muted-foreground transition",
+              // five modules on a phone: icon over a tiny label
+              full && "h-11 flex-1 flex-col gap-0.5 px-1 text-[10px] leading-none",
+              compact && "px-2.5 xl:px-3",
               active ? "bg-card text-primary-deep shadow-sm" : "hover:text-primary-deep",
             )}
           >
-            <item.icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
-            <span className={cn(compact && "hidden xl:inline")}>{item.label}</span>
+            <item.icon className={cn("h-3.5 w-3.5 shrink-0", full && "h-4 w-4")} aria-hidden />
+            <span className={cn("max-w-full truncate", compact && "hidden xl:inline")}>{full ? item.short : item.label}</span>
           </Link>
         );
       })}

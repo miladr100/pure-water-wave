@@ -5,7 +5,7 @@ import type { UserLanguage } from "@/lib/user-languages";
 // languages fall back to it until the group asks for translations. Every
 // screen reads copy through `usePainelMessages()`.
 export type PainelMessages = {
-  areas: { painel: string; academia: string; biblioteca: string; admin: string; switchLabel: string };
+  areas: { painel: string; rm: string; rmShort: string; testemunho: string; academia: string; biblioteca: string; admin: string; switchLabel: string };
   shell: {
     painelTitle: string;
     adminTitle: string;
@@ -32,6 +32,18 @@ export type PainelMessages = {
     videos: string;
     ferramentas: string;
     ia: string;
+    relatorioDia: string;
+    minhaEquipe: string;
+    convidados: string;
+    caixa: string;
+    reunioes: string;
+    porArea: string;
+    visaoGeral: string;
+    alunos: string;
+    cursos: string;
+    perguntas: string;
+    correcoes: string;
+    verComoAluno: string;
   };
   common: {
     loading: string;
@@ -304,6 +316,17 @@ export type PainelMessages = {
     inactive: string;
     programSaved: string;
   };
+  config: {
+    body: string;
+    testemunhoModule: string;
+    visibleNow: string;
+    hiddenNow: string;
+    projectRunning: (nome: string, periodo: string) => string;
+    modos: Record<"auto" | "visivel" | "oculto", { title: string; body: string }>;
+    educatorsAlways: string;
+    laterTitle: string;
+    saved: string;
+  };
   missao: {
     title: string;
     body: string;
@@ -364,7 +387,7 @@ export type PainelMessages = {
 };
 
 const pt: PainelMessages = {
-  areas: { painel: "Painel", academia: "Academia", biblioteca: "Biblioteca", admin: "Administração", switchLabel: "Área" },
+  areas: { painel: "Painel", rm: "Restauração Material", rmShort: "RM", testemunho: "Testemunho", academia: "Academia", biblioteca: "Biblioteca", admin: "Administração", switchLabel: "Módulo" },
   shell: {
     painelTitle: "Painel HJ Team",
     adminTitle: "Administração",
@@ -391,6 +414,18 @@ const pt: PainelMessages = {
     videos: "Vídeos",
     ferramentas: "Ferramentas",
     ia: "Fale com a IA",
+    relatorioDia: "Relatório do dia",
+    minhaEquipe: "Minha equipe",
+    convidados: "Convidados",
+    caixa: "Caixa",
+    reunioes: "Reuniões",
+    porArea: "Por área",
+    visaoGeral: "Visão geral",
+    alunos: "Alunos",
+    cursos: "Cursos",
+    perguntas: "Perguntas",
+    correcoes: "Correções",
+    verComoAluno: "Ver como aluno",
   },
   common: {
     loading: "Carregando…",
@@ -662,6 +697,21 @@ const pt: PainelMessages = {
     cohortName: "Nome da turma",
     inactive: "Inativa",
     programSaved: "Programa salvo",
+  },
+  config: {
+    body: "O que aparece para os membros e como o painel se comporta.",
+    testemunhoModule: "Módulo Testemunho",
+    visibleNow: "Visível para os membros",
+    hiddenNow: "Oculto para os membros",
+    projectRunning: (nome, periodo) => `Projeto de testemunho ativo: ${nome} (${periodo}).`,
+    modos: {
+      auto: { title: "Automático", body: "Aparece para os membros enquanto houver um projeto de testemunho ativo; some quando ele termina." },
+      visivel: { title: "Sempre visível", body: "Os membros veem o módulo mesmo sem projeto ativo." },
+      oculto: { title: "Oculto", body: "Os membros não veem o módulo; os convidados ficam guardados." },
+    },
+    educatorsAlways: "Educadores e administradores sempre veem o módulo, para preparar o próximo testemunho.",
+    laterTitle: "Lembretes e integrações",
+    saved: "Configuração salva",
   },
   missao: {
     title: "Áreas de missão",

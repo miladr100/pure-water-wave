@@ -1,7 +1,7 @@
 "use client";
 
 import { Download } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { useApi } from "@/components/academy/use-api";
@@ -27,7 +27,6 @@ const selectClass =
 // reports to validate, the goals, and the cash vs. pix accounting.
 export function ArrecadacaoScreen() {
   const t = usePainelMessages();
-  const router = useRouter();
   const params = useSearchParams();
   const abaParam = params.get("aba");
   const aba: Aba = ABAS.includes(abaParam as Aba) ? (abaParam as Aba) : "resultados";
@@ -35,14 +34,6 @@ export function ArrecadacaoScreen() {
   const [filtros, setFiltros] = useState({ projeto: "", programa: "", equipe: "", educador: "", busca: "" });
   const query = new URLSearchParams(Object.entries(filtros).filter(([, value]) => value !== "")).toString();
   const results = useApi<AdminResultados>(`/api/admin/hj/resultados${query ? `?${query}` : ""}`);
-
-  function setAba(next: Aba) {
-    const search = new URLSearchParams(params.toString());
-    if (next === "resultados") search.delete("aba");
-    else search.set("aba", next);
-    const text = search.toString();
-    router.replace(text ? `/admin/arrecadacao?${text}` : "/admin/arrecadacao");
-  }
 
   if (results.error) {
     return <Failed error={results.error} onRetry={results.reload} />;
@@ -55,22 +46,6 @@ export function ArrecadacaoScreen() {
 
   return (
     <div className="space-y-6">
-      <div className="-mt-2 flex gap-1 overflow-x-auto border-b border-border/60">
-        {ABAS.map((item) => (
-          <button
-            key={item}
-            type="button"
-            onClick={() => setAba(item)}
-            className={cn(
-              "-mb-px whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium transition",
-              aba === item ? "border-primary text-primary-deep" : "border-transparent text-muted-foreground hover:text-primary-deep",
-            )}
-          >
-            {item === "resultados" ? t.admin.resultsTab : item === "relatorios" ? t.admin.reportsTab : item === "metas" ? t.admin.goalsTab : t.admin.accountingTab}
-          </button>
-        ))}
-      </div>
-
       {!projeto ? (
         <>
           <PainelHeading title={t.nav.arrecadacao} />

@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 
-import { AdminShell, PageHeading } from "@/components/admin/admin-shell";
+import { AdminShell } from "@/components/admin/admin-shell";
+import { ConfiguracoesScreen } from "@/components/painel/admin/configuracoes-screen";
 import { isAdministrator } from "@/lib/academy/administrator";
 import { getSession } from "@/lib/academy/auth";
 
@@ -15,10 +16,7 @@ export default async function AdminConfiguracoesPage() {
 
   return (
     <AdminShell session={session}>
-      <PageHeading
-        title="Configurações"
-        description="Lembretes, horários e integrações ficam aqui quando forem definidos com o grupo (ver docs/painel/decisoes-pendentes.md)."
-      />
+      <ConfiguracoesScreen />
     </AdminShell>
   );
 }

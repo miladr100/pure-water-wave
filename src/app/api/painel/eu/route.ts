@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { serverError } from "@/lib/academy/http";
-import { equipeResumo, projetoResumo, usersById } from "@/lib/hj/data";
-import type { EquipeResumo, Papeis, ProjetoResumo } from "@/lib/hj/types";
+import { equipeResumo, modulosDe, projetoResumo, usersById } from "@/lib/hj/data";
+import type { EquipeResumo, Modulos, Papeis, ProjetoResumo } from "@/lib/hj/types";
 
 import { panelContext } from "../_lib/context";
 
@@ -12,6 +12,7 @@ export type PainelEu = {
   papeis: Papeis;
   projeto: ProjetoResumo | null;
   equipe: EquipeResumo | null;
+  modulos: Modulos;
 };
 
 // Who the person is in the panel, for the shell: which areas to offer and
@@ -32,6 +33,7 @@ export async function GET() {
       papeis,
       projeto: projeto ? projetoResumo(projeto, hoje) : null,
       equipe: equipe ? equipeResumo(equipe, users) : null,
+      modulos: await modulosDe(result.context),
     };
     return NextResponse.json(body);
   } catch (error) {
