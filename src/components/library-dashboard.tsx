@@ -14,8 +14,7 @@ import { getLibraryPdfsByLanguage } from "@/lib/library-pdfs";
 
 // `extraBooks`: books added from Administração › Biblioteca by link; they
 // open in a new tab (the in-site reader only knows the shipped PDFs).
-// `aiChat`: whether "Fale com a IA" is configured; the card is hidden otherwise.
-export function LibraryDashboard({ extraBooks = [], aiChat = false }: { extraBooks?: LibraryExtraBook[]; aiChat?: boolean }) {
+export function LibraryDashboard({ extraBooks = [] }: { extraBooks?: LibraryExtraBook[] }) {
   const { language, t } = useLocale();
   const pdfs = getLibraryPdfsByLanguage(language);
 
@@ -31,7 +30,7 @@ export function LibraryDashboard({ extraBooks = [], aiChat = false }: { extraBoo
           </p>
         </section>
 
-        {aiChat ? <LibraryAiCta /> : null}
+        <LibraryAiCta />
         <LibrarySearch />
 
         <section className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
