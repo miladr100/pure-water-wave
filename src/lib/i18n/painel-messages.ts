@@ -304,6 +304,34 @@ export type PainelMessages = {
     inactive: string;
     programSaved: string;
   };
+  missao: {
+    title: string;
+    body: string;
+    resultsTitle: string;
+    resultsBody: string;
+    regiao: string;
+    pais: string;
+    local: string;
+    equipe: string;
+    semArea: string;
+    addRegiao: string;
+    addPais: string;
+    addLocal: string;
+    name: string;
+    byProgram: string;
+    guests: string;
+    forms: string;
+    alerts: string;
+    members: string;
+    membersWithGuest: string;
+    noTeams: string;
+    areaLabel: string;
+    noArea: string;
+    saved: string;
+    deleted: string;
+    expandAll: string;
+    collapseAll: string;
+  };
   biblioteca: {
     title: string;
     description: string;
@@ -634,6 +662,34 @@ const pt: PainelMessages = {
     cohortName: "Nome da turma",
     inactive: "Inativa",
     programSaved: "Programa salvo",
+  },
+  missao: {
+    title: "Áreas de missão",
+    body: "Região → país → local (centro de testemunho). Cada equipe aponta para um local; o país e a região vêm daí.",
+    resultsTitle: "Resultados por área",
+    resultsBody: "Convidados por região, país, local e equipe no projeto de testemunho ativo.",
+    regiao: "Região",
+    pais: "País",
+    local: "Local",
+    equipe: "Equipe",
+    semArea: "Sem área definida",
+    addRegiao: "Nova região",
+    addPais: "Novo país",
+    addLocal: "Novo local",
+    name: "Nome",
+    byProgram: "Por programa",
+    guests: "Convidados",
+    forms: "Fichas",
+    alerts: "Atenção",
+    members: "Membros",
+    membersWithGuest: "Com convidado",
+    noTeams: "Nenhuma equipe no projeto de testemunho ainda.",
+    areaLabel: "Área de missão (local)",
+    noArea: "Sem área",
+    saved: "Área salva",
+    deleted: "Área apagada",
+    expandAll: "Abrir tudo",
+    collapseAll: "Fechar tudo",
   },
   biblioteca: {
     title: "Biblioteca",

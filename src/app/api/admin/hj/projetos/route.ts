@@ -53,6 +53,7 @@ export async function POST(request: Request) {
             educadorId: equipe.educadorId,
             capitaoId: equipe.capitaoId,
             membroIds: equipe.membroIds,
+            areaId: equipe.areaId ?? null,
           })),
         );
         equipesCopiadas = origem.length;

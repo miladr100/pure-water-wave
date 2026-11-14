@@ -9,6 +9,10 @@ export const HJ_PROGRAMAS = ["HJA", "HJR", "PW", "STG", "UPA"] as const;
 export type HjPrograma = (typeof HJ_PROGRAMAS)[number];
 
 export const PROJETO_TIPOS = ["arrecadacao", "testemunho"] as const;
+
+// Mission areas: região → país → local (a "centro de testemunho").
+export const AREA_TIPOS = ["regiao", "pais", "local"] as const;
+export type AreaTipo = (typeof AREA_TIPOS)[number];
 export type ProjetoTipo = (typeof PROJETO_TIPOS)[number];
 
 // A report leaves the member as "enviado"; the captain (or an educator)
@@ -78,6 +82,52 @@ export type ProjetoBody = {
   regraNovaMeta?: Partial<RegraNovaMeta>;
   // copy teams (and their members) from this project
   copiarEquipesDe?: string | null;
+};
+
+export type AreaRef = { id: string; nome: string };
+
+// A team's place in the tree, resolved upwards.
+export type AreaDaEquipe = { local: AreaRef; pais: AreaRef | null; regiao: AreaRef | null } | null;
+
+export type AreaNode = {
+  id: string;
+  tipo: AreaTipo;
+  nome: string;
+  paiId: string | null;
+  ativo: boolean;
+  equipes: number;
+};
+
+export type AreaBody = {
+  tipo: AreaTipo;
+  nome: string;
+  paiId?: string | null;
+  ativo?: boolean;
+};
+
+// Guest counts for one node of the tree (an area, a team, the total).
+export type TestemunhoContagem = {
+  convidados: number;
+  porEtapa: Record<ConvidadoEtapa, number>;
+  fichas: number;
+  alertas: number;
+  membros: number;
+  membrosComConvidado: number;
+};
+
+export type TestemunhoNode = TestemunhoContagem & {
+  id: string;
+  tipo: AreaTipo | "equipe" | "sem_area";
+  nome: string;
+  programa?: HjPrograma;
+  filhos: TestemunhoNode[];
+};
+
+export type TestemunhoResultados = {
+  projeto: ProjetoResumo | null;
+  total: TestemunhoContagem;
+  arvore: TestemunhoNode[];
+  porPrograma: (TestemunhoContagem & { programa: HjPrograma })[];
 };
 
 export type EquipeResumo = {
@@ -377,6 +427,7 @@ export type EquipeAdmin = {
   nome: string;
   programa: HjPrograma;
   projeto: { id: string; nome: string };
+  area: AreaDaEquipe;
   educador: PessoaRef | null;
   capitao: PessoaRef | null;
   membros: PessoaRef[];
@@ -387,6 +438,7 @@ export type EquipeBody = {
   nome: string;
   programa: HjPrograma;
   projetoId: string;
+  areaId?: string | null;
   educadorId?: string | null;
   capitaoId?: string | null;
   membroIds?: string[];

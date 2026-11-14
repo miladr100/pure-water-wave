@@ -72,6 +72,7 @@ export type EquipeDoc = {
   educadorId: Types.ObjectId | null;
   capitaoId: Types.ObjectId | null;
   membroIds: Types.ObjectId[];
+  areaId?: Types.ObjectId | null;
 };
 
 export type RelatorioDoc = {

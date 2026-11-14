@@ -9,6 +9,8 @@ import { hashPassword } from "@/lib/password";
 import { AcademyUser } from "@/models/academy-user";
 import { HjAcontecimento, HjConvidado } from "@/models/hj-convidado";
 import { HjEquipe } from "@/models/hj-equipe";
+import { HjArea, AREAS_PADRAO } from "@/models/hj-area";
+import { HjPrograma } from "@/models/hj-programa";
 import { HjProjeto } from "@/models/hj-projeto";
 import { HjRelatorio } from "@/models/hj-relatorio";
 import { SystemUser } from "@/models/system-user";
@@ -158,14 +160,51 @@ async function main() {
     HjRelatorio.deleteMany({}),
     HjConvidado.deleteMany({}),
     HjAcontecimento.deleteMany({}),
+    HjArea.deleteMany({}),
+    HjPrograma.deleteMany({}),
     AcademyUser.deleteMany({ email: demoEmails, login: { $not: /^(tutor|aluno|hjteam\.teste)@/ } }),
     SystemUser.deleteMany({ email: demoEmails, role: "pastor" }),
   ]);
+
+  // Which team each person is in, to file them under its program.
+  const programaDe = new Map<string, HjPrograma>();
+  for (const team of teams) {
+    for (const member of team.membros) programaDe.set(member.email, team.spec.programa);
+  }
+  const TURMAS: Record<HjPrograma, string[]> = { HJA: ["1ª Turma", "2ª Turma", "3ª Turma"], HJR: ["16ª Turma"], PW: ["Turma 2026"], STG: ["3ª Turma"], UPA: ["11ª Turma"] };
+  const CURSOS = ["Administração", "Psicologia", "Engenharia Civil", "Pedagogia", "Direito", "Enfermagem", "Ciência da Computação", "Arquitetura", "Nutrição", "Design"];
+  const [anoHoje] = hoje.split("-").map(Number);
+  const perfilDe = (person: Person) => {
+    const programa = programaDe.get(person.email) ?? null;
+    const idade = person.role === "tutor" ? 30 + Math.floor(random() * 15) : 18 + Math.floor(random() * 12);
+    const birthday = new Date(Date.UTC(anoHoje - idade, Math.floor(random() * 12), 1 + Math.floor(random() * 28)));
+    const membroDesde = `${anoHoje - Math.floor(random() * 8)}-${String(1 + Math.floor(random() * 12)).padStart(2, "0")}-01`;
+    return {
+      birthday,
+      hj: {
+        perfil: {
+          programa,
+          turma: programa ? pick(TURMAS[programa]) : "",
+          membroDesde,
+          cursoUniversitario: programa === "HJA" || random() < 0.4 ? pick(CURSOS) : "",
+          formacao: random() < 0.3 ? pick(["Inglês", "Espanhol", "Técnico em informática", "Música"]) : "",
+        },
+        confidencial: {
+          familiaCheonBo: random() < 0.6 ? random() < 0.7 : null,
+          segundaGeracao: random() < 0.7,
+          pais: "",
+          espiritosLibertados: random() < 0.5 ? Math.round(random() * 430) : null,
+          padraoVidaFe: "",
+        },
+      },
+    };
+  };
 
   const hash = await hashPassword(PASSWORD);
   const ids = new Map<string, Types.ObjectId>();
   for (const person of people) {
     const email = `${person.email}@${DEMO_DOMAIN}`;
+    const extra = perfilDe(person);
     const doc = await AcademyUser.findOneAndUpdate(
       { email },
       {
@@ -181,6 +220,8 @@ async function main() {
           role: person.role,
           isAdmin: person.admin === true,
           theme: "system",
+          birthday: extra.birthday,
+          hj: extra.hj,
         },
       },
       { upsert: true, new: true },
@@ -244,6 +285,36 @@ async function main() {
     diasDescanso: [],
   });
 
+  // Mission areas: Wang Song's five regions with their countries, and one
+  // local per city the demo teams work from, all under Brasil.
+  const locais = new Map<string, Types.ObjectId>();
+  {
+    let ordem = 0;
+    let brasilId: Types.ObjectId | null = null;
+    for (const item of AREAS_PADRAO) {
+      const regiao = await HjArea.create({ tipo: "regiao", nome: item.regiao, paiId: null, ordem: ordem++ });
+      let sub = 0;
+      for (const pais of item.paises) {
+        const doc = await HjArea.create({ tipo: "pais", nome: pais, paiId: regiao._id, ordem: sub++ });
+        if (pais === "Brasil") brasilId = doc._id as Types.ObjectId;
+      }
+    }
+    const cidades = [...new Set(teams.flatMap((team) => team.spec.cidades))].sort((a, b) => a.localeCompare(b, "pt"));
+    for (const [index, cidade] of cidades.entries()) {
+      const doc = await HjArea.create({ tipo: "local", nome: cidade, paiId: brasilId, ordem: index });
+      locais.set(cidade, doc._id as Types.ObjectId);
+    }
+    // Programs and cohorts, as the catalogue seeds them.
+    await HjPrograma.insertMany(
+      (Object.keys(TURMAS) as HjPrograma[]).map((sigla) => ({
+        sigla,
+        nome: { HJA: "HJ Academy", HJR: "HJ Rang", PW: "Pure Water", STG: "Shin Top Gun", UPA: "UPA" }[sigla],
+        ativo: true,
+        turmas: TURMAS[sigla].map((nome) => ({ nome, ativa: true })),
+      })),
+    );
+  }
+
   const dias = daysBetween(inicio, hoje).filter((dia) => !descanso.includes(dia));
   const diasPassados = dias.filter((dia) => dia < hoje);
   let relatorios = 0;
@@ -257,6 +328,8 @@ async function main() {
       educadorId: ids.get(team.spec.educador),
       capitaoId: ids.get(capitao.email),
       membroIds: team.membros.map((member) => ids.get(member.email)),
+      // the team's local: the city most of its members are from
+      areaId: locais.get(team.spec.cidades[(parseInt(team.spec.nome.replace(/\D/g, ""), 10) - 1) % team.spec.cidades.length]) ?? null,
     });
 
     const docs: Record<string, unknown>[] = [];

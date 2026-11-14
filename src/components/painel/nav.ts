@@ -113,6 +113,7 @@ export function subTabsFor(pathname: string, papeis: Papeis | null, t: PainelMes
     return [
       { href: "/admin/organizacao", label: t.admin.projectsTitle, exact: true },
       { href: "/admin/organizacao/programas", label: t.pessoa.programsTitle },
+      { href: "/admin/organizacao/areas", label: t.missao.title },
     ];
   }
   const academy = ["/admin/academia", "/admin/alunos", "/admin/cursos", "/admin/perguntas", "/admin/correcoes"];

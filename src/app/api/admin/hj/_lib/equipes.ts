@@ -5,12 +5,15 @@ import { isObjectId, jsonError } from "@/lib/academy/http";
 import { ref, reportsOf, usersById, type EquipeDoc, type ProjetoDoc, type UserDoc } from "@/lib/hj/data";
 import { HJ_PROGRAMAS, type EquipeAdmin, type EquipeBody } from "@/lib/hj/types";
 import { AcademyUser } from "@/models/academy-user";
+import { HjArea } from "@/models/hj-area";
 import { HjEquipe } from "@/models/hj-equipe";
+import { AreasTree } from "@/lib/hj/areas";
 
 import { textField } from "./shared";
 
 export async function equipesAdmin(projeto: ProjetoDoc): Promise<EquipeAdmin[]> {
   const equipes = (await HjEquipe.find({ projetoId: projeto._id }).sort({ nome: 1 }).lean()) as EquipeDoc[];
+  const areas = await AreasTree.load();
   const relatorios = await reportsOf(projeto._id, { estado: { $ne: "devolvido" } });
   const users = await usersById(
     equipes.flatMap((equipe) =>
@@ -24,6 +27,7 @@ export async function equipesAdmin(projeto: ProjetoDoc): Promise<EquipeAdmin[]> 
       nome: equipe.nome,
       programa: equipe.programa,
       projeto: { id: projeto._id.toString(), nome: projeto.nome },
+      area: areas.daEquipe(equipe.areaId),
       educador: ref(equipe.educadorId ? users.get(String(equipe.educadorId)) : null),
       capitao: ref(equipe.capitaoId ? users.get(String(equipe.capitaoId)) : null),
       membros: equipe.membroIds.map((id) => ({ id: String(id), nome: users.get(String(id))?.fullName ?? "—" })),
@@ -103,12 +107,24 @@ export async function validateTeam(
     }
   }
 
+  const areaId = body.areaId === undefined ? (current?.areaId ? String(current.areaId) : null) : body.areaId;
+  if (areaId) {
+    if (!isObjectId(areaId)) {
+      return { ok: false, response: jsonError("Área inválida", 400, { code: "INVALID_AREA" }) };
+    }
+    const area = await HjArea.findById(areaId).select("tipo").lean();
+    if (!area || area.tipo !== "local") {
+      return { ok: false, response: jsonError("A área da equipe precisa ser um local", 400, { code: "AREA_NOT_LOCAL" }) };
+    }
+  }
+
   return {
     ok: true,
     value: {
       projetoId: projeto._id,
       nome,
       programa,
+      areaId: areaId ? new Types.ObjectId(areaId) : null,
       educadorId: educadorId ? new Types.ObjectId(educadorId) : null,
       capitaoId: capitaoId ? new Types.ObjectId(capitaoId) : null,
       membroIds: unique.map((id) => new Types.ObjectId(id)),

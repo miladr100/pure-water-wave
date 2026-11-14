@@ -15,7 +15,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/academy/api-client";
-import { HJ_PROGRAMAS, type EquipeAdmin, type HjPrograma, type PessoaRow } from "@/lib/hj/types";
+import { HJ_PROGRAMAS, type AreaNode, type EquipeAdmin, type HjPrograma, type PessoaRow } from "@/lib/hj/types";
 import { cn } from "@/lib/utils";
 
 const selectClass =
@@ -71,6 +71,7 @@ export function EquipesScreen() {
               </p>
               <p className="text-sm">
                 {equipe.membros.length} {t.admin.members} · <Reais cents={equipe.liquidoCents} className="font-semibold" />
+                {equipe.area ? <span className="text-muted-foreground"> · {equipe.area.local.nome}{equipe.area.pais ? `, ${equipe.area.pais.nome}` : ""}</span> : null}
               </p>
               <p className="line-clamp-2 text-xs text-muted-foreground">{equipe.membros.map((membro) => membro.nome).join(", ")}</p>
             </button>
@@ -121,9 +122,18 @@ function EquipeDialog({
   // from that team's data.
   const [form, setForm] = useState(() =>
     equipe
-      ? { nome: equipe.nome, programa: equipe.programa, educadorId: equipe.educador?.id ?? "", capitaoId: equipe.capitao?.id ?? "", membroIds: equipe.membros.map((membro) => membro.id) }
-      : { nome: "", programa: "HJA" as HjPrograma, educadorId: "", capitaoId: "", membroIds: [] as string[] },
+      ? { nome: equipe.nome, programa: equipe.programa, educadorId: equipe.educador?.id ?? "", capitaoId: equipe.capitao?.id ?? "", membroIds: equipe.membros.map((membro) => membro.id), areaId: equipe.area?.local.id ?? "" }
+      : { nome: "", programa: "HJA" as HjPrograma, educadorId: "", capitaoId: "", membroIds: [] as string[], areaId: "" },
   );
+  const areas = useApi<{ areas: AreaNode[] }>("/api/admin/hj/areas");
+  // locals grouped under their country, in tree order
+  const locais = useMemo(() => {
+    const list = areas.data?.areas ?? [];
+    const byId = new Map(list.map((area) => [area.id, area]));
+    return list
+      .filter((area) => area.tipo === "local" && (area.ativo || area.id === form.areaId))
+      .map((area) => ({ id: area.id, nome: area.nome, pais: area.paiId ? (byId.get(area.paiId)?.nome ?? "") : "" }));
+  }, [areas.data, form.areaId]);
   const [adding, setAdding] = useState("");
 
   const byId = useMemo(() => new Map(pessoas.map((pessoa) => [pessoa.id, pessoa])), [pessoas]);
@@ -142,7 +152,7 @@ function EquipeDialog({
     event.preventDefault();
     setBusy(true);
     try {
-      const body = { ...form, projetoId, educadorId: form.educadorId || null, capitaoId: form.capitaoId || null };
+      const body = { ...form, projetoId, educadorId: form.educadorId || null, capitaoId: form.capitaoId || null, areaId: form.areaId || null };
       if (equipe) {
         await api(`/api/admin/hj/equipes/${equipe.id}`, { method: "PATCH", body });
       } else {
@@ -203,6 +213,18 @@ function EquipeDialog({
               {educadores.map((pessoa) => (
                 <option key={pessoa.id} value={pessoa.id}>
                   {pessoa.nome}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="eq-area">{t.missao.areaLabel}</Label>
+            <select id="eq-area" className={selectClass} value={form.areaId} onChange={(event) => setForm({ ...form, areaId: event.target.value })}>
+              <option value="">{t.missao.noArea}</option>
+              {locais.map((local) => (
+                <option key={local.id} value={local.id}>
+                  {local.pais ? `${local.nome} · ${local.pais}` : local.nome}
                 </option>
               ))}
             </select>

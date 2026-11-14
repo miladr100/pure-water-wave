@@ -13,6 +13,9 @@ const hjEquipeSchema = new Schema(
     educadorId: { type: Schema.Types.ObjectId, ref: "AcademyUser", default: null },
     capitaoId: { type: Schema.Types.ObjectId, ref: "AcademyUser", default: null },
     membroIds: { type: [Schema.Types.ObjectId], ref: "AcademyUser", default: [] },
+    // the local (centro de testemunho) the team works from; país and
+    // região follow from the areas tree
+    areaId: { type: Schema.Types.ObjectId, ref: "HjArea", default: null },
   },
   { timestamps: true, collection: "hj_equipes" },
 );
