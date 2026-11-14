@@ -316,6 +316,42 @@ export type PainelMessages = {
     inactive: string;
     programSaved: string;
   };
+  reunioes: {
+    title: string;
+    bodyMember: string;
+    bodyEducator: string;
+    ask: string;
+    asked: string;
+    with: string;
+    mine: string;
+    reason: string;
+    reasonHint: string;
+    availability: string;
+    availabilityHint: string;
+    send: string;
+    emptyMember: string;
+    emptyEducator: string;
+    estados: Record<"solicitada" | "confirmada" | "remarcar" | "recusada" | "cancelada" | "realizada", string>;
+    acoes: Record<"confirmar" | "remarcar" | "recusar", string>;
+    answer: string;
+    when: string;
+    where: string;
+    whereHint: string;
+    message: string;
+    reply: string;
+    markDone: string;
+    cancel: string;
+    cancelConfirm: string;
+    saved: string;
+    new: string;
+    askedOn: (date: string) => string;
+    notified: (channels: string) => string;
+    noChannel: string;
+    closed: (n: number) => string;
+    homeCard: string;
+    homeBody: string;
+    homePending: (n: number) => string;
+  };
   caixa: {
     title: string;
     body: string;
@@ -735,6 +771,42 @@ const pt: PainelMessages = {
     cohortName: "Nome da turma",
     inactive: "Inativa",
     programSaved: "Programa salvo",
+  },
+  reunioes: {
+    title: "Reuniões",
+    bodyMember: "Peça uma conversa individual com o seu educador. Ele responde por aqui e você recebe aviso.",
+    bodyEducator: "Pedidos de reunião dos membros. Confirme um horário, sugira outro ou responda.",
+    ask: "Pedir reunião",
+    asked: "Pedido enviado. Seu educador foi avisado.",
+    with: "Com quem",
+    mine: "meu educador",
+    reason: "Motivo",
+    reasonHint: "O que você quer conversar?",
+    availability: "Quando você pode",
+    availabilityHint: "Ex.: qualquer dia depois das 19h, sábado de manhã",
+    send: "Enviar pedido",
+    emptyMember: "Você ainda não pediu nenhuma reunião.",
+    emptyEducator: "Nenhum pedido de reunião por enquanto.",
+    estados: { solicitada: "Pedido enviado", confirmada: "Confirmada", remarcar: "Outro horário", recusada: "Não confirmada", cancelada: "Cancelada", realizada: "Realizada" },
+    acoes: { confirmar: "Confirmar", remarcar: "Sugerir outro horário", recusar: "Não agora" },
+    answer: "Responder",
+    when: "Data e hora",
+    where: "Onde",
+    whereHint: "Centro, chamada de vídeo, link…",
+    message: "Mensagem",
+    reply: "Resposta",
+    markDone: "Realizada",
+    cancel: "Cancelar",
+    cancelConfirm: "Cancelar esta reunião?",
+    saved: "Reunião atualizada",
+    new: "Novo",
+    askedOn: (date) => `Pedido em ${date}`,
+    notified: (channels) => `aviso por ${channels}`,
+    noChannel: "sino",
+    closed: (n) => (n === 1 ? "1 reunião encerrada" : `${n} reuniões encerradas`),
+    homeCard: "Falar com o educador",
+    homeBody: "Está com dificuldade? Peça uma reunião individual. Seu educador recebe o pedido na hora.",
+    homePending: (n) => (n === 1 ? "1 pedido aguardando resposta" : `${n} pedidos aguardando resposta`),
   },
   caixa: {
     title: "Caixa da equipe",

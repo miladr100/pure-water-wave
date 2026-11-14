@@ -25,6 +25,48 @@ export type ConfiguracoesAdmin = {
 
 export type ConfiguracoesBody = { modulos?: { testemunho?: ModuloTestemunhoModo } };
 
+// A member's request for a one-to-one with their educator.
+export const REUNIAO_ESTADOS = ["solicitada", "confirmada", "remarcar", "recusada", "cancelada", "realizada"] as const;
+export type ReuniaoEstado = (typeof REUNIAO_ESTADOS)[number];
+
+export type ReuniaoRow = {
+  id: string;
+  membro: PessoaRef & { telefone: string; fotoUrl: string | null; equipe: string };
+  educador: PessoaRef & { telefone: string };
+  motivo: string;
+  disponibilidade: string;
+  estado: ReuniaoEstado;
+  dataHora: string | null;
+  local: string;
+  resposta: string;
+  criadaEm: string;
+  respondidaEm: string | null;
+  // new for the side asking: the member sees a reply, the educator a request
+  nova: boolean;
+  avisos: { para: "membro" | "educador"; canal: "email" | "whatsapp"; ok: boolean; detalhe: string; em: string }[];
+  // prefilled WhatsApp chat with the other side (manual, free)
+  whatsappLink: string | null;
+};
+
+export type ReuniaoBody = {
+  educadorId?: string;
+  motivo: string;
+  disponibilidade?: string;
+};
+
+export type ReuniaoRespostaBody = {
+  acao: "confirmar" | "remarcar" | "recusar" | "realizada" | "cancelar";
+  dataHora?: string;
+  local?: string;
+  resposta?: string;
+};
+
+export type ReunioesLista = {
+  reunioes: ReuniaoRow[];
+  educadores: (PessoaRef & { minha: boolean })[];
+  pendentes: number;
+};
+
 // The team's cash box during the testimony drive.
 export const LANCAMENTO_TIPOS = ["entrada", "saida"] as const;
 export type LancamentoTipo = (typeof LANCAMENTO_TIPOS)[number];

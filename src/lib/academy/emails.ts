@@ -3,6 +3,7 @@ import { Resend } from "resend";
 import { NewStudentEmail } from "@/app/emails/academy/NewStudentEmail";
 import { PasswordChangedEmail } from "@/app/emails/academy/PasswordChangedEmail";
 import { PasswordResetEmail } from "@/app/emails/academy/PasswordResetEmail";
+import { ReuniaoEmail } from "@/app/emails/academy/ReuniaoEmail";
 import { WelcomeEmail } from "@/app/emails/academy/WelcomeEmail";
 import type { AccountKind } from "@/lib/academy/types";
 import { getEmailLogoAttachment } from "@/lib/email-assets";
@@ -150,4 +151,30 @@ export async function sendEmailWelcome({
   }
 
   console.info("E-mail de boas-vindas enviado para:", to);
+}
+
+interface ReuniaoEmailParams {
+  to: string;
+  firstName: string;
+  title: string;
+  lines: string[];
+  ctaLabel: string;
+  ctaUrl: string;
+}
+
+// Every notice about a meeting between a member and their educator
+// (asked, received, confirmed, another time, declined).
+export async function sendEmailReuniao({ to, firstName, title, lines, ctaLabel, ctaUrl }: ReuniaoEmailParams) {
+  const { error } = await resend().emails.send({
+    from: FROM,
+    to: [to],
+    subject: `${title} · Painel HJ Team`,
+    react: ReuniaoEmail({ firstName, title, lines, ctaLabel, ctaUrl }),
+    attachments: [getEmailLogoAttachment()],
+  });
+
+  if (error) {
+    console.error("Error sending meeting email:", error);
+    throw new Error("Error sending meeting email");
+  }
 }

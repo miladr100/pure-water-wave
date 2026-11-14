@@ -10,6 +10,8 @@ import { AcademyUser } from "@/models/academy-user";
 import { HjAcontecimento, HjConvidado } from "@/models/hj-convidado";
 import { HjEquipe } from "@/models/hj-equipe";
 import { HjArea, AREAS_PADRAO } from "@/models/hj-area";
+import { HjLancamento } from "@/models/hj-lancamento";
+import { HjReuniao } from "@/models/hj-reuniao";
 import { HjPrograma } from "@/models/hj-programa";
 import { HjProjeto } from "@/models/hj-projeto";
 import { HjRelatorio } from "@/models/hj-relatorio";
@@ -162,6 +164,8 @@ async function main() {
     HjAcontecimento.deleteMany({}),
     HjArea.deleteMany({}),
     HjPrograma.deleteMany({}),
+    HjLancamento.deleteMany({}),
+    HjReuniao.deleteMany({}),
     AcademyUser.deleteMany({ email: demoEmails, login: { $not: /^(tutor|aluno|hjteam\.teste)@/ } }),
     SystemUser.deleteMany({ email: demoEmails, role: "pastor" }),
   ]);
@@ -213,7 +217,7 @@ async function main() {
           email,
           login: email,
           password: hash,
-          phone: "",
+          phone: `+55 11 9${String(Math.round(random() * 99999999)).padStart(8, "0")}`,
           country: "Brasil",
           city: person.cidade,
           language: "pt",
@@ -475,6 +479,26 @@ async function main() {
     events.push({ tipo: "contato", texto: pick(["Conversa por WhatsApp", "Visita", "Ligação"]), data: ultimoContato });
     await HjAcontecimento.insertMany(events.map((event) => ({ convidadoId: doc._id, autorId: ids.get(guest.owner), ...event })));
   }
+
+  // Equipe 01 – HJA's cash box and two meeting requests, so the screens
+  // have something to show.
+  const equipe01 = await HjEquipe.findOne({ projetoId: projeto._id, nome: "Equipe 01 – HJA" }).lean();
+  if (equipe01) {
+    await HjEquipe.updateOne({ _id: equipe01._id }, { $set: { taxaEstadiaCents: 2500 } });
+    const projetoTestemunho = await HjProjeto.findOne({ tipo: "testemunho", ativo: true }).lean();
+    const capitaId = ids.get("bia.capita");
+    await HjLancamento.insertMany([
+      { equipeId: equipe01._id, projetoId: projetoTestemunho?._id ?? null, data: addDays(hoje, -6), tipo: "entrada", categoria: "rm", valorCents: 185000, descricao: "RM da semana", autorId: capitaId, automatico: false },
+      { equipeId: equipe01._id, projetoId: projetoTestemunho?._id ?? null, data: addDays(hoje, -5), tipo: "entrada", categoria: "doacao", valorCents: 30000, descricao: "Doação de um membro da igreja", autorId: capitaId, automatico: false },
+      { equipeId: equipe01._id, projetoId: projetoTestemunho?._id ?? null, data: addDays(hoje, -3), tipo: "saida", categoria: "alimentacao", valorCents: 42380, descricao: "Mercado da semana", autorId: capitaId, automatico: false },
+      { equipeId: equipe01._id, projetoId: projetoTestemunho?._id ?? null, data: addDays(hoje, -2), tipo: "saida", categoria: "transporte", valorCents: 9600, descricao: "Passagens", autorId: capitaId, automatico: false },
+      { equipeId: equipe01._id, projetoId: projetoTestemunho?._id ?? null, data: addDays(hoje, -1), tipo: "saida", categoria: "estadia", valorCents: 6 * 7 * 2500, descricao: "Estadia · 6 membros × 7 dias", autorId: capitaId, automatico: true, periodo: { inicio: addDays(hoje, -7), fim: addDays(hoje, -1) } },
+    ]);
+  }
+  await HjReuniao.insertMany([
+    { membroId: ids.get("carlos.membro"), educadorId: ids.get("david.educador"), motivo: "Estou com dificuldade de bater a meta e queria conversar sobre como abordar as pessoas.", disponibilidade: "qualquer dia depois das 19h", estado: "solicitada" },
+    { membroId: ids.get("ana.membro"), educadorId: ids.get("david.educador"), motivo: "Quero orientação sobre a jornada da Marina (Sistema 1).", disponibilidade: "sábado de manhã", estado: "confirmada", dataHora: new Date(`${addDays(hoje, 2)}T19:00:00-03:00`), local: "Centro de São Paulo", resposta: "Combinado, te espero lá.", respondidaEm: new Date(), vistaPeloEducadorEm: new Date() },
+  ]);
 
   const membros = teams.reduce((sum, team) => sum + team.membros.length, 0);
   console.log(`Painel demo pronto: projeto "${projeto.nome}", ${teams.length} equipes, ${membros} membros, ${EDUCADORES.length} educadores, ${PASTORES.length} pastores, ${relatorios} relatórios, ${guests.length} convidados.`);

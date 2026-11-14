@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import type { Types } from "mongoose";
+import { Types } from "mongoose";
 
 import { createSessionToken, getSessionCookieOptions } from "@/lib/academy/auth";
 import { isCountry } from "@/lib/academy/countries";
@@ -23,6 +23,8 @@ import { Enrollment } from "@/models/enrollment";
 import { Lesson } from "@/models/lesson";
 import { LessonProgress } from "@/models/lesson-progress";
 import { Question } from "@/models/question";
+import { HjReuniao } from "@/models/hj-reuniao";
+import { fmtDataHora } from "@/lib/hj/reunioes";
 
 type EnrollmentRow = { courseId: Types.ObjectId; createdAt: Date };
 
@@ -147,6 +149,49 @@ export async function GET() {
       answeredAt: row.answeredAt ? row.answeredAt.toISOString() : "",
       seen: Boolean(row.answerSeenAt),
     }));
+
+    // The panel's meetings ride the same bell: replies for the member,
+    // requests for the educator (src/lib/hj/reunioes.ts).
+    const userId = new Types.ObjectId(session.userId);
+    const reunioes = (await HjReuniao.find(
+      session.role === "tutor"
+        ? { $or: [{ educadorId: userId, estado: "solicitada" }, { membroId: userId, respondidaEm: { $ne: null } }] }
+        : { membroId: userId, respondidaEm: { $ne: null } },
+    )
+      .sort({ updatedAt: -1 })
+      .limit(20)
+      .populate("membroId", "fullName")
+      .populate("educadorId", "fullName")
+      .lean()) as unknown as {
+      _id: Types.ObjectId;
+      membroId: { _id: Types.ObjectId; fullName: string } | null;
+      educadorId: { _id: Types.ObjectId; fullName: string } | null;
+      motivo: string;
+      estado: string;
+      dataHora: Date | null;
+      respondidaEm: Date | null;
+      vistaPeloMembroEm: Date | null;
+      vistaPeloEducadorEm: Date | null;
+      createdAt: Date;
+    }[];
+    const ESTADO: Record<string, string> = { confirmada: "Reunião confirmada", remarcar: "Outro horário sugerido", recusada: "Reunião não confirmada", cancelada: "Reunião cancelada", realizada: "Reunião realizada", solicitada: "Pedido de reunião" };
+    for (const item of reunioes) {
+      const pedidoParaMim = session.role === "tutor" && item.educadorId && String(item.educadorId._id) === session.userId && item.estado === "solicitada";
+      const seen = pedidoParaMim ? item.vistaPeloEducadorEm !== null : item.vistaPeloMembroEm !== null && item.respondidaEm !== null && item.vistaPeloMembroEm >= item.respondidaEm;
+      notifications.push({
+        kind: "reuniao",
+        questionId: item._id.toString(),
+        text: pedidoParaMim ? `${item.membroId?.fullName ?? "Um membro"}: ${item.motivo}` : `${item.educadorId?.fullName ?? "Seu educador"}${item.dataHora && item.estado === "confirmada" ? ` · ${fmtDataHora(item.dataHora)}` : ""}`,
+        courseSlug: "",
+        lessonId: "",
+        lessonLabel: ESTADO[item.estado] ?? "Reunião",
+        answeredBy: pedidoParaMim ? item.membroId?.fullName ?? "" : item.educadorId?.fullName ?? "",
+        answeredAt: (pedidoParaMim ? item.createdAt : item.respondidaEm ?? item.createdAt).toISOString(),
+        seen,
+        href: pedidoParaMim ? "/admin/reunioes" : "/painel/reunioes",
+      });
+    }
+    notifications.sort((a, b) => (a.answeredAt < b.answeredAt ? 1 : -1));
 
     const body: MeResponse = {
       profile: meProfile(userDoc),

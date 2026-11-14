@@ -31,13 +31,13 @@ export function NotificationsBell() {
   function openNotification(item: Notification) {
     if (!item.seen) {
       setSeenHere((current) => new Set(current).add(item.questionId));
-      void api(`/api/academia/perguntas/${item.questionId}/vista`, { method: "POST" }).catch(
+      void api(item.kind === "reuniao" ? `/api/painel/reunioes/${item.questionId}` : `/api/academia/perguntas/${item.questionId}/vista`, { method: "POST" }).catch(
         () => {},
       );
     }
 
     setOpen(false);
-    router.push(`/academia/cursos/${item.courseSlug}/aulas/${item.lessonId}`);
+    router.push(item.href ?? `/academia/cursos/${item.courseSlug}/aulas/${item.lessonId}`);
   }
 
   return (
@@ -79,7 +79,7 @@ export function NotificationsBell() {
                   <p className="text-xs font-medium text-primary">{item.lessonLabel}</p>
                   <p className="line-clamp-2 text-sm text-foreground">{item.text}</p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {t.header.answeredBy(item.answeredBy)} · {fmtDate(item.answeredAt, language)}
+                    {item.kind === "reuniao" ? item.answeredBy : t.header.answeredBy(item.answeredBy)} · {fmtDate(item.answeredAt, language)}
                   </p>
                 </button>
               </li>

@@ -1,13 +1,13 @@
 "use client";
 
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight, CalendarClock, Play } from "lucide-react";
 import Link from "next/link";
 
 import { firstNameOf } from "@/components/academy/format";
 import { useApi, useMe } from "@/components/academy/use-api";
 import { Chip } from "@/components/academy/chip";
 import { Card, Eyebrow, Failed, LoadingBlock, Reais } from "@/components/painel/bits";
-import { usePainelMessages } from "@/components/painel/use-painel";
+import { usePainelEu, usePainelMessages } from "@/components/painel/use-painel";
 import { Button } from "@/components/ui/button";
 import type { SessionPayload } from "@/lib/academy/auth";
 import { fmtDia } from "@/lib/hj/dates";
@@ -21,6 +21,7 @@ export function InicioScreen({ session }: { session: SessionPayload }) {
   const t = usePainelMessages();
   const inicio = useApi<PainelInicio>("/api/painel/inicio");
   const me = useMe();
+  const eu = usePainelEu();
 
   if (inicio.error) {
     return <Failed error={inicio.error} onRetry={inicio.reload} />;
@@ -169,6 +170,7 @@ export function InicioScreen({ session }: { session: SessionPayload }) {
           </Card>
         ) : null}
 
+        {eu && !eu.modulos.testemunho ? null : (
         <Card className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-2">
             <Eyebrow>{t.inicio.testemunho}</Eyebrow>
@@ -193,6 +195,7 @@ export function InicioScreen({ session }: { session: SessionPayload }) {
             <Link href="/painel/testemunho">{t.inicio.seeGuests}</Link>
           </Button>
         </Card>
+        )}
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
@@ -225,6 +228,14 @@ export function InicioScreen({ session }: { session: SessionPayload }) {
             <ArrowRight className="h-5 w-5 text-primary" />
           </Link>
         )}
+
+        <Link href="/painel/reunioes" className="flex items-center justify-between gap-4 rounded-3xl border border-border/60 bg-card p-5 text-foreground shadow-card transition hover:-translate-y-0.5">
+          <div>
+            <Eyebrow>{t.reunioes.homeCard}</Eyebrow>
+            <p className="mt-1 text-sm text-muted-foreground">{t.reunioes.homeBody}</p>
+          </div>
+          <CalendarClock className="h-5 w-5 shrink-0 text-primary" />
+        </Link>
 
         {equipeHoje && data.equipe ? (
           <Link href="/painel/equipe" className="flex flex-col gap-1 rounded-3xl border border-border/60 bg-card p-5 text-foreground shadow-card transition hover:-translate-y-0.5">

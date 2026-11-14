@@ -281,6 +281,9 @@ export type MeResponse = {
     thumbnailUrl: string | null;
   } | null;
   notifications: {
+    // "pergunta" (an answered question, the academy's) or "reuniao" (the
+    // panel's meeting request or reply)
+    kind?: "pergunta" | "reuniao";
     questionId: string;
     text: string;
     courseSlug: string;
@@ -289,6 +292,8 @@ export type MeResponse = {
     answeredBy: string;
     answeredAt: string;
     seen: boolean;
+    // where the bell takes the person, when not a lesson
+    href?: string;
   }[];
   unreadCount: number;
 };
