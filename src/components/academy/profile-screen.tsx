@@ -110,9 +110,12 @@ function ProfileSkeleton() {
 export function ProfileContent({
   session,
   layout = "grid",
+  extra,
 }: {
   session: SessionPayload;
   layout?: "grid" | "stack";
+  // Drawn under the preferences: the panel adds its HJ Team card here.
+  extra?: React.ReactNode;
 }) {
   const { t } = useLocale();
   const me = useApi<MeResponse>("/api/academia/me");
@@ -172,13 +175,14 @@ export function ProfileContent({
             {session.role === "tutor" ? null : (
               <ProfileTutor profile={profile} onSaved={handleSaved} />
             )}
+            {extra}
       </div>
     </div>
     </div>
   );
 }
 
-export function ProfileScreen({ session }: { session: SessionPayload }) {
+export function ProfileScreen({ session, extra }: { session: SessionPayload; extra?: React.ReactNode }) {
   const { t } = useLocale();
 
   return (
@@ -189,7 +193,7 @@ export function ProfileScreen({ session }: { session: SessionPayload }) {
         </h1>
         <p className="mt-3 max-w-2xl text-muted-foreground">{t.profile.description}</p>
       </section>
-      <ProfileContent session={session} />
+      <ProfileContent session={session} extra={extra} />
     </div>
   );
 }

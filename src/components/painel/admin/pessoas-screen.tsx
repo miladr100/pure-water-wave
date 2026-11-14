@@ -6,6 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Chip } from "@/components/academy/chip";
+import { UserAvatar } from "@/components/academy/user-avatar";
 import { fmtDate } from "@/components/academy/format";
 import { useLocale } from "@/components/academy/locale-provider";
 import { describeError, useApi } from "@/components/academy/use-api";
@@ -16,7 +17,10 @@ import { refreshEu, usePainelEu, usePainelMessages } from "@/components/painel/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/academy/api-client";
-import type { PessoaRow } from "@/lib/hj/types";
+import { HJ_PROGRAMAS, type PessoaRow, type ProgramaCatalogo } from "@/lib/hj/types";
+
+const selectClass =
+  "h-10 rounded-full border border-input bg-card px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 type Papel = "membro" | "educador" | "administrador";
 
@@ -27,7 +31,12 @@ export function PessoasScreen({ papel }: { papel: Papel }) {
   const { t: ta, language } = useLocale();
   const eu = usePainelEu();
   const [busca, setBusca] = useState("");
-  const list = useApi<{ pessoas: PessoaRow[] }>(`/api/admin/hj/pessoas?papel=${papel}${busca ? `&busca=${encodeURIComponent(busca)}` : ""}`);
+  const [programa, setPrograma] = useState("");
+  const [turma, setTurma] = useState("");
+  const query = new URLSearchParams({ papel, ...(busca ? { busca } : {}), ...(programa ? { programa } : {}), ...(turma ? { turma } : {}) });
+  const list = useApi<{ pessoas: PessoaRow[] }>(`/api/admin/hj/pessoas?${query.toString()}`);
+  const catalogo = useApi<{ programas: ProgramaCatalogo[] }>("/api/admin/hj/programas");
+  const turmas = catalogo.data?.programas.find((item) => item.sigla === programa)?.turmas ?? [];
   const [busy, setBusy] = useState<string | null>(null);
   const isAdmin = Boolean(eu?.papeis.administrador);
 
@@ -60,6 +69,36 @@ export function PessoasScreen({ papel }: { papel: Papel }) {
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input value={busca} onChange={(event) => setBusca(event.target.value)} placeholder={t.common.search} className="h-10 rounded-full pl-9" aria-label={t.common.search} />
             </div>
+            {papel === "membro" ? (
+              <>
+                <select
+                  className={selectClass}
+                  value={programa}
+                  onChange={(event) => {
+                    setPrograma(event.target.value);
+                    setTurma("");
+                  }}
+                  aria-label={t.pessoa.program}
+                >
+                  <option value="">{t.pessoa.allPrograms}</option>
+                  {HJ_PROGRAMAS.map((sigla) => (
+                    <option key={sigla} value={sigla}>
+                      {catalogo.data?.programas.find((item) => item.sigla === sigla)?.nome ?? sigla}
+                    </option>
+                  ))}
+                </select>
+                {programa && turmas.length > 0 ? (
+                  <select className={selectClass} value={turma} onChange={(event) => setTurma(event.target.value)} aria-label={t.pessoa.cohort}>
+                    <option value="">{t.pessoa.allCohorts}</option>
+                    {turmas.map((item) => (
+                      <option key={item.nome} value={item.nome}>
+                        {item.nome}
+                      </option>
+                    ))}
+                  </select>
+                ) : null}
+              </>
+            ) : null}
             {papel !== "administrador" ? (
               <NewAccountDialog
                 kind={kind}
@@ -87,6 +126,7 @@ export function PessoasScreen({ papel }: { papel: Papel }) {
               <thead>
                 <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
                   <th className="px-4 py-3 font-semibold">{t.testemunho.name}</th>
+                  {papel === "membro" ? <th className="px-4 py-3 font-semibold">{t.pessoa.program}</th> : null}
                   <th className="px-4 py-3 font-semibold">{t.admin.team}</th>
                   <th className="px-4 py-3 font-semibold">Papéis</th>
                   <th className="px-4 py-3 font-semibold">Último acesso</th>
@@ -97,11 +137,29 @@ export function PessoasScreen({ papel }: { papel: Papel }) {
                 {list.data.pessoas.map((row) => (
                   <tr key={row.id}>
                     <td className="px-4 py-3">
-                      <Link href={`/admin/alunos/${row.id}`} className="font-medium hover:text-primary">
-                        {row.nome}
+                      <Link href={`/admin/pessoas/${row.id}`} className="flex items-center gap-3 hover:text-primary">
+                        <UserAvatar fullName={row.nome} photoUrl={row.fotoUrl} className="h-10 w-10" textClassName="text-sm" />
+                        <span className="min-w-0">
+                          <span className="block font-medium">
+                            {row.nome}
+                            {row.idade !== null ? <span className="font-normal text-muted-foreground"> · {t.pessoa.age(row.idade)}</span> : null}
+                          </span>
+                          <span className="block truncate text-xs text-muted-foreground">{row.resumo || row.email}</span>
+                        </span>
                       </Link>
-                      <p className="text-xs text-muted-foreground">{row.email}</p>
                     </td>
+                    {papel === "membro" ? (
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {row.programa ? (
+                          <>
+                            <Chip tone="primary">{row.programa}</Chip>
+                            {row.turma ? <span className="ml-2 text-xs">{row.turma}</span> : null}
+                          </>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                    ) : null}
                     <td className="px-4 py-3 text-muted-foreground">{row.equipe ? `${row.equipe.nome}` : "—"}</td>
                     <td className="px-4 py-3">
                       <span className="flex flex-wrap gap-1">

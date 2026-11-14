@@ -109,6 +109,12 @@ export function subTabsFor(pathname: string, papeis: Papeis | null, t: PainelMes
       { href: "/admin/pastores", label: t.admin.pastorsTab },
     ];
   }
+  if (pathname === "/admin/organizacao" || pathname.startsWith("/admin/organizacao/")) {
+    return [
+      { href: "/admin/organizacao", label: t.admin.projectsTitle, exact: true },
+      { href: "/admin/organizacao/programas", label: t.pessoa.programsTitle },
+    ];
+  }
   const academy = ["/admin/academia", "/admin/alunos", "/admin/cursos", "/admin/perguntas", "/admin/correcoes"];
   if (academy.some((path) => pathname === path || pathname.startsWith(`${path}/`))) {
     return [

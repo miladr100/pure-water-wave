@@ -2,6 +2,7 @@ import { Schema, model, models, type InferSchemaType } from "mongoose";
 
 import { USER_LANGUAGES } from "@/lib/user-languages";
 import { ACADEMY_ROLES } from "@/lib/academy/roles";
+import { HJ_PROGRAMAS } from "@/lib/hj/types";
 import { THEME_PREFERENCES } from "@/lib/theme";
 
 // The academy's own account, separate from the library's `SystemUser`
@@ -53,6 +54,43 @@ const academyUserSchema = new Schema(
     // HJ Team panel: a site administrator (always also an educator, role
     // tutor) who grants and removes the educator/administrator roles.
     isAdmin: { type: Boolean, default: false },
+    // HJ Team profile: the half the person fills in and sees, and the half
+    // only educators see (see src/lib/hj/perfil.ts). `confidencial` is never
+    // selected for the person themself.
+    hj: {
+      type: new Schema(
+        {
+          perfil: {
+            type: new Schema(
+              {
+                programa: { type: String, enum: [...HJ_PROGRAMAS, null], default: null },
+                turma: { type: String, default: "" },
+                membroDesde: { type: String, default: null },
+                cursoUniversitario: { type: String, default: "" },
+                formacao: { type: String, default: "" },
+              },
+              { _id: false },
+            ),
+            default: () => ({}),
+          },
+          confidencial: {
+            type: new Schema(
+              {
+                familiaCheonBo: { type: Boolean, default: null },
+                segundaGeracao: { type: Boolean, default: null },
+                pais: { type: String, default: "" },
+                espiritosLibertados: { type: Number, default: null },
+                padraoVidaFe: { type: String, default: "" },
+              },
+              { _id: false },
+            ),
+            default: () => ({}),
+          },
+        },
+        { _id: false },
+      ),
+      default: () => ({}),
+    },
     // Tutor-side follow-up: any note the tutor left about this student.
     tutorNotes: { type: String, default: "" },
     assignedTutorId: { type: Schema.Types.ObjectId, ref: "AcademyUser", default: null },

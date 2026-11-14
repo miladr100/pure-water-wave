@@ -3,9 +3,12 @@ import { Types } from "mongoose";
 import type { SessionPayload } from "@/lib/academy/auth";
 import { addDays, daysBetween, todayInBrazil } from "@/lib/hj/dates";
 import { liquido, media, novaMeta, recorde } from "@/lib/hj/rm";
+import { confidencialDe, idadeEm, perfilDe, resumoDe, type HjDoc } from "@/lib/hj/perfil";
+import { photoUrlOf } from "@/lib/academy/profile";
 import { alertaDe } from "@/lib/hj/testemunho";
 import type {
   ConvidadoDatas,
+  PessoaRow,
   ConvidadoRow,
   DiaResumo,
   EquipeResumo,
@@ -33,8 +36,15 @@ export type UserDoc = {
   email: string;
   phone?: string;
   country?: string;
+  city?: string;
+  birthday?: Date | null;
+  photoUpdatedAt?: Date | null;
+  language?: string;
   role: "student" | "tutor";
   isAdmin?: boolean;
+  hj?: HjDoc | null;
+  tutorNotes?: string;
+  assignedTutorId?: Types.ObjectId | null;
   createdAt?: Date;
   lastSeenAt?: Date | null;
 };
@@ -100,7 +110,8 @@ export type ConvidadoDoc = {
   updatedAt?: Date;
 };
 
-export const USER_FIELDS = "fullName email phone country role isAdmin createdAt lastSeenAt";
+// `hj.confidencial` rides along: only the educator routes ever send it out.
+export const USER_FIELDS = "fullName email phone country city birthday photoUpdatedAt language role isAdmin hj tutorNotes assignedTutorId createdAt lastSeenAt";
 
 export const oid = (value: string | Types.ObjectId) =>
   typeof value === "string" ? new Types.ObjectId(value) : value;
@@ -110,6 +121,35 @@ export const sameId = (a: Types.ObjectId | string | null | undefined, b: Types.O
 
 export function ref(user: Pick<UserDoc, "_id" | "fullName"> | null | undefined): PessoaRef | null {
   return user ? { id: user._id.toString(), nome: user.fullName } : null;
+}
+
+// A person as the people list shows them: photo, age, program, the one
+// line per program. `equipe` is the team in the project at hand.
+export function pessoaRow(user: UserDoc, equipe: EquipeDoc | null, hoje: string): PessoaRow {
+  const perfil = perfilDe(user.hj);
+  const educador = user.role === "tutor";
+  return {
+    id: user._id.toString(),
+    nome: user.fullName,
+    email: user.email,
+    telefone: user.phone ?? "",
+    pais: user.country ?? "",
+    cidade: user.city ?? "",
+    fotoUrl: photoUrlOf(user),
+    idade: idadeEm(user.birthday, hoje),
+    programa: perfil.programa ?? equipe?.programa ?? null,
+    turma: perfil.turma,
+    resumo: resumoDe({ ...perfil, programa: perfil.programa ?? equipe?.programa ?? null }, confidencialDe(user.hj), hoje),
+    papeis: {
+      membro: true,
+      capitao: Boolean(equipe && sameId(equipe.capitaoId, user._id)),
+      educador,
+      administrador: educador && user.isAdmin === true,
+    },
+    equipe: equipe ? { id: equipe._id.toString(), nome: equipe.nome, programa: equipe.programa } : null,
+    criadoEm: (user.createdAt ?? new Date()).toISOString(),
+    ultimoAcesso: user.lastSeenAt ? user.lastSeenAt.toISOString() : null,
+  };
 }
 
 // ---------- who is this ----------

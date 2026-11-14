@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { ProfileScreen } from "@/components/academy/profile-screen";
+import { PerfilHjSection } from "@/components/painel/perfil-hj-section";
 import { getSession } from "@/lib/academy/auth";
 
 // The account's profile inside the panel's frame (the layout draws it).
@@ -9,5 +10,5 @@ export default async function PainelPerfilPage() {
   if (!session) {
     redirect("/login?next=/painel/perfil");
   }
-  return <ProfileScreen session={session} />;
+  return <ProfileScreen session={session} extra={<PerfilHjSection />} />;
 }

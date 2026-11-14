@@ -258,6 +258,52 @@ export type PainelMessages = {
     recentEvents: string;
     noRecentEvents: string;
   };
+  pessoa: {
+    profileTitle: string;
+    basicData: string;
+    age: (n: number) => string;
+    noAge: string;
+    birthday: string;
+    program: string;
+    cohort: string;
+    noProgram: string;
+    noCohort: string;
+    memberSince: string;
+    memberFor: (years: number) => string;
+    course: string;
+    courseHint: string;
+    formation: string;
+    formationHint: string;
+    educatorSection: string;
+    educatorSectionBody: string;
+    cheonBo: string;
+    secondGen: string;
+    parents: string;
+    liberated: string;
+    faithPattern: string;
+    notes: string;
+    notesHint: string;
+    yes: string;
+    no: string;
+    unknown: string;
+    saved: string;
+    myHjSection: string;
+    myHjBody: string;
+    team: string;
+    educator: string;
+    guests: string;
+    rmSummary: string;
+    academyLink: string;
+    allPrograms: string;
+    allCohorts: string;
+    programsTitle: string;
+    programsBody: string;
+    cohorts: string;
+    newCohort: string;
+    cohortName: string;
+    inactive: string;
+    programSaved: string;
+  };
   biblioteca: {
     title: string;
     description: string;
@@ -542,6 +588,52 @@ const pt: PainelMessages = {
     guestsByTeam: "Convidados por equipe",
     recentEvents: "Últimos acontecimentos",
     noRecentEvents: "Nenhum acontecimento registrado ainda.",
+  },
+  pessoa: {
+    profileTitle: "Perfil",
+    basicData: "Dados básicos",
+    age: (n) => `${n} anos`,
+    noAge: "Idade não informada",
+    birthday: "Nascimento",
+    program: "Programa",
+    cohort: "Turma",
+    noProgram: "Sem programa",
+    noCohort: "Sem turma",
+    memberSince: "Membro desde",
+    memberFor: (years) => (years === 0 ? "há menos de 1 ano" : years === 1 ? "há 1 ano" : `há ${years} anos`),
+    course: "Curso universitário",
+    courseHint: "Em que curso se formou (ou está cursando).",
+    formation: "Outras formações",
+    formationHint: "Cursos, especializações, idiomas.",
+    educatorSection: "Informações do educador",
+    educatorSectionBody: "Só educadores veem e preenchem esta parte. A pessoa não a vê no próprio perfil.",
+    cheonBo: "Família Cheon Bo",
+    secondGen: "Segunda geração",
+    parents: "Pais",
+    liberated: "Espíritos centrais libertados",
+    faithPattern: "Padrão de vida de fé",
+    notes: "Anotações do educador",
+    notesHint: "Como foi o contato, o que combinar, o que acompanhar.",
+    yes: "Sim",
+    no: "Não",
+    unknown: "Não sei",
+    saved: "Perfil salvo",
+    myHjSection: "HJ Team",
+    myHjBody: "Programa e turma são definidos pelo educador. Os outros campos são seus.",
+    team: "Equipe",
+    educator: "Educador(a) responsável",
+    guests: "Convidados",
+    rmSummary: "Restauração Material",
+    academyLink: "Ver na academia",
+    allPrograms: "Todos os programas",
+    allCohorts: "Todas as turmas",
+    programsTitle: "Programas e turmas",
+    programsBody: "As siglas são fixas (as equipes e as metas usam). Nome, situação e turmas são seus.",
+    cohorts: "Turmas",
+    newCohort: "Nova turma",
+    cohortName: "Nome da turma",
+    inactive: "Inativa",
+    programSaved: "Programa salvo",
   },
   biblioteca: {
     title: "Biblioteca",

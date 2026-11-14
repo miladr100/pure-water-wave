@@ -1,3 +1,5 @@
+import type { HjConfidencial, HjPerfil } from "@/lib/hj/perfil";
+
 // The contract between the HJ Team panel's API routes (`/api/painel`,
 // `/api/admin/hj`) and its screens. Money is always integer cents; dates
 // that name a calendar day are `yyyy-mm-dd` strings in Brazil's calendar.
@@ -321,10 +323,48 @@ export type PessoaRow = {
   email: string;
   telefone: string;
   pais: string;
+  cidade: string;
+  fotoUrl: string | null;
+  idade: number | null;
+  programa: HjPrograma | null;
+  turma: string;
+  // the one line under the name, per program (see src/lib/hj/perfil.ts)
+  resumo: string;
   papeis: Papeis;
   equipe: { id: string; nome: string; programa: HjPrograma } | null;
   criadoEm: string;
   ultimoAcesso: string | null;
+};
+
+export type PessoaDetalhe = PessoaRow & {
+  nascimento: string | null;
+  idioma: string;
+  perfil: HjPerfil;
+  confidencial: HjConfidencial;
+  anotacoes: string;
+  educadorResponsavel: PessoaRef | null;
+  convidados: { total: number; porEtapa: Record<ConvidadoEtapa, number> };
+  rm: { diasEnviados: number; totalCents: number; mediaCents: number } | null;
+};
+
+export type PessoaPatchBody = {
+  perfil?: Partial<HjPerfil>;
+  confidencial?: Partial<HjConfidencial>;
+  anotacoes?: string;
+};
+
+export type ProgramaCatalogo = {
+  sigla: HjPrograma;
+  nome: string;
+  ativo: boolean;
+  turmas: { nome: string; ativa: boolean }[];
+};
+
+export type ProgramaBody = {
+  sigla: HjPrograma;
+  nome?: string;
+  ativo?: boolean;
+  turmas?: { nome: string; ativa: boolean }[];
 };
 
 export type PapeisBody = {
