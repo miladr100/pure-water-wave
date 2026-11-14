@@ -62,7 +62,13 @@ Pedidos do grupo em 13 e 14/11 (Milad, Wang Song, Yeseong, Dir. Henrique):
   ao educador; o educador confirma, sugere outro horário ou recusa; aviso no
   sino, por e-mail e por WhatsApp quando configurado (ver P8).
 - "Fale com a IA" voltou a aparecer na Biblioteca (Milad: o chat externo
-  serve por enquanto). A academia segue as regras da
+  serve por enquanto).
+- **Os quatro indicadores** (Yeseong, 14/11, o que o Rev. Kim pede): Kit 1,
+  fichas, Kit 2, Jardim por equipe em Testemunho › Equipes, em Por área e
+  no Início; **"Ponto de atenção"** ao lado da equipe quando dois deles se
+  afastam (P4 US-P4-12). **Orientação** registrada por equipe (a última ao
+  lado da equipe, histórico no diálogo) e **meta interna** de RM por membro
+  (Metas e ficha da pessoa); o membro vê as duas no Início (P4 US-P4-13, P3). A academia segue as regras da
 FFPUM: módulos abrem em ordem quando a atividade do módulo anterior é
 aprovada (nota mínima 70 por padrão, tentativas ilimitadas, a melhor vale),
 a atividade do módulo abre depois de todas as aulas, a final depois de todos
@@ -156,7 +162,7 @@ chama "Água Pura", abre em `/login` e um membro já logado cai direto no
 Painel, em tela cheia, com a barra inferior acima do indicador do iPhone.
 
 Suite automática: `npm run typecheck`, `eslint` (pastas do CI) e `npm test`
-(464 testes, MongoDB em memória): regras de RM, datas, jornada e perfil em
+(468 testes, MongoDB em memória): regras de RM, datas, jornada e perfil em
 `tests/unit/`; rotas do painel e da administração em
 `tests/api/painel-*.test.ts` (arrecadação, testemunho, caixa, reuniões) e
 `tests/api/admin-*.test.ts` (hj, áreas, perfil/programas/configurações,

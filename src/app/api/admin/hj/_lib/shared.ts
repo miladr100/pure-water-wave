@@ -16,6 +16,7 @@ import {
 import type { HjPrograma, ResultadoLinha } from "@/lib/hj/types";
 import { HjEquipe } from "@/models/hj-equipe";
 import { HjProjeto } from "@/models/hj-projeto";
+import { ultimasDosMembros } from "@/lib/hj/orientacoes";
 
 export { adminContext, educatorContext, intField, textField } from "../../../painel/_lib/context";
 
@@ -66,6 +67,7 @@ export async function buildGrid(projeto: ProjetoDoc): Promise<Grid> {
     }
   }
 
+  const orientacoes = await ultimasDosMembros(equipes.flatMap((equipe) => equipe.membroIds));
   const linhas: ResultadoLinha[] = [];
   for (const equipe of equipes) {
     for (const membroId of equipe.membroIds) {
@@ -84,6 +86,7 @@ export async function buildGrid(projeto: ProjetoDoc): Promise<Grid> {
         recordeCents: recorde(valores),
         metaCents: novaMeta(mediaCents, projeto.regraNovaMeta, projeto.metaDiariaPadraoCents, valores.length),
         diasEnviados: valores.length,
+        orientacao: orientacoes.get(key) ?? null,
       });
     }
   }

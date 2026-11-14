@@ -316,6 +316,31 @@ export type PainelMessages = {
     inactive: string;
     programSaved: string;
   };
+  indicadores: {
+    kit1: string;
+    fichas: string;
+    kit2: string;
+    jardim: string;
+    attention: string;
+    attentionBody: string;
+    teamsWithAttention: (n: number) => string;
+    teamsTitle: string;
+    teamsBody: string;
+    orientation: string;
+    lastOrientation: string;
+    noOrientation: string;
+    addOrientation: string;
+    orientationHint: string;
+    orientationDate: string;
+    orientationSaved: string;
+    orientationDeleted: string;
+    history: string;
+    innerGoal: string;
+    innerGoalHint: string;
+    innerGoalMember: string;
+    teamOrientationMember: string;
+    givenBy: (name: string, date: string) => string;
+  };
   reunioes: {
     title: string;
     bodyMember: string;
@@ -771,6 +796,31 @@ const pt: PainelMessages = {
     cohortName: "Nome da turma",
     inactive: "Inativa",
     programSaved: "Programa salvo",
+  },
+  indicadores: {
+    kit1: "Kit 1",
+    fichas: "Fichas",
+    kit2: "Kit 2",
+    jardim: "Jardim",
+    attention: "Ponto de atenção",
+    attentionBody: "Os quatro indicadores (Kit 1, fichas assinadas, Kit 2, confirmados para o Jardim) devem andar juntos. Uma queda grande entre dois deles é um ponto de atenção: vale conversar com a equipe.",
+    teamsWithAttention: (n) => (n === 1 ? "1 equipe com ponto de atenção" : `${n} equipes com ponto de atenção`),
+    teamsTitle: "Equipes",
+    teamsBody: "Os quatro indicadores de cada equipe e a última orientação que o educador deu.",
+    orientation: "Orientação",
+    lastOrientation: "Última orientação",
+    noOrientation: "Nenhuma orientação registrada ainda.",
+    addOrientation: "Registrar orientação",
+    orientationHint: "O que foi combinado com a capitã ou com a equipe, para lembrar na próxima conversa.",
+    orientationDate: "Data da conversa",
+    orientationSaved: "Orientação registrada",
+    orientationDeleted: "Orientação apagada",
+    history: "Histórico",
+    innerGoal: "Meta interna",
+    innerGoalHint: "A meta interna da semana ou o conselho da consulta, para o membro lembrar.",
+    innerGoalMember: "Sua meta interna",
+    teamOrientationMember: "Orientação do educador para a equipe",
+    givenBy: (name, date) => `${name} · ${date}`,
   },
   reunioes: {
     title: "Reuniões",

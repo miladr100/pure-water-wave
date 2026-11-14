@@ -11,6 +11,7 @@ import { useLocale } from "@/components/academy/locale-provider";
 import { describeError, useApi } from "@/components/academy/use-api";
 import { UserAvatar } from "@/components/academy/user-avatar";
 import { Card, Eyebrow, Failed, LoadingBlock, Reais } from "@/components/painel/bits";
+import { OrientacaoDialog, type OrientacaoAlvo } from "@/components/painel/orientacao-dialog";
 import { PainelHeading } from "@/components/painel/painel-shell";
 import { usePainelMessages } from "@/components/painel/use-painel";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/academy/api-client";
 import type { HjConfidencial, HjPerfil } from "@/lib/hj/perfil";
 import { ETAPA_LABELS, ETAPA_ORDEM } from "@/lib/hj/testemunho";
-import { HJ_PROGRAMAS, type PessoaDetalhe, type PessoaPatchBody, type ProgramaCatalogo } from "@/lib/hj/types";
+import { HJ_PROGRAMAS, type OrientacaoRow, type PessoaDetalhe, type PessoaPatchBody, type ProgramaCatalogo } from "@/lib/hj/types";
+import { fmtDia } from "@/lib/hj/dates";
 
 const selectClass =
   "h-10 w-full rounded-xl border border-input bg-card px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
@@ -38,6 +40,8 @@ export function PessoaScreen({ pessoaId }: { pessoaId: string }) {
   const { language } = useLocale();
   const detail = useApi<{ pessoa: PessoaDetalhe }>(`/api/admin/hj/pessoas/${pessoaId}`);
   const catalogo = useApi<{ programas: ProgramaCatalogo[] }>("/api/admin/hj/programas");
+  const orientacoes = useApi<{ orientacoes: OrientacaoRow[] }>(`/api/admin/hj/orientacoes?membro=${pessoaId}&modulo=rm`);
+  const [alvo, setAlvo] = useState<OrientacaoAlvo | null>(null);
 
   if (detail.error) {
     return <Failed error={detail.error} onRetry={detail.reload} />;
@@ -125,8 +129,29 @@ export function PessoaScreen({ pessoaId }: { pessoaId: string }) {
           </Card>
         </div>
 
-        <PerfilForm key={pessoa.id} pessoa={pessoa} programas={catalogo.data?.programas ?? []} onSaved={() => detail.reload()} />
+        <div className="space-y-6">
+          <PerfilForm key={pessoa.id} pessoa={pessoa} programas={catalogo.data?.programas ?? []} onSaved={() => detail.reload()} />
+          <Card>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <Eyebrow>{t.indicadores.innerGoal} · {t.areas.rmShort}</Eyebrow>
+              <Button size="sm" variant="outline" className="rounded-full" onClick={() => setAlvo({ modulo: "rm", membroId: pessoa.id, nome: pessoa.nome })}>
+                {t.indicadores.addOrientation}
+              </Button>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">{t.indicadores.innerGoalHint}</p>
+            {orientacoes.data && orientacoes.data.orientacoes.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">{t.indicadores.noOrientation}</p> : null}
+            <ul className="mt-3 space-y-3 text-sm">
+              {orientacoes.data?.orientacoes.slice(0, 5).map((row) => (
+                <li key={row.id}>
+                  <p className="whitespace-pre-wrap">{row.texto}</p>
+                  <p className="text-xs text-muted-foreground">{t.indicadores.givenBy(row.autor.nome, fmtDia(row.data))}</p>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </div>
       </div>
+      <OrientacaoDialog key={alvo ? "open" : "closed"} alvo={alvo} onClose={() => setAlvo(null)} onSaved={() => orientacoes.reload()} />
     </div>
   );
 }

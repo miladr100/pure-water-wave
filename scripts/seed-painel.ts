@@ -11,6 +11,7 @@ import { HjAcontecimento, HjConvidado } from "@/models/hj-convidado";
 import { HjEquipe } from "@/models/hj-equipe";
 import { HjArea, AREAS_PADRAO } from "@/models/hj-area";
 import { HjLancamento } from "@/models/hj-lancamento";
+import { HjOrientacao } from "@/models/hj-orientacao";
 import { HjReuniao } from "@/models/hj-reuniao";
 import { HjPrograma } from "@/models/hj-programa";
 import { HjProjeto } from "@/models/hj-projeto";
@@ -166,6 +167,7 @@ async function main() {
     HjPrograma.deleteMany({}),
     HjLancamento.deleteMany({}),
     HjReuniao.deleteMany({}),
+    HjOrientacao.deleteMany({}),
     AcademyUser.deleteMany({ email: demoEmails, login: { $not: /^(tutor|aluno|hjteam\.teste)@/ } }),
     SystemUser.deleteMany({ email: demoEmails, role: "pastor" }),
   ]);
@@ -445,6 +447,16 @@ async function main() {
     }
   }
 
+  // Equipe 02 – HJR carries a "ponto de atenção": lots of Kit 1, no ficha.
+  const hjr02 = teams.find((team) => team.spec.nome === "Equipe 02 – HJR");
+  if (hjr02) {
+    for (const [index, member] of hjr02.membros.entries()) {
+      for (let n = 0; n < 2; n += 1) {
+        guests.push({ owner: member.email, nome: `${pick(FIRST)} ${pick(LAST)}`, etapa: "sistema1", conferencias: 2 + index, diasAtras: 1 + n, gatewayAtras: 20 + index * 3, ficha: false, cidade: member.cidade });
+      }
+    }
+  }
+
   for (const guest of guests) {
     const ultimoContato = addDays(hoje, -guest.diasAtras);
     const gateway = guest.gatewayAtras !== undefined ? addDays(hoje, -guest.gatewayAtras) : null;
@@ -495,6 +507,14 @@ async function main() {
       { equipeId: equipe01._id, projetoId: projetoTestemunho?._id ?? null, data: addDays(hoje, -1), tipo: "saida", categoria: "estadia", valorCents: 6 * 7 * 2500, descricao: "Estadia · 6 membros × 7 dias", autorId: capitaId, automatico: true, periodo: { inicio: addDays(hoje, -7), fim: addDays(hoje, -1) } },
     ]);
   }
+  // Orientations: one for Equipe 02 – HJR (after its attention point), the
+  // week's inner goal for Ana.
+  const hjr02Doc = await HjEquipe.findOne({ projetoId: projeto._id, nome: "Equipe 02 – HJR" }).lean();
+  await HjOrientacao.insertMany([
+    ...(hjr02Doc ? [{ modulo: "testemunho", equipeId: hjr02Doc._id, membroId: null, texto: "Assinar a ficha logo depois do Gateway, no mesmo dia. A capitã acompanha cada convidado até a primeira conferência.", data: addDays(hoje, -4), autorId: ids.get("marcos.educador") }] : []),
+    { modulo: "rm", equipeId: null, membroId: ids.get("ana.membro"), texto: "Meta interna da semana: agradecer 50 vezes antes de sair e oferecer cada conversa a Deus.", data: addDays(hoje, -2), autorId: ids.get("david.educador") },
+  ]);
+
   await HjReuniao.insertMany([
     { membroId: ids.get("carlos.membro"), educadorId: ids.get("david.educador"), motivo: "Estou com dificuldade de bater a meta e queria conversar sobre como abordar as pessoas.", disponibilidade: "qualquer dia depois das 19h", estado: "solicitada" },
     { membroId: ids.get("ana.membro"), educadorId: ids.get("david.educador"), motivo: "Quero orientação sobre a jornada da Marina (Sistema 1).", disponibilidade: "sábado de manhã", estado: "confirmada", dataHora: new Date(`${addDays(hoje, 2)}T19:00:00-03:00`), local: "Centro de São Paulo", resposta: "Combinado, te espero lá.", respondidaEm: new Date(), vistaPeloEducadorEm: new Date() },

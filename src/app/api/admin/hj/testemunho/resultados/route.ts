@@ -6,6 +6,7 @@ import { activeProject, convidadoRow, equipeLookup, guestsOf, projetoResumo, use
 import { CONVIDADO_ETAPAS, type ConvidadoEtapa, type ConvidadoRow, type HjPrograma, type TestemunhoContagem, type TestemunhoNode, type TestemunhoResultados } from "@/lib/hj/types";
 import { HjEquipe } from "@/models/hj-equipe";
 import { HjProjeto } from "@/models/hj-projeto";
+import { indicadoresDe, pontoDeAtencao, somaIndicadores } from "@/lib/hj/testemunho";
 
 import { educatorContext } from "../../_lib/shared";
 
@@ -16,6 +17,7 @@ const vazio = (): TestemunhoContagem => ({
   alertas: 0,
   membros: 0,
   membrosComConvidado: 0,
+  indicadores: { kit1: 0, fichas: 0, kit2: 0, jardim: 0 },
 });
 
 function soma(into: TestemunhoContagem, from: TestemunhoContagem) {
@@ -27,6 +29,7 @@ function soma(into: TestemunhoContagem, from: TestemunhoContagem) {
   into.alertas += from.alertas;
   into.membros += from.membros;
   into.membrosComConvidado += from.membrosComConvidado;
+  somaIndicadores(into.indicadores, from.indicadores);
 }
 
 function contagemDaEquipe(equipe: EquipeDoc, rows: ConvidadoRow[]): TestemunhoContagem {
@@ -41,6 +44,8 @@ function contagemDaEquipe(equipe: EquipeDoc, rows: ConvidadoRow[]): TestemunhoCo
   }
   out.membros = equipe.membroIds.length;
   out.membrosComConvidado = equipe.membroIds.filter((id) => comConvidado.has(String(id))).length;
+  out.indicadores = indicadoresDe(rows);
+  out.atencao = pontoDeAtencao(out.indicadores);
   return out;
 }
 

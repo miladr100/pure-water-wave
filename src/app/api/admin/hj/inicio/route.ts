@@ -5,6 +5,7 @@ import { serverError } from "@/lib/academy/http";
 import { activeProject, convidadoRow, equipeLookup, guestsOf, projetoResumo, ref, sameId, usersById } from "@/lib/hj/data";
 import { CONVIDADO_ETAPAS, type AcontecimentoTipo, type AdminHjInicio, type ConvidadoEtapa } from "@/lib/hj/types";
 import { HjAcontecimento } from "@/models/hj-convidado";
+import { indicadoresDe, pontoDeAtencao } from "@/lib/hj/testemunho";
 
 import { buildGrid, educatorContext, metaTotal, porPrograma, projectFor } from "../_lib/shared";
 
@@ -43,6 +44,7 @@ export async function GET(request: Request) {
         porEtapa,
         alertas: 0,
         porEquipe: [],
+        comAtencao: 0,
         recentes: [],
       },
     };
@@ -97,18 +99,21 @@ export async function GET(request: Request) {
     body.testemunho.porEquipe = equipes
       .map((equipe) => {
         const daEquipe = rows.filter((row) => row.equipe?.id === equipe._id.toString());
+        const indicadores = indicadoresDe(daEquipe);
         return {
           id: equipe._id.toString(),
           nome: equipe.nome,
           programa: equipe.programa,
           convidados: daEquipe.length,
           alertas: daEquipe.filter((row) => row.alerta).length,
-          sistema1: daEquipe.filter((row) => row.etapa === "sistema1").length,
-          jardim: daEquipe.filter((row) => row.etapa === "jardim").length,
+          indicadores,
+          atencao: pontoDeAtencao(indicadores),
         };
       })
       .filter((equipe) => equipe.convidados > 0)
-      .sort((a, b) => b.convidados - a.convidados || a.nome.localeCompare(b.nome, "pt"));
+      // teams that need a look first, then the busiest
+      .sort((a, b) => Number(Boolean(b.atencao)) - Number(Boolean(a.atencao)) || b.convidados - a.convidados || a.nome.localeCompare(b.nome, "pt"));
+    body.testemunho.comAtencao = body.testemunho.porEquipe.filter((equipe) => equipe.atencao).length;
 
     if (guests.length > 0) {
       const events = (await HjAcontecimento.find({ convidadoId: { $in: guests.map((guest) => guest._id) } })

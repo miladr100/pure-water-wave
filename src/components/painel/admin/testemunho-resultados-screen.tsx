@@ -90,13 +90,12 @@ export function TestemunhoResultadosScreen() {
                 <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
                   <th className="px-4 py-3 font-semibold">{t.missao.regiao} / {t.missao.pais} / {t.missao.local} / {t.missao.equipe}</th>
                   <th className="px-3 py-3 text-right font-semibold">{t.missao.guests}</th>
-                  {ETAPA_ORDEM.map((etapa) => (
-                    <th key={etapa} className="px-3 py-3 text-right font-semibold">
-                      {ETAPA_LABELS[etapa]}
-                    </th>
-                  ))}
-                  <th className="px-3 py-3 text-right font-semibold">{t.missao.forms}</th>
-                  <th className="px-3 py-3 text-right font-semibold">{t.missao.alerts}</th>
+                  <th className="px-3 py-3 text-right font-semibold">{ETAPA_LABELS.pre_gateway}</th>
+                  <th className="px-3 py-3 text-right font-semibold">{ETAPA_LABELS.gateway}</th>
+                  <th className="px-3 py-3 text-right font-semibold">{t.indicadores.kit1}</th>
+                  <th className="px-3 py-3 text-right font-semibold">{t.indicadores.fichas}</th>
+                  <th className="px-3 py-3 text-right font-semibold">{t.indicadores.kit2}</th>
+                  <th className="px-3 py-3 text-right font-semibold">{t.indicadores.jardim}</th>
                   <th className="px-3 py-3 text-right font-semibold">{t.missao.membersWithGuest}</th>
                 </tr>
               </thead>
@@ -114,16 +113,20 @@ export function TestemunhoResultadosScreen() {
                         )}
                         <span className={cn(node.tipo !== "equipe" && "text-foreground")}>{node.nome}</span>
                         {node.programa ? <Chip tone="muted">{node.programa}</Chip> : null}
+                        {node.atencao ? (
+                          <span title={node.atencao.texto} className="inline-flex">
+                            <Chip tone="coral">{t.indicadores.attention}</Chip>
+                          </span>
+                        ) : null}
                       </span>
                     </td>
                     <td className="px-3 py-2.5 text-right font-semibold tabular-nums text-foreground">{node.convidados}</td>
-                    {ETAPA_ORDEM.map((etapa) => (
-                      <td key={etapa} className="px-3 py-2.5 text-right tabular-nums">
-                        {node.porEtapa[etapa]}
-                      </td>
-                    ))}
-                    <td className="px-3 py-2.5 text-right tabular-nums">{node.fichas}</td>
-                    <td className={cn("px-3 py-2.5 text-right tabular-nums", node.alertas > 0 && "font-semibold text-coral")}>{node.alertas}</td>
+                    <td className="px-3 py-2.5 text-right tabular-nums">{node.porEtapa.pre_gateway}</td>
+                    <td className="px-3 py-2.5 text-right tabular-nums">{node.porEtapa.gateway}</td>
+                    <td className="px-3 py-2.5 text-right tabular-nums">{node.indicadores.kit1}</td>
+                    <td className="px-3 py-2.5 text-right tabular-nums">{node.indicadores.fichas}</td>
+                    <td className="px-3 py-2.5 text-right tabular-nums">{node.indicadores.kit2}</td>
+                    <td className="px-3 py-2.5 text-right tabular-nums">{node.indicadores.jardim}</td>
                     <td className="px-3 py-2.5 text-right tabular-nums">
                       {node.membrosComConvidado}/{node.membros}
                     </td>
@@ -144,12 +147,10 @@ export function TestemunhoResultadosScreen() {
                 <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
                   <th className="py-2 pr-3 font-semibold">{t.admin.program}</th>
                   <th className="py-2 pr-3 text-right font-semibold">{t.missao.guests}</th>
-                  {ETAPA_ORDEM.map((etapa) => (
-                    <th key={etapa} className="py-2 pr-3 text-right font-semibold">
-                      {ETAPA_LABELS[etapa]}
-                    </th>
-                  ))}
-                  <th className="py-2 pr-3 text-right font-semibold">{t.missao.forms}</th>
+                  <th className="py-2 pr-3 text-right font-semibold">{t.indicadores.kit1}</th>
+                  <th className="py-2 pr-3 text-right font-semibold">{t.indicadores.fichas}</th>
+                  <th className="py-2 pr-3 text-right font-semibold">{t.indicadores.kit2}</th>
+                  <th className="py-2 pr-3 text-right font-semibold">{t.indicadores.jardim}</th>
                   <th className="py-2 text-right font-semibold">{t.missao.membersWithGuest}</th>
                 </tr>
               </thead>
@@ -159,12 +160,10 @@ export function TestemunhoResultadosScreen() {
                     <tr>
                       <td className="py-2.5 pr-3 font-medium">{row.programa}</td>
                       <td className="py-2.5 pr-3 text-right font-semibold tabular-nums">{row.convidados}</td>
-                      {ETAPA_ORDEM.map((etapa) => (
-                        <td key={etapa} className="py-2.5 pr-3 text-right tabular-nums">
-                          {row.porEtapa[etapa]}
-                        </td>
-                      ))}
-                      <td className="py-2.5 pr-3 text-right tabular-nums">{row.fichas}</td>
+                      <td className="py-2.5 pr-3 text-right tabular-nums">{row.indicadores.kit1}</td>
+                      <td className="py-2.5 pr-3 text-right tabular-nums">{row.indicadores.fichas}</td>
+                      <td className="py-2.5 pr-3 text-right tabular-nums">{row.indicadores.kit2}</td>
+                      <td className="py-2.5 pr-3 text-right tabular-nums">{row.indicadores.jardim}</td>
                       <td className="py-2.5 text-right tabular-nums">
                         {row.membrosComConvidado}/{row.membros}
                       </td>

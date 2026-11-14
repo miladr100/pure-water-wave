@@ -37,6 +37,8 @@ fechar.
 | 26 | **Domínio e e-mail:** o Resend do site (contact@purewaterwave.org) manda os avisos de reunião? O demo (pww-painel) não tem RESEND_API_KEY. | Milad | Sim, o mesmo remetente; só precisa da chave no ambiente. | P8 |
 | 27 | **Módulo Testemunho:** o modo "automático" (aparece com projeto ativo) é o padrão certo? | Milad | Sim; o administrador troca em Configurações. | P6 |
 
+| 28 | **Ponto de atenção:** a regra "o indicador seguinte abaixo de 30 % do anterior, a partir de 3 convidados" está boa, ou o grupo prefere outros limiares? | Yeseong | 3 e 30 % (`ATENCAO_MINIMO`, `ATENCAO_RAZAO`); mudam em um lugar. | P4 |
+
 ## Premissas gerais
 
 - Interface em português do Brasil, com en/es pelos catálogos existentes.

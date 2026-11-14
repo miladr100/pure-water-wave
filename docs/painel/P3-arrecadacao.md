@@ -125,6 +125,15 @@ nova meta   = máx(mínimo, teto_múltiplo(média × fator, 50))   fator 1,3; m�
 Valores em centavos inteiros no banco; moeda do projeto. Moeda estrangeira em
 espécie fica como texto no relatório e **não** soma.
 
+## Meta interna por membro (implementado 14/11/2026)
+
+Yeseong (14/11): na consulta, o educador dá ao membro uma **meta interna** da
+semana ("agradecer tantas vezes", "encontrar Deus em tal ação") e os dois
+esquecem. `hj_orientacoes` (módulo `rm`, membro) guarda o que foi dito, com
+data e autor: o educador registra em Arrecadação › Metas (coluna "Meta
+interna") ou na ficha da pessoa; a última aparece para o membro no Início do
+Painel ("Sua meta interna") e na linha do membro na grade de metas.
+
 ## Fora de escopo
 
 - Controle de estoque de material (decisão do Sr. Sérgio).

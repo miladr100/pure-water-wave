@@ -126,6 +126,21 @@ criado em. A linha do tempo é a lista de acontecimentos.
 - Testemunho › Por área: árvore região → país → local → equipe com convidados, por etapa, fichas, atenção e membros com convidado; totais por programa. Equipes sem local ficam em "Sem área definida".
 - Conta as equipes do projeto de testemunho ativo; enquanto ele não tem equipes, as do projeto de RM ativo.
 
+### US-P4-12 — Os quatro indicadores e o ponto de atenção (implementado 14/11/2026)
+
+> Como educador, quero ler cada equipe pelos quatro números que o Rev. Kim pede — Kit 1, fichas assinadas, Kit 2, confirmados para o Jardim — e ser avisado quando eles se afastam.
+
+- Indicadores **acumulados** por equipe (`indicadoresDe` em `src/lib/hj/testemunho.ts`): Kit 1 = convidados em Sistema 1 ou além; fichas = com ficha assinada; Kit 2 = em Sistema 2 ou além; Jardim = confirmados. Um convidado no Jardim conta nos quatro.
+- **Ponto de atenção** (`pontoDeAtencao`): entre dois indicadores vizinhos (Kit 1 → fichas → Kit 2 → Jardim), quando o primeiro tem pelo menos 3 e o seguinte fica abaixo de 30 % dele. Exemplos do Yeseong: 90 no Kit 1 e 2 fichas; 10/10 e Kit 2 zero; 10/10/10 e Jardim zero. Limiares em `ATENCAO_MINIMO` e `ATENCAO_RAZAO` (decisão pendente #28).
+- Aparece ao lado do nome da equipe em Testemunho › Equipes, em Por área e no Início do administrador; a tela Equipes mostra os cinco números por equipe e os totais.
+
+### US-P4-13 — Orientação dada à equipe (implementado 14/11/2026)
+
+> Como educador, quero registrar o que orientei à equipe depois de um ponto de atenção, para na próxima conversa perguntar se cumpriram.
+
+- `hj_orientacoes` (módulo `testemunho`, equipe): texto, data da conversa, autor. A última aparece ao lado da equipe em Testemunho › Equipes; o histórico fica no diálogo "Registrar orientação". Só quem escreveu (ou administrador) apaga.
+- O membro vê a última orientação da sua equipe no Início do Painel ("Orientação do educador para a equipe").
+
 ### US-P4-11 — Caixa da equipe (implementado 14/11/2026)
 
 > Como capitã, quero cuidar do caixa da equipe durante o testemunho: quanto entrou, quanto saiu, quanto sobrou e a taxa de estadia.

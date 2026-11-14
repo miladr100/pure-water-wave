@@ -4,6 +4,7 @@ import { Check, FileSignature, Heart, MessageCircle, StickyNote, Waves } from "l
 import Link from "next/link";
 
 import { useApi } from "@/components/academy/use-api";
+import { Chip } from "@/components/academy/chip";
 import { Bar, Card, Eyebrow, Failed, LoadingBlock, Reais, Stat } from "@/components/painel/bits";
 import { PainelHeading } from "@/components/painel/painel-shell";
 import { usePainelMessages } from "@/components/painel/use-painel";
@@ -156,11 +157,11 @@ export function AdminInicioScreen() {
         <SectionTitle
           label={t.admin.testemunhoSection}
           detail={testemunho.projeto ? `${testemunho.projeto.nome} · ${fmtDia(testemunho.projeto.inicio)} – ${fmtDia(testemunho.projeto.fim)}` : t.admin.noTestemunhoProject}
-          href="/admin/testemunho"
-          linkLabel={t.inicio.seeGuests}
+          href="/admin/testemunho/equipes"
+          linkLabel={t.indicadores.teamsTitle}
         />
         <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          <Stat label="Convidados" value={testemunho.convidados} hint={testemunho.alertas > 0 ? t.admin.alerts(testemunho.alertas) : undefined} />
+          <Stat label="Convidados" value={testemunho.convidados} hint={testemunho.comAtencao > 0 ? t.indicadores.teamsWithAttention(testemunho.comAtencao) : testemunho.alertas > 0 ? t.admin.alerts(testemunho.alertas) : undefined} />
           {ETAPA_ORDEM.map((etapa) => (
             <Stat key={etapa} label={ETAPA_LABELS[etapa]} value={testemunho.porEtapa[etapa]} />
           ))}
@@ -177,22 +178,31 @@ export function AdminInicioScreen() {
                     <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
                       <th className="py-2 pr-3 font-semibold">{t.admin.team}</th>
                       <th className="py-2 pr-3 text-right font-semibold">Convidados</th>
-                      <th className="py-2 pr-3 text-right font-semibold">{ETAPA_LABELS.sistema1}</th>
-                      <th className="py-2 pr-3 text-right font-semibold">{ETAPA_LABELS.jardim}</th>
-                      <th className="py-2 text-right font-semibold">{t.testemunho.filterAlert}</th>
+                      <th className="py-2 pr-3 text-right font-semibold">{t.indicadores.kit1}</th>
+                      <th className="py-2 pr-3 text-right font-semibold">{t.indicadores.fichas}</th>
+                      <th className="py-2 pr-3 text-right font-semibold">{t.indicadores.kit2}</th>
+                      <th className="py-2 text-right font-semibold">{t.indicadores.jardim}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/60">
                     {testemunho.porEquipe.map((equipe) => (
                       <tr key={equipe.id}>
                         <td className="py-2.5 pr-3">
-                          <span className="font-medium">{equipe.nome}</span>
+                          <Link href={`/admin/testemunho/equipes?equipe=${equipe.id}`} className="font-medium hover:text-primary">
+                            {equipe.nome}
+                          </Link>
                           <span className="ml-2 text-xs text-muted-foreground">{equipe.programa}</span>
+                          {equipe.atencao ? (
+                            <span className="ml-2 inline-flex" title={equipe.atencao.texto}>
+                              <Chip tone="coral">{t.indicadores.attention}</Chip>
+                            </span>
+                          ) : null}
                         </td>
                         <td className="py-2.5 pr-3 text-right font-semibold tabular-nums">{equipe.convidados}</td>
-                        <td className="py-2.5 pr-3 text-right tabular-nums">{equipe.sistema1}</td>
-                        <td className="py-2.5 pr-3 text-right tabular-nums">{equipe.jardim}</td>
-                        <td className={`py-2.5 text-right tabular-nums ${equipe.alertas > 0 ? "font-semibold text-coral" : "text-muted-foreground"}`}>{equipe.alertas}</td>
+                        <td className="py-2.5 pr-3 text-right tabular-nums">{equipe.indicadores.kit1}</td>
+                        <td className="py-2.5 pr-3 text-right tabular-nums">{equipe.indicadores.fichas}</td>
+                        <td className="py-2.5 pr-3 text-right tabular-nums">{equipe.indicadores.kit2}</td>
+                        <td className="py-2.5 text-right tabular-nums">{equipe.indicadores.jardim}</td>
                       </tr>
                     ))}
                   </tbody>

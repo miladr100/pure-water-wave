@@ -25,6 +25,54 @@ export type ConfiguracoesAdmin = {
 
 export type ConfiguracoesBody = { modulos?: { testemunho?: ModuloTestemunhoModo } };
 
+// What the educator told a team or a member, written down.
+export const ORIENTACAO_MODULOS = ["testemunho", "rm"] as const;
+export type OrientacaoModulo = (typeof ORIENTACAO_MODULOS)[number];
+
+export type OrientacaoRow = {
+  id: string;
+  modulo: OrientacaoModulo;
+  equipe: PessoaRef | null;
+  membro: PessoaRef | null;
+  texto: string;
+  data: string;
+  autor: PessoaRef;
+  criadaEm: string;
+};
+
+export type OrientacaoBody = {
+  modulo: OrientacaoModulo;
+  equipeId?: string;
+  membroId?: string;
+  texto: string;
+  data?: string;
+};
+
+// The four indicators per team and the attention flag (src/lib/hj/testemunho.ts).
+export type IndicadoresEquipe = { kit1: number; fichas: number; kit2: number; jardim: number };
+export type AtencaoEquipe = { de: keyof IndicadoresEquipe; para: keyof IndicadoresEquipe; texto: string } | null;
+
+export type EquipeTestemunhoRow = {
+  id: string;
+  nome: string;
+  programa: HjPrograma;
+  educador: PessoaRef | null;
+  capitao: PessoaRef | null;
+  membros: number;
+  membrosComConvidado: number;
+  convidados: number;
+  indicadores: IndicadoresEquipe;
+  atencao: AtencaoEquipe;
+  orientacao: OrientacaoRow | null;
+  area: AreaDaEquipe;
+};
+
+export type TestemunhoEquipes = {
+  projeto: ProjetoResumo | null;
+  equipes: EquipeTestemunhoRow[];
+  totais: IndicadoresEquipe & { convidados: number; comAtencao: number };
+};
+
 // A member's request for a one-to-one with their educator.
 export const REUNIAO_ESTADOS = ["solicitada", "confirmada", "remarcar", "recusada", "cancelada", "realizada"] as const;
 export type ReuniaoEstado = (typeof REUNIAO_ESTADOS)[number];
@@ -230,6 +278,9 @@ export type TestemunhoContagem = {
   alertas: number;
   membros: number;
   membrosComConvidado: number;
+  indicadores: IndicadoresEquipe;
+  // teams only: the drop between two of the four indicators
+  atencao?: AtencaoEquipe;
 };
 
 export type TestemunhoNode = TestemunhoContagem & {
@@ -384,6 +435,8 @@ export type PainelInicio = {
   rm: RmResumo | null;
   equipeHoje: { enviados: number; total: number; liquidoCents: number; pendentes: number } | null;
   testemunho: { total: number; atencao: { id: string; nome: string; alerta: ConvidadoAlerta }[] };
+  // what the educator told the team (testemunho) and the member (RM), latest of each
+  orientacoes: { equipe: OrientacaoRow | null; pessoal: OrientacaoRow | null };
 };
 
 export type MeusRelatorios = {
@@ -446,7 +499,8 @@ export type AdminHjInicio = {
     convidados: number;
     porEtapa: Record<ConvidadoEtapa, number>;
     alertas: number;
-    porEquipe: { id: string; nome: string; programa: HjPrograma; convidados: number; alertas: number; sistema1: number; jardim: number }[];
+    porEquipe: { id: string; nome: string; programa: HjPrograma; convidados: number; alertas: number; indicadores: IndicadoresEquipe; atencao: AtencaoEquipe }[];
+    comAtencao: number;
     recentes: { id: string; convidado: PessoaRef; tipo: AcontecimentoTipo; texto: string; data: string; autor: PessoaRef }[];
   };
 };
@@ -461,6 +515,8 @@ export type ResultadoLinha = {
   recordeCents: number;
   metaCents: number;
   diasEnviados: number;
+  // the member's inner goal / advice from the last consulta (RM)
+  orientacao: OrientacaoRow | null;
 };
 
 export type AdminResultados = {

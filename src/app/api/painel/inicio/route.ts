@@ -13,6 +13,8 @@ import {
   convidadoRow,
 } from "@/lib/hj/data";
 import type { PainelInicio } from "@/lib/hj/types";
+import { ultimasDasEquipes, ultimasDosMembros } from "@/lib/hj/orientacoes";
+import { minhaEquipeTestemunho } from "@/lib/hj/caixa";
 
 import { panelContext } from "../_lib/context";
 
@@ -66,6 +68,11 @@ export async function GET() {
     const lookup = equipeLookup(equipe ? [equipe] : []);
     const rows = guests.map((guest) => convidadoRow(guest, users, lookup, hoje));
 
+    // What the educator told the team (testemunho) and this member (RM).
+    const { equipe: equipeTestemunho } = await minhaEquipeTestemunho(context);
+    const daEquipe = equipeTestemunho ? await ultimasDasEquipes([equipeTestemunho]) : new Map();
+    const pessoais = await ultimasDosMembros([user._id]);
+
     const body: PainelInicio = {
       membro: { id: user._id.toString(), nome: user.fullName, papeis },
       projeto: projeto ? projetoResumo(projeto, hoje) : null,
@@ -78,6 +85,7 @@ export async function GET() {
       devolvidos,
       rm,
       equipeHoje,
+      orientacoes: { equipe: equipeTestemunho ? (daEquipe.get(equipeTestemunho._id.toString()) ?? null) : null, pessoal: pessoais.get(user._id.toString()) ?? null },
       testemunho: {
         total: rows.length,
         atencao: rows

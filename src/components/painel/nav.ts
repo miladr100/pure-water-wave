@@ -135,6 +135,7 @@ export function navFor(area: ShellArea, papeis: Papeis | null, t: PainelMessages
   if (modulo === "testemunho") {
     return [
       { href: "/admin/testemunho", label: t.nav.convidados, icon: Heart, match: ["/admin/testemunho"], exact: true },
+      { href: "/admin/testemunho/equipes", label: t.nav.equipes, icon: UsersRound, match: ["/admin/testemunho/equipes"] },
       { href: "/admin/testemunho/resultados", label: t.nav.porArea, icon: MapPinned, match: ["/admin/testemunho/resultados"] },
       { href: "/admin/testemunho/caixa", label: t.nav.caixa, icon: Wallet, match: ["/admin/testemunho/caixa"] },
     ];

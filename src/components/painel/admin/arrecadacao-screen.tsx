@@ -1,11 +1,12 @@
 "use client";
 
-import { Download } from "lucide-react";
+import { Download, MessageSquareText } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { useApi } from "@/components/academy/use-api";
 import { Bar, Card, Eyebrow, Failed, LoadingBlock, Reais, Stat } from "@/components/painel/bits";
+import { OrientacaoDialog, type OrientacaoAlvo } from "@/components/painel/orientacao-dialog";
 import { PainelHeading } from "@/components/painel/painel-shell";
 import { usePainelMessages } from "@/components/painel/use-painel";
 import { RelatorioLinha } from "@/components/painel/validacao";
@@ -120,7 +121,7 @@ export function ArrecadacaoScreen() {
             </div>
           </Card>
 
-          {aba === "resultados" ? <Resultados data={data} /> : aba === "metas" ? <Metas data={data} /> : <Contabilidade data={data} />}
+          {aba === "resultados" ? <Resultados data={data} /> : aba === "metas" ? <Metas data={data} onChanged={() => results.reload()} /> : <Contabilidade data={data} />}
         </>
       )}
     </div>
@@ -211,8 +212,9 @@ function Resultados({ data }: { data: AdminResultados }) {
   );
 }
 
-function Metas({ data }: { data: AdminResultados }) {
+function Metas({ data, onChanged }: { data: AdminResultados; onChanged: () => void }) {
   const t = usePainelMessages();
+  const [alvo, setAlvo] = useState<OrientacaoAlvo | null>(null);
   return (
     <>
       <div className="grid gap-3 sm:grid-cols-3">
@@ -231,7 +233,8 @@ function Metas({ data }: { data: AdminResultados }) {
                 <th className="py-2 pr-3 text-right font-semibold">Dias</th>
                 <th className="py-2 pr-3 text-right font-semibold">{t.equipe.media}</th>
                 <th className="py-2 pr-3 text-right font-semibold">Recorde</th>
-                <th className="py-2 text-right font-semibold">Nova meta</th>
+                <th className="py-2 pr-3 text-right font-semibold">Nova meta</th>
+                <th className="py-2 font-semibold">{t.indicadores.innerGoal}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/60">
@@ -242,13 +245,27 @@ function Metas({ data }: { data: AdminResultados }) {
                   <td className="py-2 pr-3 text-right tabular-nums">{linha.diasEnviados}</td>
                   <td className="py-2 pr-3 text-right tabular-nums">{fmtReais(linha.mediaCents)}</td>
                   <td className="py-2 pr-3 text-right tabular-nums">{fmtReais(linha.recordeCents)}</td>
-                  <td className="py-2 text-right font-semibold tabular-nums text-primary-deep">{fmtReais(linha.metaCents)}</td>
+                  <td className="py-2 pr-3 text-right font-semibold tabular-nums text-primary-deep">{fmtReais(linha.metaCents)}</td>
+                  <td className="max-w-xs py-2">
+                    <button type="button" className="group flex w-full items-start gap-2 text-left" onClick={() => setAlvo({ modulo: "rm", membroId: linha.membro.id, nome: linha.membro.nome })} title={linha.orientacao?.texto}>
+                      <MessageSquareText className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary" />
+                      {linha.orientacao ? (
+                        <span className="min-w-0">
+                          <span className="line-clamp-2">{linha.orientacao.texto}</span>
+                          <span className="block text-xs text-muted-foreground">{fmtDia(linha.orientacao.data)}</span>
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground group-hover:text-primary">{t.indicadores.addOrientation}</span>
+                      )}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </Card>
+      <OrientacaoDialog key={alvo?.membroId ?? "closed"} alvo={alvo} onClose={() => setAlvo(null)} onSaved={onChanged} />
     </>
   );
 }

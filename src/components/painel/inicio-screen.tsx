@@ -229,6 +229,20 @@ export function InicioScreen({ session }: { session: SessionPayload }) {
           </Link>
         )}
 
+        {data.orientacoes.pessoal ? (
+          <Card className="border-primary/30 bg-secondary/40">
+            <Eyebrow>{t.indicadores.innerGoalMember}</Eyebrow>
+            <p className="mt-1 whitespace-pre-wrap text-[15px] leading-relaxed">{data.orientacoes.pessoal.texto}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{t.indicadores.givenBy(data.orientacoes.pessoal.autor.nome, fmtDia(data.orientacoes.pessoal.data))}</p>
+          </Card>
+        ) : null}
+        {data.orientacoes.equipe && (!eu || eu.modulos.testemunho) ? (
+          <Card>
+            <Eyebrow>{t.indicadores.teamOrientationMember}</Eyebrow>
+            <p className="mt-1 whitespace-pre-wrap text-[15px] leading-relaxed">{data.orientacoes.equipe.texto}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{t.indicadores.givenBy(data.orientacoes.equipe.autor.nome, fmtDia(data.orientacoes.equipe.data))}</p>
+          </Card>
+        ) : null}
         <Link href="/painel/reunioes" className="flex items-center justify-between gap-4 rounded-3xl border border-border/60 bg-card p-5 text-foreground shadow-card transition hover:-translate-y-0.5">
           <div>
             <Eyebrow>{t.reunioes.homeCard}</Eyebrow>
