@@ -38,7 +38,6 @@ export function PainelShell({
   area,
   session,
   pastor,
-  aiChat,
   title,
   subtitle,
   banner,
