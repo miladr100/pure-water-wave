@@ -16,6 +16,8 @@ const hjEquipeSchema = new Schema(
     // the local (centro de testemunho) the team works from; país and
     // região follow from the areas tree
     areaId: { type: Schema.Types.ObjectId, ref: "HjArea", default: null },
+    // stay fee per member per day, charged to the team's cash box
+    taxaEstadiaCents: { type: Number, default: 0 },
   },
   { timestamps: true, collection: "hj_equipes" },
 );

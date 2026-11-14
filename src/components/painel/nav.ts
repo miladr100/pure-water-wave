@@ -113,7 +113,7 @@ export function navFor(area: ShellArea, papeis: Papeis | null, t: PainelMessages
     if (modulo === "testemunho") {
       return [
         { href: "/painel/testemunho", label: t.nav.convidados, icon: Heart, match: ["/painel/testemunho"], exact: true },
-        ...(papeis?.capitao ? [{ href: "/painel/testemunho/caixa", label: t.nav.caixa, icon: Wallet, match: ["/painel/testemunho/caixa"] }] : []),
+        { href: "/painel/testemunho/caixa", label: t.nav.caixa, icon: Wallet, match: ["/painel/testemunho/caixa"] },
       ];
     }
     return [

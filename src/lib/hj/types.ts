@@ -25,6 +25,66 @@ export type ConfiguracoesAdmin = {
 
 export type ConfiguracoesBody = { modulos?: { testemunho?: ModuloTestemunhoModo } };
 
+// The team's cash box during the testimony drive.
+export const LANCAMENTO_TIPOS = ["entrada", "saida"] as const;
+export type LancamentoTipo = (typeof LANCAMENTO_TIPOS)[number];
+export const LANCAMENTO_CATEGORIAS = ["rm", "doacao", "estadia", "alimentacao", "transporte", "material", "outro"] as const;
+export type LancamentoCategoria = (typeof LANCAMENTO_CATEGORIAS)[number];
+
+export type LancamentoRow = {
+  id: string;
+  data: string;
+  tipo: LancamentoTipo;
+  categoria: LancamentoCategoria;
+  valorCents: number;
+  descricao: string;
+  autor: PessoaRef;
+  automatico: boolean;
+  periodo: { inicio: string; fim: string } | null;
+  criadoEm: string;
+};
+
+export type LancamentoBody = {
+  data?: string;
+  tipo: LancamentoTipo;
+  categoria: LancamentoCategoria;
+  valorCents: number;
+  descricao?: string;
+};
+
+export type EstadiaBody = { inicio: string; fim: string };
+
+export type CaixaEquipe = {
+  equipe: EquipeResumo & { membros: number; taxaEstadiaCents: number };
+  projeto: ProjetoResumo | null;
+  saldoCents: number;
+  entradasCents: number;
+  saidasCents: number;
+  porCategoria: { categoria: LancamentoCategoria; tipo: LancamentoTipo; valorCents: number }[];
+  lancamentos: LancamentoRow[];
+  podeLancar: boolean;
+  podeConfigurar: boolean;
+};
+
+export type CaixaResumoEquipe = {
+  equipe: { id: string; nome: string; programa: HjPrograma };
+  capitao: PessoaRef | null;
+  educador: PessoaRef | null;
+  membros: number;
+  taxaEstadiaCents: number;
+  saldoCents: number;
+  entradasCents: number;
+  saidasCents: number;
+  lancamentos: number;
+  ultimoLancamento: string | null;
+};
+
+export type CaixaResumo = {
+  projeto: ProjetoResumo | null;
+  equipes: CaixaResumoEquipe[];
+  totais: { saldoCents: number; entradasCents: number; saidasCents: number };
+};
+
 // Mission areas: região → país → local (a "centro de testemunho").
 export const AREA_TIPOS = ["regiao", "pais", "local"] as const;
 export type AreaTipo = (typeof AREA_TIPOS)[number];
@@ -443,6 +503,7 @@ export type EquipeAdmin = {
   programa: HjPrograma;
   projeto: { id: string; nome: string };
   area: AreaDaEquipe;
+  taxaEstadiaCents: number;
   educador: PessoaRef | null;
   capitao: PessoaRef | null;
   membros: PessoaRef[];
@@ -454,6 +515,8 @@ export type EquipeBody = {
   programa: HjPrograma;
   projetoId: string;
   areaId?: string | null;
+  // the stay fee per member per day the team's cash box charges
+  taxaEstadiaCents?: number;
   educadorId?: string | null;
   capitaoId?: string | null;
   membroIds?: string[];

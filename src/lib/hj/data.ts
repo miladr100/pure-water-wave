@@ -75,6 +75,7 @@ export type EquipeDoc = {
   capitaoId: Types.ObjectId | null;
   membroIds: Types.ObjectId[];
   areaId?: Types.ObjectId | null;
+  taxaEstadiaCents?: number;
 };
 
 export type RelatorioDoc = {

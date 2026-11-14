@@ -28,6 +28,7 @@ export async function equipesAdmin(projeto: ProjetoDoc): Promise<EquipeAdmin[]> 
       programa: equipe.programa,
       projeto: { id: projeto._id.toString(), nome: projeto.nome },
       area: areas.daEquipe(equipe.areaId),
+      taxaEstadiaCents: equipe.taxaEstadiaCents ?? 0,
       educador: ref(equipe.educadorId ? users.get(String(equipe.educadorId)) : null),
       capitao: ref(equipe.capitaoId ? users.get(String(equipe.capitaoId)) : null),
       membros: equipe.membroIds.map((id) => ({ id: String(id), nome: users.get(String(id))?.fullName ?? "—" })),
@@ -118,6 +119,11 @@ export async function validateTeam(
     }
   }
 
+  const taxaEstadiaCents = body.taxaEstadiaCents === undefined ? (current?.taxaEstadiaCents ?? 0) : body.taxaEstadiaCents;
+  if (typeof taxaEstadiaCents !== "number" || !Number.isFinite(taxaEstadiaCents) || taxaEstadiaCents < 0) {
+    return { ok: false, response: jsonError("Taxa de estadia inválida", 400, { code: "INVALID_FEE" }) };
+  }
+
   return {
     ok: true,
     value: {
@@ -125,6 +131,7 @@ export async function validateTeam(
       nome,
       programa,
       areaId: areaId ? new Types.ObjectId(areaId) : null,
+      taxaEstadiaCents: Math.round(taxaEstadiaCents),
       educadorId: educadorId ? new Types.ObjectId(educadorId) : null,
       capitaoId: capitaoId ? new Types.ObjectId(capitaoId) : null,
       membroIds: unique.map((id) => new Types.ObjectId(id)),

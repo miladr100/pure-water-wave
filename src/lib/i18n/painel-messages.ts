@@ -316,6 +316,44 @@ export type PainelMessages = {
     inactive: string;
     programSaved: string;
   };
+  caixa: {
+    title: string;
+    body: string;
+    adminTitle: string;
+    adminBody: string;
+    balance: string;
+    in: string;
+    out: string;
+    newEntry: string;
+    type: string;
+    tipos: Record<"entrada" | "saida", string>;
+    category: string;
+    categorias: Record<"rm" | "doacao" | "estadia" | "alimentacao" | "transporte" | "material" | "outro", string>;
+    amount: string;
+    description: string;
+    date: string;
+    posted: string;
+    deleted: string;
+    deleteConfirm: string;
+    noEntries: string;
+    stayFee: string;
+    stayFeeHint: string;
+    stayFeeMissing: string;
+    postStay: string;
+    postStayBody: (membros: number, taxa: string) => string;
+    from: string;
+    to: string;
+    stayPosted: string;
+    byCategory: string;
+    readOnly: string;
+    automatic: string;
+    team: string;
+    entries: string;
+    lastEntry: string;
+    total: string;
+    noTeam: string;
+    saveFee: string;
+  };
   config: {
     body: string;
     testemunhoModule: string;
@@ -697,6 +735,44 @@ const pt: PainelMessages = {
     cohortName: "Nome da turma",
     inactive: "Inativa",
     programSaved: "Programa salvo",
+  },
+  caixa: {
+    title: "Caixa da equipe",
+    body: "O dinheiro da equipe durante o testemunho: o que entra, o que sai e quanto sobra.",
+    adminTitle: "Caixa das equipes",
+    adminBody: "Saldo de cada equipe no testemunho. Abra uma equipe para ver e lançar.",
+    balance: "Saldo",
+    in: "Entradas",
+    out: "Saídas",
+    newEntry: "Novo lançamento",
+    type: "Tipo",
+    tipos: { entrada: "Entrada", saida: "Saída" },
+    category: "Categoria",
+    categorias: { rm: "Resultado de RM", doacao: "Doação", estadia: "Estadia", alimentacao: "Alimentação", transporte: "Transporte", material: "Material", outro: "Outro" },
+    amount: "Valor",
+    description: "Descrição",
+    date: "Data",
+    posted: "Lançamento feito",
+    deleted: "Lançamento apagado",
+    deleteConfirm: "Apagar este lançamento?",
+    noEntries: "Nenhum lançamento ainda.",
+    stayFee: "Taxa de estadia",
+    stayFeeHint: "Por membro, por dia. O educador define; a capitã lança o período.",
+    stayFeeMissing: "Sem taxa de estadia definida para esta equipe.",
+    postStay: "Lançar estadia do período",
+    postStayBody: (membros, taxa) => `${membros} membros × dias × ${taxa} por dia, como uma saída.`,
+    from: "De",
+    to: "Até",
+    stayPosted: "Estadia lançada",
+    byCategory: "Por categoria",
+    readOnly: "Só a capitã, o capitão e o educador lançam no caixa; você vê.",
+    automatic: "automático",
+    team: "Equipe",
+    entries: "Lançamentos",
+    lastEntry: "Último",
+    total: "Total",
+    noTeam: "Você não está em uma equipe do testemunho.",
+    saveFee: "Salvar taxa",
   },
   config: {
     body: "O que aparece para os membros e como o painel se comporta.",
