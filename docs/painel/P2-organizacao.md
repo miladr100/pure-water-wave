@@ -96,7 +96,16 @@ educador responsável, capitão (membro da equipe), membros[], país/cidade
 - Filtros comuns: projeto (padrão: o ativo), período, equipe, programa, turma, educador, situação. Datas livres como alternativa a projeto/período.
 - A preferência de projeto/período fica gravada por usuário (como no sistema de Wang Song).
 
+## Áreas de missão (14/11/2026)
+
+A hierarquia **região → país → local** entrou (pedido do Milad e do Wang
+Song): `hj_areas` é uma árvore com as cinco regiões e os países do sistema
+do Wang Song; o **local** é o centro de testemunho (uma cidade, um centro). A
+equipe aponta para um local (`areaId`); país e região vêm da árvore. O
+administrador mantém a árvore em Organização › Áreas de missão (renomear,
+desativar; apagar só folhas sem equipes). Os resultados de testemunho somam
+por local, país e região (P4).
+
 ## Fora de escopo
 
-- Hierarquia região → país → cidade. País e cidade são campos simples da conta e da equipe.
 - Equipes fora de projeto.

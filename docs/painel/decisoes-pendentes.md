@@ -30,6 +30,13 @@ fechar.
 
 | 21 | **Validação do próprio relatório:** o capitão valida o da sua equipe; o dele mesmo, quem valida? **Premissa adotada 09/11 (Victor/Claude):** o capitão não valida o próprio relatório — o educador da equipe (ou um administrador) valida. | Yeseong | Implementado assim na versão navegável; muda em uma linha se o grupo preferir. | P3 |
 
+| 22 | **Perfil por programa:** os campos são estes mesmos — HJA: curso em que se formou; HJR: família Cheon Bo; PW: há quanto tempo é membro — ou faltam outros (formação, tempo de igreja)? | Yeseong | Os três, mais "outras formações" e "membro desde" para todos; o educador preenche família Cheon Bo, 2ª geração, pais, espíritos libertados e padrão de vida de fé, que o membro não vê. | P1 |
+| 23 | **Equipes do testemunho:** o projeto de testemunho monta as suas equipes, ou usa as do RM que está rodando? | Yeseong, Wang Song | Enquanto o projeto de testemunho não tem equipes, o painel usa as do projeto de RM ativo (é assim no Início, em Por área e no Caixa). | P2, P4 |
+| 24 | **Taxa de estadia:** por membro e por dia, lançada pela capitã por período (como está), ou automática aos domingos como no sistema do Wang Song? | Yeseong | Manual por período; automática depois, se fizer falta (não há worker na Vercel). | P4 |
+| 25 | **WhatsApp para avisos:** de que número saem as mensagens — um número da Água Pura (novo portfólio Meta) ou o da FFPUM Marketing? Quem paga (cerca de US$ 0,007 por mensagem no Brasil)? Quais avisos valem a pena (reunião pedida/respondida; mudança de equipe; lembrete do relatório)? | Milad, Yeseong, Victor | Reunião pedida e respondida pela API quando houver número; o resto pelo sino e e-mail; link manual de WhatsApp sempre. | P8 |
+| 26 | **Domínio e e-mail:** o Resend do site (contact@purewaterwave.org) manda os avisos de reunião? O demo (pww-painel) não tem RESEND_API_KEY. | Milad | Sim, o mesmo remetente; só precisa da chave no ambiente. | P8 |
+| 27 | **Módulo Testemunho:** o modo "automático" (aparece com projeto ativo) é o padrão certo? | Milad | Sim; o administrador troca em Configurações. | P6 |
+
 ## Premissas gerais
 
 - Interface em português do Brasil, com en/es pelos catálogos existentes.

@@ -30,9 +30,39 @@ MongoDB (nada é mock no navegador):
   tirar os papéis de educador e administrador em Pessoas, e Organização (projetos, dias de descanso, metas
   por programa, regra da nova meta, copiar as equipes do projeto anterior).
 
-O switch **Painel · Academia · Biblioteca** fica ao lado do logo para quem tem
-conta da academia (pastores veem só a Biblioteca, sem switch); o perfil abre
-pelo avatar no canto superior direito. A academia segue as regras da
+O switch tem **cinco módulos — Painel · Restauração Material · Testemunho ·
+Academia · Biblioteca** (Milad, 13/11) — ao lado do logo para quem tem conta
+da academia (pastores veem só a Biblioteca, sem switch); cada módulo tem a
+sua barra lateral (no computador) ou barra inferior (no celular). O módulo
+Testemunho aparece para os membros só enquanto há projeto de testemunho
+ativo, ou sempre/nunca, conforme Configurações; educadores sempre o veem. O
+perfil abre pelo avatar no canto superior direito.
+
+## Novidades de 14/11/2026
+
+Pedidos do grupo em 13 e 14/11 (Milad, Wang Song, Yeseong, Dir. Henrique):
+
+- **Perfil HJ Team** (Pessoas): foto, idade, programa e turma, e a linha por
+  programa — curso universitário (HJ Academy), há quanto tempo é membro
+  (Pure Water), família Cheon Bo (HJ Rang). A ficha da pessoa
+  (`/admin/pessoas/[id]`) tem a parte **Informações do educador**
+  (família Cheon Bo, segunda geração, pais, espíritos centrais libertados,
+  padrão de vida de fé, anotações) que só educadores veem e preenchem; o
+  membro edita curso, formações e "membro desde" em Meu perfil. Programas e
+  turmas em Organização.
+- **Áreas de missão** (Organização): região → país → local (centro de
+  testemunho), com as cinco regiões do sistema do Wang Song. A equipe
+  aponta para um local. **Testemunho › Por área** soma convidados por etapa,
+  fichas e alertas em cada região, país, local e equipe, e por programa.
+- **Caixa da equipe** (Testemunho › Caixa): entradas e saídas por categoria,
+  saldo, taxa de estadia por membro/dia (o educador define) e "lançar
+  estadia do período" (membros × dias × taxa). A capitã e o educador da
+  equipe lançam; os membros veem; o educador vê o saldo de todas.
+- **Reuniões** (Painel › Reuniões): o membro pede uma conversa individual
+  ao educador; o educador confirma, sugere outro horário ou recusa; aviso no
+  sino, por e-mail e por WhatsApp quando configurado (ver P8).
+- "Fale com a IA" voltou a aparecer na Biblioteca (Milad: o chat externo
+  serve por enquanto). A academia segue as regras da
 FFPUM: módulos abrem em ordem quando a atividade do módulo anterior é
 aprovada (nota mínima 70 por padrão, tentativas ilimitadas, a melhor vale),
 a atividade do módulo abre depois de todas as aulas, a final depois de todos
@@ -126,13 +156,28 @@ chama "Água Pura", abre em `/login` e um membro já logado cai direto no
 Painel, em tela cheia, com a barra inferior acima do indicador do iPhone.
 
 Suite automática: `npm run typecheck`, `eslint` (pastas do CI) e `npm test`
-(451 testes, MongoDB em memória): regras de RM, datas e jornada em
-`tests/unit/hj-*.test.ts`; rotas do painel e da administração em
-`tests/api/painel-*.test.ts` e `tests/api/admin-hj.test.ts`.
+(464 testes, MongoDB em memória): regras de RM, datas, jornada e perfil em
+`tests/unit/`; rotas do painel e da administração em
+`tests/api/painel-*.test.ts` (arrecadação, testemunho, caixa, reuniões) e
+`tests/api/admin-*.test.ts` (hj, áreas, perfil/programas/configurações,
+biblioteca).
+
+Verificado em 14/11 no navegador (Playwright, 1280 px e 390 px) e pela API:
+os cinco módulos com as barras certas para membro, capitã, educador e
+administrador; o módulo Testemunho some para a Ana em modo "oculto" e
+`/painel/testemunho` volta ao início; ficha da Ana com a parte do educador
+(a API do membro nunca devolve os campos confidenciais); áreas: criar local,
+recusar duplicado e país como área de equipe, apagar com filhos é recusado;
+resultados por área batem com os convidados do seed; caixa da Equipe 01
+(Bia lança, Ana só vê, Marcos — educador de outra equipe — só vê, David
+define a taxa, estadia do período e recusa de período repetido); reunião da
+Ana com o David (pedido, sino dos dois lados, confirmar, realizada, sugerir
+outro horário, cancelar).
 
 ## Fora desta versão
 
-Lembretes e notificações push (P6), exportação da contabilidade, tradução en/es do painel (os textos estão em
+Lembretes e notificações push (P6), WhatsApp pela Cloud API (falta número de
+produção, pagamento e modelos aprovados — ver P8), exportação da contabilidade, tradução en/es do painel (os textos estão em
 `src/lib/i18n/painel-messages.ts`, só em português), upload de PDF na
 Biblioteca administrável (hoje só por link), ambiente `dev` próprio na Vercel
 e no Atlas (hoje o demo é o projeto `pww-painel`), e-mail de boas-vindas

@@ -58,6 +58,8 @@ convidados). Por isso `papéis` é uma lista, não um valor único.
 **Critérios de aceite**
 - Campos: nome completo, e-mail (login), telefone (com código do país), país, cidade, data de nascimento, idioma (pt/en/es), foto, **programa** (HJA, HJR, PW, STG, UPA), **turma** (opcional, da lista do programa), **educador responsável**, **situação** (ativo/inativo), anotações do educador (privadas), data de entrada no HJ Team.
 - Programa e turma vêm do cadastro P2; não são texto livre.
+- **Perfil por programa (14/11/2026, Yeseong):** a lista de Pessoas mostra foto, nome, idade e uma linha por programa — HJ Academy: curso em que se formou; HJ Rang: família Cheon Bo; Pure Water: há quanto tempo é membro. O membro edita curso, outras formações e "membro desde"; programa e turma são do educador.
+- **Informações do educador (Milad, Victor):** família Cheon Bo, segunda geração, pais, espíritos centrais libertados, padrão de vida de fé e anotações ficam em `hj.confidencial`; só educadores veem e preenchem (podem perguntar aos pais ou pais espirituais) e a pessoa nunca vê no próprio perfil.
 - Uma conta inativa não entra em equipes novas, não aparece em listas por padrão e não consegue entrar; o histórico dela (relatórios, convidados) permanece.
 - O formulário de nova conta e o CSV de importação (já existentes) ganham as colunas `programa` e `turma`; `tipo` aceita `membro`, `educador`, `administrador`, `pastor`.
 

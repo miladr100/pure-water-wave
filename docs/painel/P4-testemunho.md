@@ -119,6 +119,21 @@ criado em. A linha do tempo é a lista de acontecimentos.
 - Evolução por dia/semana/mês: cadastros e marcos no intervalo.
 - Exportar CSV de convidados (com os mesmos filtros).
 
+### US-P4-10 — Resultados por área (implementado 14/11/2026)
+
+> Como educador, quero os números de cada centro de testemunho e a visão por região e país (o que o Rev. Kim pede).
+
+- Testemunho › Por área: árvore região → país → local → equipe com convidados, por etapa, fichas, atenção e membros com convidado; totais por programa. Equipes sem local ficam em "Sem área definida".
+- Conta as equipes do projeto de testemunho ativo; enquanto ele não tem equipes, as do projeto de RM ativo.
+
+### US-P4-11 — Caixa da equipe (implementado 14/11/2026)
+
+> Como capitã, quero cuidar do caixa da equipe durante o testemunho: quanto entrou, quanto saiu, quanto sobrou e a taxa de estadia.
+
+- `hj_lancamentos`: entrada ou saída, categoria (RM, doação, estadia, alimentação, transporte, material, outro), valor, data, descrição, autor; o saldo é a soma.
+- A capitã e o educador da equipe lançam e apagam; os membros veem; o educador vê o saldo de todas as equipes em Testemunho › Caixa e define a **taxa de estadia** por membro por dia.
+- "Lançar estadia do período": membros × dias × taxa como uma saída automática; período que se sobrepõe a um já lançado é recusado.
+
 ### US-P4-08 — Importar convidados
 
 > Como educador, quero importar convidados por CSV ou do sistema de Wang Song.

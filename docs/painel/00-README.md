@@ -36,6 +36,7 @@ grupo (Milad, Wang Song, Yeseong) ou do Victor:
 | [P6-area-do-membro](P6-area-do-membro.md) | As telas do membro e do capitão, celular e PWA | Rascunho |
 | [P7-dados-e-migracao](P7-dados-e-migracao.md) | Modelo de dados no MongoDB, importação do sistema de testemunho e da planilha | Rascunho |
 | [08-demo-e-testes](08-demo-e-testes.md) | A versão navegável (branch `feat/painel-ui`): o que cobre, contas de demonstração, como rodar e o que foi verificado | Em revisão |
+| [P8-reunioes-e-avisos](P8-reunioes-e-avisos.md) | Pedido de reunião individual com o educador, resposta, avisos por sino, e-mail e WhatsApp | Implementado |
 | [decisoes-pendentes](decisoes-pendentes.md) | Perguntas abertas para o grupo e as premissas adotadas enquanto não há resposta | Vivo |
 | Design: [Painel HJ Team (canvas)](https://claude.ai/artifact/NaRhc2TRnqUnd4LiyBkUCB) | 16 telas no estilo do site: 7 do celular (Painel e Academia), 2 do computador (Painel e Academia do membro), 5 da administração do educador e 2 exclusivas do administrador. O canvas ainda mostra o switch com três segmentos Painel · Academia · Administração; a versão navegável (08) já segue a decisão posterior: Painel · Academia · Biblioteca | Superado pela versão navegável |
 
@@ -74,3 +75,8 @@ onde o painel a muda (login, perfil, navegação, quem é "aluno").
 | 09/11/2026 | O app instalável se chama **Água Pura** (um só para pastores, membros e educadores), começa em `/login` e manda cada conta para a sua casa; testado em emulador Android e simulador iOS | Victor |
 | 09/11/2026 | Administradores têm **Biblioteca** na barra lateral (`/admin/biblioteca`) para adicionar livros, materiais e vídeos por link à biblioteca de todos; a academia segue as regras da FFPUM (módulos, atividade obrigatória para avançar, nota mínima 70, tentativas ilimitadas, melhor tentativa vale) | Victor |
 | 09/11/2026 | Ao entrar, membros caem no Painel (`/painel`), educadores em `/admin`, pastores na biblioteca; o capitão não valida o próprio relatório (educador valida); testes automáticos cobrem regras e rotas do painel | Victor |
+| 13/11/2026 | "Fale com a IA" fica visível na Biblioteca: o chat externo serve por enquanto | Milad |
+| 13/11/2026 | O switch tem cinco módulos — Painel · Restauração Material · Testemunho · Academia · Biblioteca — cada um com a sua barra; o módulo Testemunho tem um interruptor em Configurações (automático com projeto ativo, sempre, oculto) | Milad (sugestão), implementado 14/11 |
+| 13–14/11/2026 | Testemunho por **áreas de missão** (região → país → local), com resultados por área e por programa; **caixa da equipe** durante o testemunho (entradas, saídas, taxa de estadia); perfil com programa e turma, como no sistema do Wang Song | Milad, Wang Song, Yeseong |
+| 14/11/2026 | Perfil do membro com foto, idade e a linha por programa (HJA: curso; HJR: família Cheon Bo; PW: tempo de membro); a parte confidencial é do educador e o membro não a vê | Yeseong, Milad, Victor |
+| 14/11/2026 | Reunião individual com o educador pedida pelo painel, com aviso ao educador e ao membro (sino, e-mail, WhatsApp quando configurado) | Dir. Henrique via Yeseong |
