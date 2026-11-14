@@ -2,12 +2,15 @@ import { NextResponse } from "next/server";
 import type { Types } from "mongoose";
 
 import { serverError } from "@/lib/academy/http";
-import { activeProject, convidadoRow, equipeLookup, guestsOf, projetoResumo, ref, sameId, usersById } from "@/lib/hj/data";
-import { CONVIDADO_ETAPAS, type AcontecimentoTipo, type AdminHjInicio, type ConvidadoEtapa } from "@/lib/hj/types";
+import { activeProject, convidadoRow, equipeLookup, guestsOf, projetoResumo, usersById, USER_FIELDS, type UserDoc } from "@/lib/hj/data";
+import { idadeEm, perfilDe } from "@/lib/hj/perfil";
+import { CONVIDADO_ETAPAS, type AcontecimentoTipo, type AdminHjInicio, type ConvidadoEtapa, type DadosGerais, type HjPrograma } from "@/lib/hj/types";
+import { AcademyUser } from "@/models/academy-user";
 import { HjAcontecimento } from "@/models/hj-convidado";
+import { programasCatalogo } from "@/models/hj-programa";
 import { indicadoresDe, pontoDeAtencao } from "@/lib/hj/testemunho";
 
-import { buildGrid, educatorContext, metaTotal, porPrograma, projectFor } from "../_lib/shared";
+import { buildGrid, educatorContext, PANORAMA_VAZIO, panoramaArrecadacao, projectFor } from "../_lib/shared";
 
 type EventDoc = {
   _id: Types.ObjectId;
@@ -18,9 +21,10 @@ type EventDoc = {
   data: string;
 };
 
-// The educator's and administrator's home: two overviews, one per kind
-// of project running today — the fundraising (by program and by team) and
-// the testimony drive (guests by stage and by team, latest happenings).
+// The educator's and administrator's home: the course's general numbers
+// (people, programs, boys and girls, average age, who stands out) and one
+// line per project running today — the fundraising panorama lives in its
+// own module since 14/11/2026 (Yeseong), the testimony teams in theirs.
 export async function GET(request: Request) {
   try {
     const result = await educatorContext();
@@ -35,9 +39,8 @@ export async function GET(request: Request) {
     const porEtapa = Object.fromEntries(CONVIDADO_ETAPAS.map((etapa) => [etapa, 0])) as Record<ConvidadoEtapa, number>;
     const body: AdminHjInicio = {
       projeto: null,
-      totais: { liquidoCents: 0, metaCents: 0, membros: 0, equipes: 0, enviadosHoje: 0, pendentesValidacao: 0, devolvidos: 0 },
-      programas: [],
-      equipes: [],
+      ...PANORAMA_VAZIO,
+      geral: { pessoas: 0, porPrograma: [], meninos: 0, meninas: 0, semGenero: 0, idadeMedia: null, comIdade: 0, destaquesRm: [], destaquesTestemunho: [] },
       testemunho: {
         projeto: projetoTestemunho ? projetoResumo(projetoTestemunho, hoje) : null,
         convidados: 0,
@@ -54,35 +57,8 @@ export async function GET(request: Request) {
     const grid = projeto ? await buildGrid(projeto) : null;
 
     if (projeto && grid) {
-      const deHoje = grid.relatorios.filter((item) => item.data === hoje);
       body.projeto = projetoResumo(projeto, hoje);
-      body.totais = {
-        liquidoCents: grid.linhas.reduce((sum, linha) => sum + linha.totalCents, 0),
-        metaCents: metaTotal(projeto),
-        membros: grid.linhas.length,
-        equipes: grid.equipes.length,
-        enviadosHoje: deHoje.filter((item) => item.estado !== "devolvido").length,
-        pendentesValidacao: grid.relatorios.filter((item) => item.estado === "enviado").length,
-        devolvidos: grid.relatorios.filter((item) => item.estado === "devolvido").length,
-      };
-      body.programas = porPrograma(grid);
-      body.equipes = grid.equipes
-        .map((equipe) => {
-          const linhas = grid.linhas.filter((linha) => linha.equipe.id === equipe._id.toString());
-          const hojeDaEquipe = deHoje.filter((item) => sameId(item.equipeId, equipe._id) && item.estado !== "devolvido");
-          return {
-            id: equipe._id.toString(),
-            nome: equipe.nome,
-            programa: equipe.programa,
-            educador: ref(equipe.educadorId ? grid.users.get(String(equipe.educadorId)) : null),
-            capitao: ref(equipe.capitaoId ? grid.users.get(String(equipe.capitaoId)) : null),
-            membros: equipe.membroIds.length,
-            enviadosHoje: hojeDaEquipe.length,
-            liquidoHojeCents: hojeDaEquipe.reduce((sum, item) => sum + item.liquidoCents, 0),
-            liquidoCents: linhas.reduce((sum, linha) => sum + linha.totalCents, 0),
-          };
-        })
-        .sort((a, b) => a.nome.localeCompare(b.nome, "pt"));
+      Object.assign(body, panoramaArrecadacao(grid, hoje));
     }
 
     const equipes = grid?.equipes ?? [];
@@ -114,6 +90,7 @@ export async function GET(request: Request) {
       // teams that need a look first, then the busiest
       .sort((a, b) => Number(Boolean(b.atencao)) - Number(Boolean(a.atencao)) || b.convidados - a.convidados || a.nome.localeCompare(b.nome, "pt"));
     body.testemunho.comAtencao = body.testemunho.porEquipe.filter((equipe) => equipe.atencao).length;
+    body.geral = await dadosGerais([...memberIds], lookup, grid?.linhas ?? [], rows, hoje);
 
     if (guests.length > 0) {
       const events = (await HjAcontecimento.find({ convidadoId: { $in: guests.map((guest) => guest._id) } })
@@ -136,4 +113,72 @@ export async function GET(request: Request) {
   } catch (error) {
     return serverError("Erro ao carregar a administração", error, "Não foi possível carregar a administração");
   }
+}
+
+// The course as a whole: everyone in a team of the active fundraising
+// project plus every member filed under a program. Program comes from the
+// profile, else from the team; boys and girls from the profile's "sexo".
+async function dadosGerais(
+  memberIds: string[],
+  lookup: ReturnType<typeof equipeLookup>,
+  linhas: { membro: { id: string; nome: string }; equipe: { nome: string }; totalCents: number }[],
+  guests: { responsavel: { id: string; nome: string }; equipe: { nome: string } | null; etapa: ConvidadoEtapa }[],
+  hoje: string,
+): Promise<DadosGerais> {
+  const pessoas = (await AcademyUser.find({ role: "student", $or: [{ _id: { $in: memberIds } }, { "hj.perfil.programa": { $ne: null } }] })
+    .select(USER_FIELDS)
+    .lean()) as UserDoc[];
+  const nomes = new Map((await programasCatalogo()).map((item) => [item.sigla, item.nome]));
+  const porPrograma = new Map<HjPrograma, number>();
+  let meninos = 0;
+  let meninas = 0;
+  let semGenero = 0;
+  let somaIdade = 0;
+  let comIdade = 0;
+  for (const user of pessoas) {
+    const perfil = perfilDe(user.hj);
+    const programa = perfil.programa ?? lookup(user._id.toString())?.programa ?? null;
+    if (programa) {
+      porPrograma.set(programa, (porPrograma.get(programa) ?? 0) + 1);
+    }
+    if (perfil.genero === "masculino") meninos += 1;
+    else if (perfil.genero === "feminino") meninas += 1;
+    else semGenero += 1;
+    const idade = idadeEm(user.birthday, hoje);
+    if (idade !== null) {
+      somaIdade += idade;
+      comIdade += 1;
+    }
+  }
+
+  const destaquesRm = linhas
+    .filter((linha) => linha.totalCents > 0)
+    .sort((a, b) => b.totalCents - a.totalCents || a.membro.nome.localeCompare(b.membro.nome, "pt"))
+    .slice(0, 3)
+    .map((linha) => ({ membro: linha.membro, equipe: linha.equipe.nome, totalCents: linha.totalCents }));
+
+  const porResponsavel = new Map<string, DadosGerais["destaquesTestemunho"][number]>();
+  for (const guest of guests) {
+    const current = porResponsavel.get(guest.responsavel.id) ?? { membro: guest.responsavel, equipe: guest.equipe?.nome ?? null, convidados: 0, jardim: 0 };
+    current.convidados += 1;
+    if (guest.etapa === "jardim") current.jardim += 1;
+    porResponsavel.set(guest.responsavel.id, current);
+  }
+  const destaquesTestemunho = [...porResponsavel.values()]
+    .sort((a, b) => b.jardim - a.jardim || b.convidados - a.convidados || a.membro.nome.localeCompare(b.membro.nome, "pt"))
+    .slice(0, 3);
+
+  return {
+    pessoas: pessoas.length,
+    porPrograma: [...porPrograma.entries()]
+      .map(([programa, total]) => ({ programa, nome: nomes.get(programa) ?? programa, pessoas: total }))
+      .sort((a, b) => b.pessoas - a.pessoas || a.programa.localeCompare(b.programa)),
+    meninos,
+    meninas,
+    semGenero,
+    idadeMedia: comIdade > 0 ? Math.round((somaIdade / comIdade) * 10) / 10 : null,
+    comIdade,
+    destaquesRm,
+    destaquesTestemunho,
+  };
 }

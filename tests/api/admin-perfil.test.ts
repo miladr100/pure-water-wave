@@ -31,7 +31,7 @@ describe("perfil helpers", () => {
   });
 
   it("writes the one line per program", () => {
-    const base = { programa: null, turma: "", membroDesde: null, cursoUniversitario: "", formacao: "" };
+    const base = { programa: null, genero: null, turma: "", membroDesde: null, cursoUniversitario: "", formacao: "" };
     expect(resumoDe({ ...base, programa: "HJA", cursoUniversitario: "Psicologia" }, null, "2026-11-14")).toBe("Formado(a) em Psicologia");
     expect(resumoDe({ ...base, programa: "PW", membroDesde: "2024-01-01" }, null, "2026-11-14")).toBe("Membro há 2 anos");
     expect(resumoDe({ ...base, programa: "HJR" }, { familiaCheonBo: true, segundaGeracao: null, pais: "", espiritosLibertados: null, padraoVidaFe: "" }, "2026-11-14")).toBe("Família Cheon Bo");
@@ -77,7 +77,7 @@ describe("Perfil HJ Team, programas e turmas, módulo Testemunho", () => {
     await signInAsPanel(membro);
     expect((await getPessoa(jsonRequest(`/api/admin/hj/pessoas/${id}`), params({ id }))).status).toBe(404);
     const meu = await readJson<MeuPerfilHj>(await getMeuPerfil());
-    expect(meu.perfil).toEqual({ programa: "HJA", turma: "2ª Turma", membroDesde: "2019-03-10", cursoUniversitario: "Psicologia", formacao: "" });
+    expect(meu.perfil).toEqual({ programa: "HJA", genero: null, turma: "2ª Turma", membroDesde: "2019-03-10", cursoUniversitario: "Psicologia", formacao: "" });
     expect(meu.programaNome).toBe("HJ Academy");
     expect(meu.educador?.nome).toBe("Educador da Equipe");
     expect(JSON.stringify(meu)).not.toContain("Cheon");

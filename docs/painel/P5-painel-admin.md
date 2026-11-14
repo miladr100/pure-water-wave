@@ -56,9 +56,26 @@ menu próprio (montar equipes do projeto ativo) e Pessoas tem só Membros.
 
 > Como educador, quero abrir o painel e saber o que precisa de atenção hoje.
 
-**Critérios de aceite**
-- Para o projeto de **arrecadação** ativo: dia N de M, total × meta (barra), relatórios de hoje (validados / a validar / sem envio) com atalho para a fila, maior resultado do dia, equipes com capitão pendente.
-- Para o projeto de **testemunho** ativo: convidados no período, por etapa, fichas, convidados sem acontecimento há mais de 14 dias (atalho), membros sem convidados.
+**Critérios de aceite** (revistos em 14/11/2026, Yeseong: a arrecadação sai
+do Início e vai para Restauração Material › Resultados; o Início mostra os
+**dados gerais do curso** em cards)
+- **Dados gerais do curso:** Time HJ (total de pessoas), um card por programa
+  (HJ Academy, HJ Rang, Pure Water…, com a parte do total), meninos e
+  meninas (sexo do perfil HJ; "sem informar" quando falta), média de idade
+  (de quem tem data de nascimento), **destaques na RM até agora** (os três
+  maiores totais do projeto ativo) e **destaques no testemunho até agora**
+  (quem mais levou ao Jardim, depois quem mais convidou). Os cards de
+  programa abrem Pessoas já filtrada. Contam como Time HJ os membros das
+  equipes do projeto de RM ativo e qualquer membro com programa no perfil.
+- **Projetos em andamento:** uma linha por projeto ativo — RM (dia N de M,
+  total × meta, enviaram hoje, a validar com atalho para a fila) e
+  Testemunho (convidados, os quatro indicadores, equipes com ponto de
+  atenção) — cada um com o atalho para o seu módulo; e os últimos
+  acontecimentos do testemunho.
+- **Restauração Material › Resultados** recebe o panorama que estava no
+  Início: arrecadado × meta com membros, equipes, enviaram hoje, a validar e
+  devolvidos; por programa; por equipe (hoje e total). Abaixo, a planilha
+  com filtros, como antes.
 - Academia: correções e perguntas pendentes (como hoje).
 - Sem projeto ativo: cartão "Criar projeto" (admin) ou aviso (educador).
 

@@ -64,6 +64,7 @@ const academyUserSchema = new Schema(
             type: new Schema(
               {
                 programa: { type: String, enum: [...HJ_PROGRAMAS, null], default: null },
+                genero: { type: String, enum: ["masculino", "feminino", null], default: null },
                 turma: { type: String, default: "" },
                 membroDesde: { type: String, default: null },
                 cursoUniversitario: { type: String, default: "" },

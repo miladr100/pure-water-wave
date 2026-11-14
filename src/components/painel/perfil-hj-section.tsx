@@ -13,6 +13,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/academy/api-client";
+import type { HjGenero } from "@/lib/hj/perfil";
+
+const selectClass =
+  "h-10 w-full rounded-xl border border-input bg-card px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 // The HJ Team card of the person's own profile: program, cohort, team
 // and educator (read-only, the educator keeps them) and the fields the
@@ -36,12 +40,13 @@ function Form({ data, onSaved }: { data: MeuPerfilHj; onSaved: () => void }) {
   const [curso, setCurso] = useState(data.perfil.cursoUniversitario);
   const [formacao, setFormacao] = useState(data.perfil.formacao);
   const [desde, setDesde] = useState(data.perfil.membroDesde ?? "");
+  const [genero, setGenero] = useState<HjGenero | "">(data.perfil.genero ?? "");
   const [busy, setBusy] = useState(false);
 
   async function save() {
     setBusy(true);
     try {
-      await api("/api/painel/perfil", { method: "PATCH", body: { cursoUniversitario: curso, formacao, membroDesde: desde || null } });
+      await api("/api/painel/perfil", { method: "PATCH", body: { cursoUniversitario: curso, formacao, membroDesde: desde || null, genero: genero || null } });
       toast.success(t.pessoa.saved);
       onSaved();
     } catch (error) {
@@ -83,6 +88,14 @@ function Form({ data, onSaved }: { data: MeuPerfilHj; onSaved: () => void }) {
           void save();
         }}
       >
+        <div className="space-y-1.5">
+          <Label htmlFor="hj-genero">{t.pessoa.gender}</Label>
+          <select id="hj-genero" className={selectClass} value={genero} onChange={(event) => setGenero(event.target.value as HjGenero | "")}>
+            <option value="">{t.pessoa.genderUnknown}</option>
+            <option value="masculino">{t.pessoa.male}</option>
+            <option value="feminino">{t.pessoa.female}</option>
+          </select>
+        </div>
         <div className="space-y-1.5">
           <Label htmlFor="hj-desde">{t.pessoa.memberSince}</Label>
           <Input id="hj-desde" type="date" value={desde} onChange={(event) => setDesde(event.target.value)} className="h-10 rounded-xl" />

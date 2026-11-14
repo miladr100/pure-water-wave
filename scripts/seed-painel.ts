@@ -190,6 +190,7 @@ async function main() {
       hj: {
         perfil: {
           programa,
+          genero: random() < 0.05 ? null : random() < 0.52 ? "masculino" : "feminino",
           turma: programa ? pick(TURMAS[programa]) : "",
           membroDesde,
           cursoUniversitario: programa === "HJA" || random() < 0.4 ? pick(CURSOS) : "",

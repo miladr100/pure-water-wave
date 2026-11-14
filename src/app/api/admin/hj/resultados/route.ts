@@ -4,7 +4,7 @@ import { serverError } from "@/lib/academy/http";
 import { projetoResumo } from "@/lib/hj/data";
 import { HJ_PROGRAMAS, type AdminResultados, type HjPrograma } from "@/lib/hj/types";
 
-import { allProjects, buildGrid, educatorContext, metaTotal, porPrograma, projectFor } from "../_lib/shared";
+import { allProjects, buildGrid, educatorContext, metaTotal, panoramaArrecadacao, porPrograma, projectFor } from "../_lib/shared";
 
 // The results grid (member × day) with the spreadsheet's totals, filtered
 // by program, team, educator or name. Totals follow the filter.
@@ -26,6 +26,7 @@ export async function GET(request: Request) {
         linhas: [],
         totais: { porDia: {}, dinheiroCents: 0, pixCents: 0, despesasCents: 0, liquidoCents: 0, metaCents: 0 },
         programas: [],
+        panorama: null,
         filtros: { projetos, programas: [...HJ_PROGRAMAS], equipes: [], educadores: [] },
       };
       return NextResponse.json(empty);
@@ -73,6 +74,7 @@ export async function GET(request: Request) {
         metaCents: metaTotal(projeto),
       },
       programas: porPrograma(grid),
+      panorama: panoramaArrecadacao(grid, context.hoje),
       filtros: {
         projetos,
         programas: [...new Set(grid.equipes.map((team) => team.programa))].sort() as HjPrograma[],

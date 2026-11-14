@@ -17,9 +17,11 @@ MongoDB (nada é mock no navegador):
   acontecimentos, mudar de etapa, editar datas).
 - **Capitã(o)** (`/painel/equipe`): quem enviou hoje, validar ou devolver com
   motivo, histórico da equipe, convidados da equipe.
-- **Educador(a)** (`/admin`): visão geral (por programa e por equipe),
-  Arrecadação com as abas Resultados (a planilha, membro × dia, com filtros e
-  CSV), Relatórios do dia (validação das equipes que acompanha), Metas e
+- **Educador(a)** (`/admin`): visão geral com os dados gerais do curso
+  (pessoas, por programa, meninos e meninas, média de idade, destaques na RM
+  e no testemunho) e uma linha por projeto em andamento; Restauração
+  Material com as abas Resultados (o panorama por programa e por equipe, e a
+  planilha membro × dia, com filtros e CSV), Relatórios do dia (validação das equipes que acompanha), Metas e
   Contabilidade (dinheiro × pix); Testemunho de todas as equipes; Pessoas
   (membros, educadores, pastores, nova conta, importar CSV); Equipes (criar,
   editar, capitão, membros — ninguém em duas equipes do mesmo projeto);
@@ -68,7 +70,17 @@ Pedidos do grupo em 13 e 14/11 (Milad, Wang Song, Yeseong, Dir. Henrique):
   no Início; **"Ponto de atenção"** ao lado da equipe quando dois deles se
   afastam (P4 US-P4-12). **Orientação** registrada por equipe (a última ao
   lado da equipe, histórico no diálogo) e **meta interna** de RM por membro
-  (Metas e ficha da pessoa); o membro vê as duas no Início (P4 US-P4-13, P3). A academia segue as regras da
+  (Metas e ficha da pessoa); o membro vê as duas no Início (P4 US-P4-13, P3).
+- **Visão geral em cards** (Yeseong, 14/11, "só uma última coisa"): a
+  arrecadação saiu do Início do educador e foi para Restauração Material ›
+  Resultados (arrecadado × meta, por programa, por equipe, e a planilha).
+  O Início mostra os dados gerais do curso — Time HJ, um card por programa,
+  meninos e meninas, média de idade, destaques na RM e no testemunho até
+  agora — e uma linha por projeto em andamento (P5 US-P5-01). Para contar
+  meninos e meninas, o perfil HJ ganhou o campo **Sexo**, que o membro
+  preenche em Meu perfil e o educador na ficha (P1 US-P1-02).
+
+A academia segue as regras da
 FFPUM: módulos abrem em ordem quando a atividade do módulo anterior é
 aprovada (nota mínima 70 por padrão, tentativas ilimitadas, a melhor vale),
 a atividade do módulo abre depois de todas as aulas, a final depois de todos
@@ -162,7 +174,7 @@ chama "Água Pura", abre em `/login` e um membro já logado cai direto no
 Painel, em tela cheia, com a barra inferior acima do indicador do iPhone.
 
 Suite automática: `npm run typecheck`, `eslint` (pastas do CI) e `npm test`
-(468 testes, MongoDB em memória): regras de RM, datas, jornada e perfil em
+(470 testes, MongoDB em memória): regras de RM, datas, jornada e perfil em
 `tests/unit/`; rotas do painel e da administração em
 `tests/api/painel-*.test.ts` (arrecadação, testemunho, caixa, reuniões) e
 `tests/api/admin-*.test.ts` (hj, áreas, perfil/programas/configurações,

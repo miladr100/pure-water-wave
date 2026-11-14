@@ -228,6 +228,14 @@ function PerfilForm({ pessoa, programas, onSaved }: { pessoa: PessoaDetalhe; pro
             </select>
           </div>
           <div className="space-y-1.5">
+            <Label htmlFor="p-genero">{t.pessoa.gender}</Label>
+            <select id="p-genero" className={selectClass} value={perfil.genero ?? ""} onChange={(event) => setPerfil({ ...perfil, genero: (event.target.value || null) as HjPerfil["genero"] })}>
+              <option value="">{t.pessoa.genderUnknown}</option>
+              <option value="masculino">{t.pessoa.male}</option>
+              <option value="feminino">{t.pessoa.female}</option>
+            </select>
+          </div>
+          <div className="space-y-1.5">
             <Label htmlFor="p-desde">{t.pessoa.memberSince}</Label>
             <Input id="p-desde" type="date" value={perfil.membroDesde ?? ""} onChange={(event) => setPerfil({ ...perfil, membroDesde: event.target.value || null })} className="h-10 rounded-xl" />
           </div>

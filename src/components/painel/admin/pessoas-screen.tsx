@@ -2,6 +2,7 @@
 
 import { Search, Shield, ShieldOff, UserCheck, UserMinus } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -30,8 +31,10 @@ export function PessoasScreen({ papel }: { papel: Papel }) {
   const t = usePainelMessages();
   const { t: ta, language } = useLocale();
   const eu = usePainelEu();
+  const params = useSearchParams();
   const [busca, setBusca] = useState("");
-  const [programa, setPrograma] = useState("");
+  // the home's program cards land here already filtered
+  const [programa, setPrograma] = useState(params.get("programa") ?? "");
   const [turma, setTurma] = useState("");
   const query = new URLSearchParams({ papel, ...(busca ? { busca } : {}), ...(programa ? { programa } : {}), ...(turma ? { turma } : {}) });
   const list = useApi<{ pessoas: PessoaRow[] }>(`/api/admin/hj/pessoas?${query.toString()}`);

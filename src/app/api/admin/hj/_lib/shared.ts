@@ -6,6 +6,7 @@ import {
   countsAsResult,
   ref,
   reportsOf,
+  sameId,
   usersById,
   type EquipeDoc,
   type PanelContext,
@@ -13,7 +14,7 @@ import {
   type RelatorioDoc,
   type UserDoc,
 } from "@/lib/hj/data";
-import type { HjPrograma, ResultadoLinha } from "@/lib/hj/types";
+import type { ArrecadacaoPanorama, HjPrograma, ResultadoLinha } from "@/lib/hj/types";
 import { HjEquipe } from "@/models/hj-equipe";
 import { HjProjeto } from "@/models/hj-projeto";
 import { ultimasDosMembros } from "@/lib/hj/orientacoes";
@@ -93,6 +94,48 @@ export async function buildGrid(projeto: ProjetoDoc): Promise<Grid> {
   linhas.sort((a, b) => a.equipe.nome.localeCompare(b.equipe.nome, "pt") || a.membro.nome.localeCompare(b.membro.nome, "pt"));
 
   return { projeto, equipes, relatorios, users, dias, linhas };
+}
+
+export const PANORAMA_VAZIO: ArrecadacaoPanorama = {
+  totais: { liquidoCents: 0, metaCents: 0, membros: 0, equipes: 0, enviadosHoje: 0, pendentesValidacao: 0, devolvidos: 0 },
+  programas: [],
+  equipes: [],
+};
+
+// The project's totals, by program and by team — what the educators read
+// first in Restauração Material › Resultados.
+export function panoramaArrecadacao(grid: Grid, hoje: string): ArrecadacaoPanorama {
+  const { projeto } = grid;
+  const deHoje = grid.relatorios.filter((item) => item.data === hoje);
+  return {
+    totais: {
+      liquidoCents: grid.linhas.reduce((sum, linha) => sum + linha.totalCents, 0),
+      metaCents: metaTotal(projeto),
+      membros: grid.linhas.length,
+      equipes: grid.equipes.length,
+      enviadosHoje: deHoje.filter((item) => item.estado !== "devolvido").length,
+      pendentesValidacao: grid.relatorios.filter((item) => item.estado === "enviado").length,
+      devolvidos: grid.relatorios.filter((item) => item.estado === "devolvido").length,
+    },
+    programas: porPrograma(grid),
+    equipes: grid.equipes
+      .map((equipe) => {
+        const linhas = grid.linhas.filter((linha) => linha.equipe.id === equipe._id.toString());
+        const hojeDaEquipe = deHoje.filter((item) => sameId(item.equipeId, equipe._id) && item.estado !== "devolvido");
+        return {
+          id: equipe._id.toString(),
+          nome: equipe.nome,
+          programa: equipe.programa,
+          educador: ref(equipe.educadorId ? grid.users.get(String(equipe.educadorId)) : null),
+          capitao: ref(equipe.capitaoId ? grid.users.get(String(equipe.capitaoId)) : null),
+          membros: equipe.membroIds.length,
+          enviadosHoje: hojeDaEquipe.length,
+          liquidoHojeCents: hojeDaEquipe.reduce((sum, item) => sum + item.liquidoCents, 0),
+          liquidoCents: linhas.reduce((sum, linha) => sum + linha.totalCents, 0),
+        };
+      })
+      .sort((a, b) => a.nome.localeCompare(b.nome, "pt")),
+  };
 }
 
 export function metaDoPrograma(projeto: ProjetoDoc, programa: HjPrograma) {

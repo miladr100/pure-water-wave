@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, FileSignature, Heart, MessageCircle, StickyNote, Waves } from "lucide-react";
+import { Check, FileSignature, HandCoins, Heart, MessageCircle, StickyNote, Trophy, Users, Waves } from "lucide-react";
 import Link from "next/link";
 
 import { useApi } from "@/components/academy/use-api";
@@ -10,8 +10,10 @@ import { PainelHeading } from "@/components/painel/painel-shell";
 import { usePainelMessages } from "@/components/painel/use-painel";
 import { fmtDia } from "@/lib/hj/dates";
 import { fmtReais, pct } from "@/lib/hj/rm";
-import { ETAPA_LABELS, ETAPA_ORDEM } from "@/lib/hj/testemunho";
 import type { AcontecimentoTipo, AdminHjInicio } from "@/lib/hj/types";
+
+// "46,1%" — a share, written the Brazilian way
+const parte = (value: number, total: number) => `${String(pct(value, total)).replace(".", ",")}%`;
 
 const TIPO_ICON: Record<AcontecimentoTipo, typeof Heart> = {
   contato: MessageCircle,
@@ -22,9 +24,11 @@ const TIPO_ICON: Record<AcontecimentoTipo, typeof Heart> = {
   nota: StickyNote,
 };
 
-// The administration's home: the fundraising overview (by program, by
-// team) and the testimony overview (by stage, by team, latest happenings),
-// each under the project of its kind that runs today.
+// The educator's and administrator's home: the course's general numbers
+// in cards — people, per program, boys and girls, average age, who
+// stands out in the RM and in the testimony drive — then one line per
+// project running today. The fundraising tables moved to Restauração
+// Material › Resultados (Yeseong, 14/11/2026).
 export function AdminInicioScreen() {
   const t = usePainelMessages();
   const home = useApi<AdminHjInicio>("/api/admin/hj/inicio");
@@ -36,224 +40,221 @@ export function AdminInicioScreen() {
     return <LoadingBlock />;
   }
 
-  const { projeto, totais, programas, equipes, testemunho } = home.data;
+  const { projeto, totais, geral, testemunho } = home.data;
   const hoje = projeto?.hoje ?? testemunho.projeto?.hoje ?? null;
 
   return (
     <div className="space-y-8 sm:space-y-10">
       <PainelHeading title={t.admin.homeTitle} description={hoje ? fmtDia(hoje, "longo") : undefined} />
 
-      {/* ---------- Arrecadação ---------- */}
-      <section className="space-y-5">
-        <SectionTitle
-          label={t.admin.arrecadacaoSection}
-          detail={projeto ? `${projeto.nome} · ${t.common.day(projeto.diaAtual, projeto.totalDias)}` : t.common.noProject}
-          href="/admin/arrecadacao"
-          linkLabel={t.admin.resultsTab}
-        />
-        {projeto ? (
-          <>
-            <Card>
-              <div className="flex flex-wrap items-end justify-between gap-3">
-                <div>
-                  <Eyebrow>{t.admin.raised}</Eyebrow>
-                  <p className="font-display text-4xl font-semibold text-primary-deep tabular-nums">{fmtReais(totais.liquidoCents)}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {t.admin.ofGoal(fmtReais(totais.metaCents))} · {pct(totais.liquidoCents, totais.metaCents)}%
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                  <span>
-                    <strong className="text-foreground">{totais.membros}</strong> {t.admin.members}
-                  </span>
-                  <span>
-                    <strong className="text-foreground">{totais.equipes}</strong> {t.admin.teams}
-                  </span>
-                  <span>
-                    <strong className="text-foreground">{totais.enviadosHoje}</strong> {t.admin.sentToday}
-                  </span>
-                  <Link href="/admin/arrecadacao?aba=relatorios" className="text-primary hover:underline">
-                    <strong>{totais.pendentesValidacao}</strong> {t.admin.pendingValidation}
-                  </Link>
-                  {totais.devolvidos > 0 ? (
-                    <span className="text-coral">
-                      <strong>{totais.devolvidos}</strong> {t.admin.returned}
-                    </span>
-                  ) : null}
-                </div>
-              </div>
-              <Bar value={totais.liquidoCents} max={totais.metaCents} className="mt-4" />
-            </Card>
-
-            <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-              <Card>
-                <Eyebrow className="mb-3">{t.admin.byProgram}</Eyebrow>
-                <ul className="space-y-3">
-                  {programas.map((programa) => (
-                    <li key={programa.programa}>
-                      <div className="flex flex-wrap items-baseline justify-between gap-x-3 text-sm">
-                        <span className="font-semibold">
-                          {programa.programa} <span className="font-normal text-muted-foreground">· {programa.membros} {t.admin.members}</span>
-                        </span>
-                        <span className="text-muted-foreground">
-                          <Reais cents={programa.liquidoCents} className="font-semibold text-foreground" />
-                          {programa.metaCents ? ` de ${fmtReais(programa.metaCents)} · ${pct(programa.liquidoCents, programa.metaCents)}%` : ""}
-                        </span>
-                      </div>
-                      <Bar value={programa.liquidoCents} max={programa.metaCents || programa.liquidoCents} className="mt-1.5" />
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-
-              <Card>
-                <Eyebrow className="mb-3">{t.admin.byTeam}</Eyebrow>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
-                        <th className="py-2 pr-3 font-semibold">{t.admin.team}</th>
-                        <th className="py-2 pr-3 font-semibold">{t.admin.educator}</th>
-                        <th className="py-2 pr-3 text-right font-semibold">{t.common.today}</th>
-                        <th className="py-2 text-right font-semibold">{t.equipe.total}</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border/60">
-                      {equipes.map((equipe) => (
-                        <tr key={equipe.id}>
-                          <td className="py-2.5 pr-3">
-                            <Link href={`/admin/equipes?equipe=${equipe.id}`} className="font-medium hover:text-primary">
-                              {equipe.nome}
-                            </Link>
-                            <span className="ml-2 text-xs text-muted-foreground">{equipe.programa}</span>
-                          </td>
-                          <td className="py-2.5 pr-3 text-muted-foreground">{equipe.educador?.nome ?? "—"}</td>
-                          <td className="py-2.5 pr-3 text-right">
-                            <span className={equipe.enviadosHoje < equipe.membros ? "text-coral" : "text-muted-foreground"}>
-                              {equipe.enviadosHoje}/{equipe.membros}
-                            </span>{" "}
-                            <Reais cents={equipe.liquidoHojeCents} className="font-semibold" />
-                          </td>
-                          <td className="py-2.5 text-right font-semibold">
-                            <Reais cents={equipe.liquidoCents} />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </Card>
-            </div>
-          </>
-        ) : (
-          <Card>
-            <p className="text-muted-foreground">{t.common.noProject}</p>
-          </Card>
-        )}
-      </section>
-
-      {/* ---------- Testemunho ---------- */}
-      <section className="space-y-5">
-        <SectionTitle
-          label={t.admin.testemunhoSection}
-          detail={testemunho.projeto ? `${testemunho.projeto.nome} · ${fmtDia(testemunho.projeto.inicio)} – ${fmtDia(testemunho.projeto.fim)}` : t.admin.noTestemunhoProject}
-          href="/admin/testemunho/equipes"
-          linkLabel={t.indicadores.teamsTitle}
-        />
-        <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          <Stat label="Convidados" value={testemunho.convidados} hint={testemunho.comAtencao > 0 ? t.indicadores.teamsWithAttention(testemunho.comAtencao) : testemunho.alertas > 0 ? t.admin.alerts(testemunho.alertas) : undefined} />
-          {ETAPA_ORDEM.map((etapa) => (
-            <Stat key={etapa} label={ETAPA_LABELS[etapa]} value={testemunho.porEtapa[etapa]} />
+      {/* ---------- Dados gerais do curso ---------- */}
+      <section className="space-y-4">
+        <SectionTitle icon={Users} label={t.admin.generalTitle} detail={t.admin.people(geral.pessoas)} href="/admin/pessoas" linkLabel={t.nav.pessoas} />
+        <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(10rem,1fr))]">
+          <Stat
+            label={t.admin.timeHj}
+            value={geral.pessoas}
+            hint={`${geral.meninos} ${t.admin.boys.toLowerCase()} · ${geral.meninas} ${t.admin.girls.toLowerCase()}${geral.semGenero > 0 ? ` · ${t.admin.noGender(geral.semGenero)}` : ""}`}
+            className="border-primary/30 bg-secondary/40"
+          />
+          {geral.porPrograma.map((programa) => (
+            <Stat
+              key={programa.programa}
+              label={programa.nome}
+              value={programa.pessoas}
+              hint={
+                <Link href={`/admin/pessoas?programa=${programa.programa}`} className="hover:underline">
+                  {programa.programa} · {parte(programa.pessoas, geral.pessoas)} {t.admin.ofTimeHj}
+                </Link>
+              }
+            />
           ))}
         </div>
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Stat label={t.admin.boys} value={geral.meninos} hint={geral.pessoas > 0 ? parte(geral.meninos, geral.pessoas) : undefined} />
+          <Stat label={t.admin.girls} value={geral.meninas} hint={geral.pessoas > 0 ? parte(geral.meninas, geral.pessoas) : undefined} />
+          <Stat label={t.admin.avgAge} value={geral.idadeMedia !== null ? t.admin.years(geral.idadeMedia) : "—"} hint={geral.comIdade > 0 ? t.admin.withBirthday(geral.comIdade) : undefined} />
+        </div>
+        <div className="grid gap-5 lg:grid-cols-2">
           <Card>
-            <Eyebrow className="mb-3">{t.admin.guestsByTeam}</Eyebrow>
-            {testemunho.porEquipe.length === 0 ? (
-              <p className="text-sm text-muted-foreground">{t.testemunho.empty}</p>
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <Eyebrow>{t.admin.rmHighlights}</Eyebrow>
+              <Link href="/admin/arrecadacao" className="text-sm font-medium text-primary hover:underline">
+                {t.admin.resultsTab} →
+              </Link>
+            </div>
+            {geral.destaquesRm.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t.admin.noHighlights}</p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
-                      <th className="py-2 pr-3 font-semibold">{t.admin.team}</th>
-                      <th className="py-2 pr-3 text-right font-semibold">Convidados</th>
-                      <th className="py-2 pr-3 text-right font-semibold">{t.indicadores.kit1}</th>
-                      <th className="py-2 pr-3 text-right font-semibold">{t.indicadores.fichas}</th>
-                      <th className="py-2 pr-3 text-right font-semibold">{t.indicadores.kit2}</th>
-                      <th className="py-2 text-right font-semibold">{t.indicadores.jardim}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/60">
-                    {testemunho.porEquipe.map((equipe) => (
-                      <tr key={equipe.id}>
-                        <td className="py-2.5 pr-3">
-                          <Link href={`/admin/testemunho/equipes?equipe=${equipe.id}`} className="font-medium hover:text-primary">
-                            {equipe.nome}
-                          </Link>
-                          <span className="ml-2 text-xs text-muted-foreground">{equipe.programa}</span>
-                          {equipe.atencao ? (
-                            <span className="ml-2 inline-flex" title={equipe.atencao.texto}>
-                              <Chip tone="coral">{t.indicadores.attention}</Chip>
-                            </span>
-                          ) : null}
-                        </td>
-                        <td className="py-2.5 pr-3 text-right font-semibold tabular-nums">{equipe.convidados}</td>
-                        <td className="py-2.5 pr-3 text-right tabular-nums">{equipe.indicadores.kit1}</td>
-                        <td className="py-2.5 pr-3 text-right tabular-nums">{equipe.indicadores.fichas}</td>
-                        <td className="py-2.5 pr-3 text-right tabular-nums">{equipe.indicadores.kit2}</td>
-                        <td className="py-2.5 text-right tabular-nums">{equipe.indicadores.jardim}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <ol className="space-y-2.5">
+                {geral.destaquesRm.map((item, index) => (
+                  <Destaque key={item.membro.id} index={index} nome={item.membro.nome} href={`/admin/pessoas/${item.membro.id}`} detail={item.equipe} value={<Reais cents={item.totalCents} className="font-semibold text-primary-deep" />} />
+                ))}
+              </ol>
             )}
           </Card>
           <Card>
-            <Eyebrow className="mb-3">{t.admin.recentEvents}</Eyebrow>
-            {testemunho.recentes.length === 0 ? (
-              <p className="text-sm text-muted-foreground">{t.admin.noRecentEvents}</p>
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <Eyebrow>{t.admin.testemunhoHighlights}</Eyebrow>
+              <Link href="/admin/testemunho/equipes" className="text-sm font-medium text-primary hover:underline">
+                {t.nav.equipes} →
+              </Link>
+            </div>
+            {geral.destaquesTestemunho.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t.admin.noHighlights}</p>
             ) : (
-              <ol className="space-y-3">
-                {testemunho.recentes.map((item) => {
-                  const Icon = TIPO_ICON[item.tipo];
-                  return (
-                    <li key={item.id} className="flex gap-3">
-                      <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-primary-deep">
-                        <Icon className="h-3.5 w-3.5" />
-                      </span>
-                      <div className="min-w-0 text-sm">
-                        <Link href={`/admin/testemunho/${item.convidado.id}`} className="font-medium hover:text-primary">
-                          {item.convidado.nome}
-                        </Link>
-                        <span className="text-muted-foreground"> · {item.texto}</span>
-                        <p className="text-xs text-muted-foreground">
-                          {fmtDia(item.data)} · {item.autor.nome}
-                        </p>
-                      </div>
-                    </li>
-                  );
-                })}
+              <ol className="space-y-2.5">
+                {geral.destaquesTestemunho.map((item, index) => (
+                  <Destaque key={item.membro.id} index={index} nome={item.membro.nome} href={`/admin/pessoas/${item.membro.id}`} detail={item.equipe ?? ""} value={<span className="text-sm font-semibold text-primary-deep">{t.admin.guestsOf(item.convidados, item.jardim)}</span>} />
+                ))}
               </ol>
             )}
           </Card>
         </div>
       </section>
+
+      {/* ---------- Projetos em andamento ---------- */}
+      <section className="space-y-4">
+        <SectionTitle label={t.admin.projectsToday} detail={projeto || testemunho.projeto ? "" : t.common.noProject} />
+        <div className="grid gap-5 lg:grid-cols-2">
+          <Card>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-primary-deep">
+                  <HandCoins className="h-4 w-4" />
+                </span>
+                <div>
+                  <p className="font-display text-lg font-semibold text-primary-deep">{t.areas.rm}</p>
+                  <p className="text-xs text-muted-foreground">{projeto ? `${projeto.nome} · ${t.common.day(projeto.diaAtual, projeto.totalDias)}` : t.common.noProject}</p>
+                </div>
+              </div>
+              <Link href="/admin/arrecadacao" className="text-sm font-medium text-primary hover:underline">
+                {t.admin.resultsTab} →
+              </Link>
+            </div>
+            {projeto ? (
+              <>
+                <p className="mt-3 font-display text-3xl font-semibold text-primary-deep tabular-nums">{fmtReais(totais.liquidoCents)}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t.admin.ofGoal(fmtReais(totais.metaCents))} · {pct(totais.liquidoCents, totais.metaCents)}% · {totais.enviadosHoje}/{totais.membros} {t.admin.sentToday}
+                  {totais.pendentesValidacao > 0 ? (
+                    <>
+                      {" · "}
+                      <Link href="/admin/arrecadacao?aba=relatorios" className="text-primary hover:underline">
+                        {totais.pendentesValidacao} {t.admin.pendingValidation}
+                      </Link>
+                    </>
+                  ) : null}
+                </p>
+                <Bar value={totais.liquidoCents} max={totais.metaCents} className="mt-3" />
+              </>
+            ) : null}
+          </Card>
+          <Card>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-primary-deep">
+                  <Heart className="h-4 w-4" />
+                </span>
+                <div>
+                  <p className="font-display text-lg font-semibold text-primary-deep">{t.areas.testemunho}</p>
+                  <p className="text-xs text-muted-foreground">{testemunho.projeto ? `${testemunho.projeto.nome} · ${fmtDia(testemunho.projeto.inicio)} – ${fmtDia(testemunho.projeto.fim)}` : t.admin.noTestemunhoProject}</p>
+                </div>
+              </div>
+              <Link href="/admin/testemunho/equipes" className="text-sm font-medium text-primary hover:underline">
+                {t.nav.equipes} →
+              </Link>
+            </div>
+            <p className="mt-3 font-display text-3xl font-semibold text-primary-deep tabular-nums">
+              {testemunho.convidados} <span className="font-sans text-base font-normal text-muted-foreground">{t.missao.guests.toLowerCase()}</span>
+            </p>
+            <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+              <span>
+                {t.indicadores.kit1} <strong className="text-foreground">{testemunho.porEquipe.reduce((sum, equipe) => sum + equipe.indicadores.kit1, 0)}</strong>
+              </span>
+              <span>
+                {t.indicadores.fichas} <strong className="text-foreground">{testemunho.porEquipe.reduce((sum, equipe) => sum + equipe.indicadores.fichas, 0)}</strong>
+              </span>
+              <span>
+                {t.indicadores.kit2} <strong className="text-foreground">{testemunho.porEquipe.reduce((sum, equipe) => sum + equipe.indicadores.kit2, 0)}</strong>
+              </span>
+              <span>
+                {t.indicadores.jardim} <strong className="text-foreground">{testemunho.porEquipe.reduce((sum, equipe) => sum + equipe.indicadores.jardim, 0)}</strong>
+              </span>
+              {testemunho.comAtencao > 0 ? (
+                <Link href="/admin/testemunho/equipes" className="inline-flex">
+                  <Chip tone="coral">{t.admin.teamsWithAttention(testemunho.comAtencao)}</Chip>
+                </Link>
+              ) : null}
+            </div>
+          </Card>
+        </div>
+
+        <Card>
+          <Eyebrow className="mb-3">{t.admin.recentEvents}</Eyebrow>
+          {testemunho.recentes.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{t.admin.noRecentEvents}</p>
+          ) : (
+            <ol className="grid gap-3 sm:grid-cols-2">
+              {testemunho.recentes.map((item) => {
+                const Icon = TIPO_ICON[item.tipo];
+                return (
+                  <li key={item.id} className="flex gap-3">
+                    <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-primary-deep">
+                      <Icon className="h-3.5 w-3.5" />
+                    </span>
+                    <div className="min-w-0 text-sm">
+                      <Link href={`/admin/testemunho/${item.convidado.id}`} className="font-medium hover:text-primary">
+                        {item.convidado.nome}
+                      </Link>
+                      <span className="text-muted-foreground"> · {item.texto}</span>
+                      <p className="text-xs text-muted-foreground">
+                        {fmtDia(item.data)} · {item.autor.nome}
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </Card>
+      </section>
     </div>
   );
 }
 
-function SectionTitle({ label, detail, href, linkLabel }: { label: string; detail: string; href: string; linkLabel: string }) {
+function Destaque({ index, nome, href, detail, value }: { index: number; nome: string; href: string; detail: string; value: React.ReactNode }) {
+  return (
+    <li className="flex items-center gap-3">
+      <span className={index === 0 ? "flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground" : "flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-bold text-primary-deep"}>
+        {index === 0 ? <Trophy className="h-3.5 w-3.5" /> : index + 1}
+      </span>
+      <div className="min-w-0 flex-1">
+        <Link href={href} className="font-medium hover:text-primary">
+          {nome}
+        </Link>
+        {detail ? <p className="truncate text-xs text-muted-foreground">{detail}</p> : null}
+      </div>
+      {value}
+    </li>
+  );
+}
+
+function SectionTitle({ icon: Icon, label, detail, href, linkLabel }: { icon?: typeof Users; label: string; detail: string; href?: string; linkLabel?: string }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-2 border-b border-border/60 pb-2">
       <div>
-        <h2 className="font-display text-2xl font-semibold text-primary-deep">{label}</h2>
-        <p className="text-sm text-muted-foreground">{detail}</p>
+        <h2 className="flex items-center gap-2 font-display text-2xl font-semibold text-primary-deep">
+          {Icon ? <Icon className="h-5 w-5" /> : null}
+          {label}
+        </h2>
+        {detail ? <p className="text-sm text-muted-foreground">{detail}</p> : null}
       </div>
-      <Link href={href} className="text-sm font-medium text-primary hover:underline">
-        {linkLabel} →
-      </Link>
+      {href && linkLabel ? (
+        <Link href={href} className="text-sm font-medium text-primary hover:underline">
+          {linkLabel} →
+        </Link>
+      ) : null}
     </div>
   );
 }

@@ -469,8 +469,10 @@ export type EquipePainel = {
 
 // ---------- educator / administrator side ----------
 
-export type AdminHjInicio = {
-  projeto: ProjetoResumo | null;
+// The fundraising panorama of the active project: totals, by program and
+// by team. Lives in Restauração Material › Resultados; the Painel home
+// keeps one line of it (Yeseong, 14/11/2026).
+export type ArrecadacaoPanorama = {
   totais: {
     liquidoCents: number;
     metaCents: number;
@@ -492,6 +494,26 @@ export type AdminHjInicio = {
     liquidoHojeCents: number;
     liquidoCents: number;
   }[];
+};
+
+// The course's general numbers — the cards of the Painel home (Yeseong,
+// 14/11/2026): how many people, per program, boys and girls, average
+// age, who stands out in the RM and in the testimony drive so far.
+export type DadosGerais = {
+  pessoas: number;
+  porPrograma: { programa: HjPrograma; nome: string; pessoas: number }[];
+  meninos: number;
+  meninas: number;
+  semGenero: number;
+  idadeMedia: number | null;
+  comIdade: number;
+  destaquesRm: { membro: PessoaRef; equipe: string; totalCents: number }[];
+  destaquesTestemunho: { membro: PessoaRef; equipe: string | null; convidados: number; jardim: number }[];
+};
+
+export type AdminHjInicio = ArrecadacaoPanorama & {
+  projeto: ProjetoResumo | null;
+  geral: DadosGerais;
   // The testimony drive running today (a project of type "testemunho"),
   // with the guests of every team as they stand.
   testemunho: {
@@ -532,6 +554,8 @@ export type AdminResultados = {
     metaCents: number;
   };
   programas: { programa: HjPrograma; liquidoCents: number; metaCents: number; membros: number }[];
+  // the whole project, whatever the filters
+  panorama: ArrecadacaoPanorama | null;
   filtros: {
     projetos: { id: string; nome: string }[];
     programas: HjPrograma[];

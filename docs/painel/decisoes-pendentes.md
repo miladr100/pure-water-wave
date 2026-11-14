@@ -38,6 +38,7 @@ fechar.
 | 27 | **Módulo Testemunho:** o modo "automático" (aparece com projeto ativo) é o padrão certo? | Milad | Sim; o administrador troca em Configurações. | P6 |
 
 | 28 | **Ponto de atenção:** a regra "o indicador seguinte abaixo de 30 % do anterior, a partir de 3 convidados" está boa, ou o grupo prefere outros limiares? | Yeseong | 3 e 30 % (`ATENCAO_MINIMO`, `ATENCAO_RAZAO`); mudam em um lugar. | P4 |
+| 29 | **Dados gerais do curso:** quem conta como "Time HJ" — todo membro com conta, só quem está em equipe do RM ativo, ou quem tem programa no perfil? E o "destaque no testemunho" é quem mais levou ao Jardim (como está) ou quem mais convidou? | Yeseong | Equipes do RM ativo + quem tem programa; destaque = Jardim primeiro, depois convidados. O campo Sexo (masculino/feminino) é preenchido pelo membro ou pelo educador. | P5, P1 |
 
 ## Premissas gerais
 

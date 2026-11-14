@@ -191,6 +191,22 @@ export type PainelMessages = {
     byTeam: string;
     testemunhoSummary: string;
     alerts: (n: number) => string;
+    generalTitle: string;
+    timeHj: string;
+    people: (n: number) => string;
+    ofTimeHj: string;
+    boys: string;
+    girls: string;
+    noGender: (n: number) => string;
+    avgAge: string;
+    years: (n: number) => string;
+    withBirthday: (n: number) => string;
+    rmHighlights: string;
+    testemunhoHighlights: string;
+    noHighlights: string;
+    guestsOf: (n: number, jardim: number) => string;
+    projectsToday: string;
+    teamsWithAttention: (n: number) => string;
     resultsTab: string;
     reportsTab: string;
     goalsTab: string;
@@ -275,6 +291,10 @@ export type PainelMessages = {
     basicData: string;
     age: (n: number) => string;
     noAge: string;
+    gender: string;
+    male: string;
+    female: string;
+    genderUnknown: string;
     birthday: string;
     program: string;
     cohort: string;
@@ -672,6 +692,22 @@ const pt: PainelMessages = {
     byTeam: "Por equipe",
     testemunhoSummary: "Testemunho",
     alerts: (n) => (n === 1 ? "1 convidado precisa de atenção" : `${n} convidados precisam de atenção`),
+    generalTitle: "Dados gerais do curso",
+    timeHj: "Time HJ",
+    people: (n) => (n === 1 ? "1 pessoa" : `${n} pessoas`),
+    ofTimeHj: "do Time HJ",
+    boys: "Meninos",
+    girls: "Meninas",
+    noGender: (n) => (n === 1 ? "1 sem informar" : `${n} sem informar`),
+    avgAge: "Média de idade",
+    years: (n) => `${String(n).replace(".", ",")} anos`,
+    withBirthday: (n) => (n === 1 ? "de 1 pessoa com data de nascimento" : `de ${n} pessoas com data de nascimento`),
+    rmHighlights: "Destaques na RM até agora",
+    testemunhoHighlights: "Destaques no testemunho até agora",
+    noHighlights: "Ainda sem resultados.",
+    guestsOf: (n, jardim) => `${n === 1 ? "1 convidado" : `${n} convidados`}${jardim > 0 ? ` · ${jardim} no Jardim` : ""}`,
+    projectsToday: "Projetos em andamento",
+    teamsWithAttention: (n) => (n === 1 ? "1 equipe com ponto de atenção" : `${n} equipes com ponto de atenção`),
     resultsTab: "Resultados",
     reportsTab: "Relatórios do dia",
     goalsTab: "Metas",
@@ -756,6 +792,10 @@ const pt: PainelMessages = {
     basicData: "Dados básicos",
     age: (n) => `${n} anos`,
     noAge: "Idade não informada",
+    gender: "Sexo",
+    male: "Masculino",
+    female: "Feminino",
+    genderUnknown: "Não informado",
     birthday: "Nascimento",
     program: "Programa",
     cohort: "Turma",

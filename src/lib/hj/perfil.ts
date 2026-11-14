@@ -12,8 +12,13 @@ import { HJ_PROGRAMAS } from "@/lib/hj/types";
 //   generation, parents, liberated ancestors, the pattern of their life of
 //   faith. Never sent to the member (Victor, 14/11/2026).
 
+export const HJ_GENEROS = ["masculino", "feminino"] as const;
+export type HjGenero = (typeof HJ_GENEROS)[number];
+
 export type HjPerfil = {
   programa: HjPrograma | null;
+  // "meninos" and "meninas" in the course's general numbers (Yeseong, 14/11/2026)
+  genero: HjGenero | null;
   turma: string;
   // yyyy-mm-dd: when they became a member of the church / movement
   membroDesde: string | null;
@@ -29,7 +34,7 @@ export type HjConfidencial = {
   padraoVidaFe: string;
 };
 
-export const PERFIL_VAZIO: HjPerfil = { programa: null, turma: "", membroDesde: null, cursoUniversitario: "", formacao: "" };
+export const PERFIL_VAZIO: HjPerfil = { programa: null, genero: null, turma: "", membroDesde: null, cursoUniversitario: "", formacao: "" };
 export const CONFIDENCIAL_VAZIO: HjConfidencial = { familiaCheonBo: null, segundaGeracao: null, pais: "", espiritosLibertados: null, padraoVidaFe: "" };
 
 export type HjDoc = { perfil?: Partial<HjPerfil> | null; confidencial?: Partial<HjConfidencial> | null };
@@ -38,6 +43,7 @@ export function perfilDe(hj: HjDoc | null | undefined): HjPerfil {
   const p = hj?.perfil ?? {};
   return {
     programa: p.programa && HJ_PROGRAMAS.includes(p.programa) ? p.programa : null,
+    genero: p.genero && HJ_GENEROS.includes(p.genero) ? p.genero : null,
     turma: p.turma ?? "",
     membroDesde: p.membroDesde ?? null,
     cursoUniversitario: p.cursoUniversitario ?? "",
@@ -122,6 +128,9 @@ export function parsePerfilProprio(body: Partial<HjPerfil>): Partial<HjPerfil> {
   if (formacao !== undefined) out.formacao = formacao;
   if (body.membroDesde === null || (typeof body.membroDesde === "string" && ISO_DAY.test(body.membroDesde))) {
     out.membroDesde = body.membroDesde;
+  }
+  if (body.genero === null || (body.genero && HJ_GENEROS.includes(body.genero))) {
+    out.genero = body.genero;
   }
   return out;
 }
