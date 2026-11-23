@@ -40,7 +40,7 @@ export function PessoaScreen({ pessoaId }: { pessoaId: string }) {
   const { language } = useLocale();
   const detail = useApi<{ pessoa: PessoaDetalhe }>(`/api/admin/hj/pessoas/${pessoaId}`);
   const catalogo = useApi<{ programas: ProgramaCatalogo[] }>("/api/admin/hj/programas");
-  const orientacoes = useApi<{ orientacoes: OrientacaoRow[] }>(`/api/admin/hj/orientacoes?membro=${pessoaId}&modulo=rm`);
+  const orientacoes = useApi<{ orientacoes: OrientacaoRow[] }>(`/api/admin/hj/orientacoes?membro=${pessoaId}`);
   const [alvo, setAlvo] = useState<OrientacaoAlvo | null>(null);
 
   if (detail.error) {
@@ -133,7 +133,7 @@ export function PessoaScreen({ pessoaId }: { pessoaId: string }) {
           <PerfilForm key={pessoa.id} pessoa={pessoa} programas={catalogo.data?.programas ?? []} onSaved={() => detail.reload()} />
           <Card>
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <Eyebrow>{t.indicadores.innerGoal} · {t.areas.rmShort}</Eyebrow>
+              <Eyebrow>{t.indicadores.innerGoal}</Eyebrow>
               <Button size="sm" variant="outline" className="rounded-full" onClick={() => setAlvo({ modulo: "rm", membroId: pessoa.id, nome: pessoa.nome })}>
                 {t.indicadores.addOrientation}
               </Button>
@@ -144,7 +144,9 @@ export function PessoaScreen({ pessoaId }: { pessoaId: string }) {
               {orientacoes.data?.orientacoes.slice(0, 5).map((row) => (
                 <li key={row.id}>
                   <p className="whitespace-pre-wrap">{row.texto}</p>
-                  <p className="text-xs text-muted-foreground">{t.indicadores.givenBy(row.autor.nome, fmtDia(row.data))}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t.indicadores.givenBy(row.autor.nome, fmtDia(row.data))} · {row.modulo === "testemunho" ? t.areas.testemunho : t.areas.rmShort}
+                  </p>
                 </li>
               ))}
             </ul>

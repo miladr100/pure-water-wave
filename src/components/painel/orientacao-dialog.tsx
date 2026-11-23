@@ -18,8 +18,8 @@ import type { OrientacaoBody, OrientacaoModulo, OrientacaoRow } from "@/lib/hj/t
 
 export type OrientacaoAlvo = { modulo: OrientacaoModulo; equipeId?: string; membroId?: string; nome: string };
 
-// Register what was told to a team (testemunho) or a member (RM: the inner
-// goal), with the history underneath so the educator sees what was said
+// Register what was told to a team (testemunho) or a member (the meta
+// interna, in the RM and in the testimony drive alike), with the history underneath so the educator sees what was said
 // last time before saying it again (Yeseong, 14/11/2026).
 export function OrientacaoDialog({ alvo, onClose, onSaved }: { alvo: OrientacaoAlvo | null; onClose: () => void; onSaved: () => void }) {
   const t = usePainelMessages();
@@ -28,12 +28,14 @@ export function OrientacaoDialog({ alvo, onClose, onSaved }: { alvo: OrientacaoA
   const [texto, setTexto] = useState("");
   const [data, setData] = useState("");
   const [busy, setBusy] = useState(false);
-  const query = alvo ? (alvo.equipeId ? `equipe=${alvo.equipeId}` : `membro=${alvo.membroId}`) + `&modulo=${alvo.modulo}` : "";
+  // a member's meta interna has one history across the RM and the testimony drive
+  const query = alvo ? (alvo.equipeId ? `equipe=${alvo.equipeId}&modulo=${alvo.modulo}` : `membro=${alvo.membroId}`) : "";
   const history = useApi<{ orientacoes: OrientacaoRow[] }>(alvo ? `/api/admin/hj/orientacoes?${query}` : "/api/admin/hj/orientacoes?membro=none");
   if (!alvo) {
     return null;
   }
-  const isGoal = alvo.modulo === "rm";
+  // to a member it is the meta interna, in either phase (Victor, 23/11/2026)
+  const isGoal = Boolean(alvo.membroId);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -87,7 +89,7 @@ export function OrientacaoDialog({ alvo, onClose, onSaved }: { alvo: OrientacaoA
               {t.common.close}
             </Button>
             <Button type="submit" disabled={busy || texto.trim().length < 3}>
-              {busy ? t.common.saving : t.indicadores.addOrientation}
+              {busy ? t.common.saving : isGoal ? t.indicadores.setInnerGoal : t.indicadores.addOrientation}
             </Button>
           </DialogFooter>
         </form>
@@ -99,7 +101,10 @@ export function OrientacaoDialog({ alvo, onClose, onSaved }: { alvo: OrientacaoA
               <li key={row.id} className="flex gap-3 text-sm">
                 <div className="min-w-0 flex-1">
                   <p className="whitespace-pre-wrap">{row.texto}</p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">{t.indicadores.givenBy(row.autor.nome, fmtDia(row.data))}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    {t.indicadores.givenBy(row.autor.nome, fmtDia(row.data))}
+                    {isGoal ? ` · ${row.modulo === "testemunho" ? t.areas.testemunho : t.areas.rmShort}` : ""}
+                  </p>
                 </div>
                 {eu && (eu.papeis.administrador || eu.id === row.autor.id) ? (
                   <Button type="button" size="icon" variant="ghost" className="h-8 w-8 shrink-0 rounded-full text-muted-foreground hover:text-coral" aria-label={t.indicadores.orientationDeleted} onClick={() => void remove(row)}>

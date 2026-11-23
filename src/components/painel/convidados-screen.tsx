@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Chip } from "@/components/academy/chip";
 import { useLocale } from "@/components/academy/locale-provider";
 import { describeError, useApi } from "@/components/academy/use-api";
-import { Card, Failed, LoadingBlock, fmtRelativeDay } from "@/components/painel/bits";
+import { Card, Eyebrow, Failed, LoadingBlock, fmtRelativeDay } from "@/components/painel/bits";
 import { PainelHeading } from "@/components/painel/painel-shell";
 import { usePainelEu, usePainelMessages } from "@/components/painel/use-painel";
 import { Button } from "@/components/ui/button";
@@ -17,9 +17,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/academy/api-client";
-import { todayInBrazil } from "@/lib/hj/dates";
+import { fmtDia, todayInBrazil } from "@/lib/hj/dates";
 import { ETAPA_LABELS, ETAPA_ORDEM } from "@/lib/hj/testemunho";
-import type { ConvidadoEtapa, ConvidadoRow } from "@/lib/hj/types";
+import type { ConvidadoEtapa, ConvidadoRow, OrientacaoRow } from "@/lib/hj/types";
 import { cn } from "@/lib/utils";
 
 const selectClass =
@@ -38,7 +38,7 @@ export function ConvidadosScreen({ base }: { base: "/painel/testemunho" | "/admi
   const eu = usePainelEu();
   const admin = base === "/admin/testemunho";
   const [escopo, setEscopo] = useState<"meus" | "todos">(admin ? "todos" : "meus");
-  const list = useApi<{ convidados: ConvidadoRow[] }>(`/api/painel/convidados?escopo=${escopo}`);
+  const list = useApi<{ convidados: ConvidadoRow[]; metaInterna: OrientacaoRow | null }>(`/api/painel/convidados?escopo=${escopo}`);
   const [busca, setBusca] = useState("");
   const [etapa, setEtapa] = useState<ConvidadoEtapa | "">("");
   const [soAlertas, setSoAlertas] = useState(false);
@@ -89,6 +89,15 @@ export function ConvidadosScreen({ base }: { base: "/painel/testemunho" | "/admi
           </>
         }
       />
+
+      {/* the member's meta interna: there is one in the testimony phase too (Victor, 23/11/2026) */}
+      {!admin && list.data?.metaInterna ? (
+        <Card className="border-primary/30 bg-secondary/40">
+          <Eyebrow>{t.indicadores.innerGoalMember}</Eyebrow>
+          <p className="mt-1 whitespace-pre-wrap text-[15px] leading-relaxed">{list.data.metaInterna.texto}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{t.indicadores.givenBy(list.data.metaInterna.autor.nome, fmtDia(list.data.metaInterna.data))}</p>
+        </Card>
+      ) : null}
 
       <div className="flex flex-wrap gap-2">
         {ETAPA_ORDEM.map((item) => (

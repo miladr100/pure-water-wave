@@ -7,10 +7,12 @@ import { GET as listOrientacoes, POST as postOrientacao } from "@/app/api/admin/
 import { DELETE as deleteOrientacao } from "@/app/api/admin/hj/orientacoes/[id]/route";
 import { GET as resultadosRm } from "@/app/api/admin/hj/resultados/route";
 import { GET as equipesTestemunho } from "@/app/api/admin/hj/testemunho/equipes/route";
+import { GET as convidadosMembro } from "@/app/api/painel/convidados/route";
 import { GET as inicioMembro } from "@/app/api/painel/inicio/route";
 import { ATENCAO_MINIMO, indicadoresDe, pontoDeAtencao } from "@/lib/hj/testemunho";
 import type { AdminHjInicio, AdminResultados, OrientacaoRow, PainelInicio, TestemunhoEquipes } from "@/lib/hj/types";
 import { HjConvidado } from "@/models/hj-convidado";
+import { HjProjeto } from "@/models/hj-projeto";
 
 import { jsonRequest, params, readJson } from "../helpers/api";
 import { clearDb, startDb, stopDb } from "../helpers/db";
@@ -121,5 +123,35 @@ describe("Orientações do educador", () => {
     expect((await deleteOrientacao(jsonRequest(`/api/admin/hj/orientacoes/${first.orientacao.id}`, { method: "DELETE" }), params({ id: first.orientacao.id }))).status).toBe(200);
     await signInAsPanel(membro);
     expect((await readJson<PainelInicio>(await inicioMembro())).orientacoes.pessoal).toBeNull();
+  });
+
+  it("the meta interna also exists in the testimony phase: filed under it, shown to the member and on Testemunho › Equipes", async () => {
+    const { educador, membro, projeto } = await createTeamSetup();
+    await signInAsPanel(educador);
+    // given in the RM…
+    await postOrientacao(jsonRequest("/api/admin/hj/orientacoes", { body: { modulo: "rm", membroId: membro._id.toString(), texto: "Meta interna da RM", data: "2026-11-02" } }));
+
+    // …then the course moves to the testimony drive (only one project active at a time)
+    await HjProjeto.updateOne({ _id: projeto._id }, { $set: { ativo: false } });
+    await createProjeto({ nome: "Testemunho", tipo: "testemunho" });
+    const created = await readJson<{ orientacao: OrientacaoRow }>(
+      // the client may still say "rm": a member's meta interna follows the active project
+      await postOrientacao(jsonRequest("/api/admin/hj/orientacoes", { body: { modulo: "rm", membroId: membro._id.toString(), texto: "Meta interna do testemunho: ouvir antes de falar", data: "2026-11-20" } })),
+    );
+    expect(created.orientacao.modulo).toBe("testemunho");
+
+    // one history across both phases, newest first
+    const history = await readJson<{ orientacoes: OrientacaoRow[] }>(await listOrientacoes(jsonRequest(`/api/admin/hj/orientacoes?membro=${membro._id}`)));
+    expect(history.orientacoes.map((row) => row.modulo)).toEqual(["testemunho", "rm"]);
+
+    const equipes = await readJson<TestemunhoEquipes>(await equipesTestemunho());
+    const linha = equipes.equipes[0].metasInternas.find((item) => item.membro.id === membro._id.toString());
+    expect(linha?.meta?.texto).toContain("ouvir antes de falar");
+    expect(equipes.equipes[0].metasInternas.filter((item) => item.meta)).toHaveLength(1);
+
+    await signInAsPanel(membro);
+    expect((await readJson<PainelInicio>(await inicioMembro())).orientacoes.pessoal?.texto).toContain("ouvir antes de falar");
+    const convidados = await readJson<{ metaInterna: OrientacaoRow | null }>(await convidadosMembro(jsonRequest("/api/painel/convidados?escopo=meus")));
+    expect(convidados.metaInterna?.texto).toContain("ouvir antes de falar");
   });
 });

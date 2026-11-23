@@ -4,6 +4,7 @@ import { Types } from "mongoose";
 import { isObjectId, jsonError, serverError } from "@/lib/academy/http";
 import { isIsoDay } from "@/lib/hj/dates";
 import { convidadoRow, equipeLookup, guestsOf, membersInScope, usersById, type ConvidadoDoc } from "@/lib/hj/data";
+import { ultimasDosMembros } from "@/lib/hj/orientacoes";
 import { CONVIDADO_ETAPAS, type ConvidadoBody, type ConvidadoRow } from "@/lib/hj/types";
 import { HjAcontecimento, HjConvidado } from "@/models/hj-convidado";
 
@@ -11,7 +12,7 @@ import { intField, panelContext, textField } from "../_lib/context";
 
 // GET: the guests the person follows — their own, plus their team's as
 // captain, their teams' as educator, everyone's as administrator.
-// `?escopo=meus` keeps only their own.
+// `?escopo=meus` keeps only their own. Also the person's own meta interna.
 export async function GET(request: Request) {
   try {
     const result = await panelContext();
@@ -28,7 +29,9 @@ export async function GET(request: Request) {
     const lookup = equipeLookup(equipes);
 
     const convidados: ConvidadoRow[] = guests.map((guest) => convidadoRow(guest, users, lookup, context.hoje));
-    return NextResponse.json({ convidados, escopo: escopo === "meus" ? "meus" : "todos" });
+    // the person's own meta interna, shown above the guests during the drive (Victor, 23/11/2026)
+    const metaInterna = (await ultimasDosMembros([context.user._id])).get(context.user._id.toString()) ?? null;
+    return NextResponse.json({ convidados, escopo: escopo === "meus" ? "meus" : "todos", metaInterna });
   } catch (error) {
     return serverError("Erro ao listar convidados", error, "Não foi possível carregar os convidados");
   }

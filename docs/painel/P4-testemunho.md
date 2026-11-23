@@ -126,6 +126,13 @@ criado em. A linha do tempo é a lista de acontecimentos.
 - Testemunho › Por área: árvore região → país → local → equipe com convidados, por etapa, fichas, atenção e membros com convidado; totais por programa. Equipes sem local ficam em "Sem área definida".
 - Conta as equipes do projeto de testemunho (o ativo, senão o mais recente); enquanto ele não tem equipes, as do último projeto de RM.
 
+### Meta interna no testemunho (implementado 23/11/2026)
+
+> Como educador, quero dar e ver a meta interna de cada membro também durante o testemunho (Victor).
+
+- Testemunho › Equipes: cada equipe tem "Metas internas dos membros", com a última meta de cada um e "Registrar meta interna".
+- O membro vê "Sua meta interna" no Início e no topo de Testemunho › Convidados. Ver P3, "Meta interna por membro".
+
 ### US-P4-12 — Os quatro indicadores e o ponto de atenção (implementado 14/11/2026)
 
 > Como educador, quero ler cada equipe pelos quatro números que o Rev. Kim pede — Kit 1, fichas assinadas, Kit 2, confirmados para o Jardim — e ser avisado quando eles se afastam.

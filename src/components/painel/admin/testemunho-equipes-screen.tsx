@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, MessageSquareText } from "lucide-react";
+import { AlertTriangle, ChevronDown, MessageSquareText, Target } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
@@ -88,6 +88,38 @@ export function TestemunhoEquipesScreen() {
             {t.indicadores.addOrientation}
           </Button>
         </div>
+        {/* each member's meta interna: there is one in the testimony phase too (Victor, 23/11/2026) */}
+        {equipe.metasInternas.length > 0 ? (
+          <details className="group mt-3 rounded-2xl border border-border/60 px-3 py-2">
+            <summary className="cursor-pointer list-none text-sm font-semibold text-primary-deep marker:hidden">
+              <span className="inline-flex items-center gap-2">
+                <Target className="h-4 w-4 text-primary" aria-hidden />
+                {t.indicadores.innerGoalsTeam(equipe.metasInternas.filter((item) => item.meta).length)}
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition group-open:rotate-180" aria-hidden />
+              </span>
+            </summary>
+            <ul className="mt-2 divide-y divide-border/60">
+              {equipe.metasInternas.map(({ membro, meta }) => (
+                <li key={membro.id} className="flex items-start justify-between gap-3 py-2 text-sm">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-foreground">{membro.nome}</p>
+                    {meta ? (
+                      <>
+                        <p className="whitespace-pre-wrap">{meta.texto}</p>
+                        <p className="text-xs text-muted-foreground">{t.indicadores.givenBy(meta.autor.nome, fmtDia(meta.data))}</p>
+                      </>
+                    ) : (
+                      <p className="text-muted-foreground">{t.indicadores.noInnerGoal}</p>
+                    )}
+                  </div>
+                  <Button size="sm" variant="ghost" className="shrink-0 rounded-full" onClick={() => setAlvo({ modulo: "testemunho", membroId: membro.id, nome: membro.nome })}>
+                    {t.indicadores.setInnerGoal}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </details>
+        ) : null}
       </li>
     );
   }
@@ -116,7 +148,7 @@ export function TestemunhoEquipesScreen() {
           ))}
         </ul>
       )}
-      <OrientacaoDialog key={alvo ? `${alvo.equipeId}` : "closed"} alvo={alvo} onClose={() => setAlvo(null)} onSaved={() => data.reload()} />
+      <OrientacaoDialog key={alvo ? `${alvo.equipeId ?? alvo.membroId}` : "closed"} alvo={alvo} onClose={() => setAlvo(null)} onSaved={() => data.reload()} />
     </div>
   );
 }

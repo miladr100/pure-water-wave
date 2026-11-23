@@ -370,6 +370,9 @@ export type PainelMessages = {
     innerGoal: string;
     innerGoalHint: string;
     innerGoalMember: string;
+    innerGoalsTeam: (n: number) => string;
+    noInnerGoal: string;
+    setInnerGoal: string;
     teamOrientationMember: string;
     givenBy: (name: string, date: string) => string;
   };
@@ -881,8 +884,11 @@ const pt: PainelMessages = {
     orientationDeleted: "Orientação apagada",
     history: "Histórico",
     innerGoal: "Meta interna",
-    innerGoalHint: "A meta interna da semana ou o conselho da consulta, para o membro lembrar.",
+    innerGoalHint: "A meta interna da semana ou o conselho da consulta, para o membro lembrar. Vale na RM e no testemunho.",
     innerGoalMember: "Sua meta interna",
+    innerGoalsTeam: (n) => `Metas internas dos membros (${n})`,
+    noInnerGoal: "Sem meta interna",
+    setInnerGoal: "Registrar meta interna",
     teamOrientationMember: "Orientação do educador para a equipe",
     givenBy: (name, date) => `${name} · ${date}`,
   },

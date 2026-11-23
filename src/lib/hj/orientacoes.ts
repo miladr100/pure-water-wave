@@ -44,13 +44,16 @@ export async function ultimasDasEquipes(equipes: EquipeDoc[], modulo: Orientacao
   return new Map([...latest.entries()].map(([key, doc]) => [key, orientacaoRow(doc, users, byId)]));
 }
 
-// The latest orientation per member (modulo rm) for a set of members.
-export async function ultimasDosMembros(membroIds: Iterable<Types.ObjectId | string>, modulo: OrientacaoModulo = "rm") {
+// The latest "meta interna" per member for a set of members. The meta
+// interna is the member's, not the project's: it is given in the RM and
+// during the testimony drive alike (Victor, 23/11/2026), so the latest one
+// wins whatever phase it was given in. `modulo` narrows it to one phase.
+export async function ultimasDosMembros(membroIds: Iterable<Types.ObjectId | string>, modulo?: OrientacaoModulo) {
   const ids = [...new Set([...membroIds].map(String))].map((id) => new Types.ObjectId(id));
   if (ids.length === 0) {
     return new Map<string, OrientacaoRow>();
   }
-  const docs = (await HjOrientacao.find({ modulo, membroId: { $in: ids } }).sort({ data: -1, createdAt: -1 }).lean()) as unknown as OrientacaoDoc[];
+  const docs = (await HjOrientacao.find({ ...(modulo ? { modulo } : {}), membroId: { $in: ids } }).sort({ data: -1, createdAt: -1 }).lean()) as unknown as OrientacaoDoc[];
   const latest = new Map<string, OrientacaoDoc>();
   for (const doc of docs) {
     const key = String(doc.membroId);

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { Types } from "mongoose";
 
 import { isObjectId, jsonError, serverError } from "@/lib/academy/http";
-import { usersById, type EquipeDoc, type UserDoc } from "@/lib/hj/data";
+import { projetoAtivo, usersById, type EquipeDoc, type UserDoc } from "@/lib/hj/data";
 import { isIsoDay } from "@/lib/hj/dates";
 import { orientacaoRow, type OrientacaoDoc } from "@/lib/hj/orientacoes";
 import { ORIENTACAO_MODULOS, type OrientacaoBody, type OrientacaoRow } from "@/lib/hj/types";
@@ -48,7 +48,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST: what the educator told a team (testemunho) or a member (rm).
+// POST: what the educator told a team (testemunho) or a member (the meta interna).
 export async function POST(request: Request) {
   try {
     const result = await educatorContext();
@@ -79,8 +79,13 @@ export async function POST(request: Request) {
     } else {
       return jsonError("Informe a equipe ou o membro", 400, { code: "TARGET_REQUIRED" });
     }
+    // A member's meta interna is filed under the phase the course is in
+    // when it is given: the testimony drive while it is the active project,
+    // the RM otherwise (Victor, 23/11/2026: there is a meta interna in the
+    // testimony phase too). A team's orientation keeps the module it came with.
+    const modulo = membroId ? ((await projetoAtivo("testemunho")) ? "testemunho" : "rm") : body.modulo;
     const created = await HjOrientacao.create({
-      modulo: body.modulo,
+      modulo,
       equipeId,
       membroId,
       texto,

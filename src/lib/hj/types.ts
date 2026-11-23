@@ -64,6 +64,8 @@ export type EquipeTestemunhoRow = {
   indicadores: IndicadoresEquipe;
   atencao: AtencaoEquipe;
   orientacao: OrientacaoRow | null;
+  // each member's latest meta interna, whatever phase it was given in
+  metasInternas: { membro: PessoaRef; meta: OrientacaoRow | null }[];
   area: AreaDaEquipe;
 };
 
