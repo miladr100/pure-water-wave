@@ -13,7 +13,7 @@ import { LibrarySettingsMenu } from "@/components/library-settings-menu";
 import { LogoutButton } from "@/components/logout-button";
 import { AreaSwitch } from "@/components/painel/area-switch";
 import { useLocale } from "@/components/academy/locale-provider";
-import { isActive, moduloOf, navFor, subTabsFor, type ShellArea } from "@/components/painel/nav";
+import { activeSubTab, isActive, moduloOf, navFor, subTabsFor, type ShellArea } from "@/components/painel/nav";
 import { useCollapsed } from "@/components/painel/use-collapsed";
 import { usePainelEu, usePainelMessages } from "@/components/painel/use-painel";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { emAndamento } from "@/lib/hj/dates";
 import type { SessionPayload } from "@/lib/academy/auth";
 import { cn } from "@/lib/utils";
 
@@ -93,11 +94,12 @@ export function PainelShell({
   const items = navFor(area, papeis, t, ta, { pathname, modulos: eu?.modulos ?? null });
   // The sidebar is the module's; "admin" is the educator's side of it.
   const modulo = area === "academia" ? "academia" : area === "biblioteca" ? "biblioteca" : moduloOf(pathname);
-  const subTabs = area === "admin" ? subTabsFor(pathname, papeis, t) : null;
+  const subTabs = area === "admin" || area === "painel" ? subTabsFor(pathname, papeis, t) : null;
+  const subTabAtual = subTabs ? activeSubTab(subTabs, pathname, aba) : null;
   const primary = items.slice(0, 5);
   const overflow = items.slice(5);
   // "admin" is the educator's Painel: same area and title, more items.
-  const areaLabel = modulo === "rm" ? t.areas.rm : modulo === "testemunho" ? t.areas.testemunho : modulo === "academia" ? t.areas.academia : modulo === "biblioteca" ? t.areas.biblioteca : t.areas.painel;
+  const areaLabel = modulo === "contabilidade" ? t.areas.contabilidade : modulo === "academia" ? t.areas.academia : modulo === "biblioteca" ? t.areas.biblioteca : t.areas.painel;
   const home = area === "admin" ? "/admin" : area === "academia" ? "/academia" : area === "biblioteca" ? "/biblioteca" : "/painel";
 
   const headerTitle =
@@ -109,10 +111,10 @@ export function PainelShell({
       : area === "admin"
       ? [session?.fullName, papeis?.administrador ? "Administrador(a)" : "Educador(a)"].filter(Boolean).join(" · ")
       : eu?.equipe
-        ? [eu.equipe.nome, eu.projeto ? `${eu.projeto.nome.split(" – ")[0]}, ${t.common.day(eu.projeto.diaAtual, eu.projeto.totalDias)}` : null]
+        ? [eu.equipe.nome, emAndamento(eu.projeto) && eu.projeto ? `${eu.projeto.nome.split(" – ")[0]}, ${t.common.day(eu.projeto.diaAtual, eu.projeto.totalDias)}` : null]
             .filter(Boolean)
             .join(" · ")
-        : eu?.projeto
+        : eu?.projeto && emAndamento(eu.projeto)
           ? eu.projeto.nome
           : "");
 
@@ -215,7 +217,7 @@ export function PainelShell({
             <div className="border-b border-border/60 bg-card/60">
               <nav className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 sm:px-6" aria-label={areaLabel}>
                 {subTabs.map((tab) => {
-                  const active = tab.exact ? pathname === tab.href : pathname === tab.href || pathname.startsWith(`${tab.href}/`);
+                  const active = tab.href === subTabAtual;
                   return (
                     <Link
                       key={tab.href}
@@ -257,7 +259,7 @@ export function PainelShell({
               )}
             >
               <item.icon className={cn("h-5 w-5", active && "text-primary")} aria-hidden />
-              <span className="w-full truncate text-center">{item.label}</span>
+              <span className="w-full truncate text-center">{item.curto ?? item.label}</span>
             </Link>
           );
         })}
