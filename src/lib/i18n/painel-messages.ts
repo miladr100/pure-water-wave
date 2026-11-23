@@ -5,7 +5,7 @@ import type { UserLanguage } from "@/lib/user-languages";
 // languages fall back to it until the group asks for translations. Every
 // screen reads copy through `usePainelMessages()`.
 export type PainelMessages = {
-  areas: { painel: string; rm: string; rmShort: string; testemunho: string; academia: string; biblioteca: string; admin: string; switchLabel: string };
+  areas: { painel: string; rm: string; rmShort: string; testemunho: string; contabilidade: string; academia: string; biblioteca: string; admin: string; switchLabel: string };
   shell: {
     painelTitle: string;
     adminTitle: string;
@@ -38,6 +38,9 @@ export type PainelMessages = {
     caixa: string;
     reunioes: string;
     porArea: string;
+    movimentos: string;
+    informes: string;
+    ajustes: string;
     visaoGeral: string;
     alunos: string;
     cursos: string;
@@ -99,6 +102,10 @@ export type PainelMessages = {
     dinheiro: string;
     pix: string;
     despesas: string;
+    despesasTitle: string;
+    despesasHint: string;
+    addDespesa: string;
+    removeDespesa: (nome: string) => string;
     liquido: string;
     itens: string;
     contatos: string;
@@ -112,6 +119,8 @@ export type PainelMessages = {
     history: string;
     noHistory: string;
     alreadyValidated: string;
+    projectOff: string;
+    projectOffShort: string;
     numbersHint: string;
     whatsapp: string;
     copy: string;
@@ -206,6 +215,8 @@ export type PainelMessages = {
     noHighlights: string;
     guestsOf: (n: number, jardim: number) => string;
     projectsToday: string;
+    noProjectToday: string;
+    noProjectTodayLast: string;
     teamsWithAttention: (n: number) => string;
     resultsTab: string;
     reportsTab: string;
@@ -262,6 +273,7 @@ export type PainelMessages = {
     start: string;
     end: string;
     active: string;
+    activeTakesOver: (nome: string) => string;
     restDays: string;
     restDaysHint: string;
     dailyGoal: string;
@@ -506,7 +518,7 @@ export type PainelMessages = {
 };
 
 const pt: PainelMessages = {
-  areas: { painel: "Painel", rm: "Restauração Material", rmShort: "RM", testemunho: "Testemunho", academia: "Academia", biblioteca: "Biblioteca", admin: "Administração", switchLabel: "Módulo" },
+  areas: { painel: "Painel", rm: "Restauração Material", rmShort: "RM", testemunho: "Testemunho", contabilidade: "Contabilidade", academia: "Academia", biblioteca: "Biblioteca", admin: "Administração", switchLabel: "Módulo" },
   shell: {
     painelTitle: "Painel HJ Team",
     adminTitle: "Administração",
@@ -539,6 +551,9 @@ const pt: PainelMessages = {
     caixa: "Caixa",
     reunioes: "Reuniões",
     porArea: "Por área",
+    movimentos: "Movimentos",
+    informes: "Informes",
+    ajustes: "Ajustes",
     visaoGeral: "Visão geral",
     alunos: "Alunos",
     cursos: "Cursos",
@@ -600,6 +615,10 @@ const pt: PainelMessages = {
     dinheiro: "Dinheiro",
     pix: "Pix",
     despesas: "Despesas",
+    despesasTitle: "Despesas do dia",
+    despesasHint: "Depois que o capitão valida, as despesas entram na contabilidade da equipe.",
+    addDespesa: "Adicionar outra despesa",
+    removeDespesa: (nome) => `Remover ${nome}`,
     liquido: "Líquido",
     itens: "Itens vendidos",
     contatos: "Contatos",
@@ -613,7 +632,9 @@ const pt: PainelMessages = {
     history: "Meus dias",
     noHistory: "Nenhum relatório ainda neste projeto.",
     alreadyValidated: "Este dia já foi validado. Para alterar, fale com o capitão.",
-    numbersHint: "Em reais, sem centavos: 350 ou 1.250",
+    projectOff: "Este projeto de arrecadação não está ativo agora, então não recebe relatórios. Os dias que você já enviou continuam aqui.",
+    projectOffShort: "projeto desativado",
+    numbersHint: "Em reais: 350, 1.250 ou 18,50",
     whatsapp: "Mensagem para o grupo",
     copy: "Copiar mensagem",
     copied: "Mensagem copiada",
@@ -706,12 +727,14 @@ const pt: PainelMessages = {
     testemunhoHighlights: "Destaques no testemunho até agora",
     noHighlights: "Ainda sem resultados.",
     guestsOf: (n, jardim) => `${n === 1 ? "1 convidado" : `${n} convidados`}${jardim > 0 ? ` · ${jardim} no Jardim` : ""}`,
-    projectsToday: "Projetos em andamento",
+    projectsToday: "Projeto em andamento",
+    noProjectToday: "Nenhum projeto em andamento hoje.",
+    noProjectTodayLast: "Nenhum projeto em andamento hoje. Este é o mais recente.",
     teamsWithAttention: (n) => (n === 1 ? "1 equipe com ponto de atenção" : `${n} equipes com ponto de atenção`),
     resultsTab: "Resultados",
     reportsTab: "Relatórios do dia",
     goalsTab: "Metas",
-    accountingTab: "Contabilidade",
+    accountingTab: "Dinheiro e Pix",
     exportCsv: "Exportar CSV",
     filters: "Filtros",
     project: "Projeto",
@@ -763,6 +786,7 @@ const pt: PainelMessages = {
     start: "Início",
     end: "Fim",
     active: "Ativo",
+    activeTakesOver: (nome) => `Só um projeto fica ativo por vez: ao salvar, “${nome}” deixa de estar ativo.`,
     restDays: "Dias de descanso",
     restDaysHint: "Uma data por linha (aaaa-mm-dd)",
     dailyGoal: "Meta diária inicial",

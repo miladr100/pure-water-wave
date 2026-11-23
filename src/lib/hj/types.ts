@@ -434,7 +434,8 @@ export type PainelInicio = {
   devolvidos: RelatorioRow[];
   rm: RmResumo | null;
   equipeHoje: { enviados: number; total: number; liquidoCents: number; pendentes: number } | null;
-  testemunho: { total: number; atencao: { id: string; nome: string; alerta: ConvidadoAlerta }[] };
+  // `projeto`: the testimony project's dates — the home shows one project, the one being done
+  testemunho: { projeto: { ativo: boolean; inicio: string; fim: string } | null; total: number; atencao: { id: string; nome: string; alerta: ConvidadoAlerta }[] };
   // what the educator told the team (testemunho) and the member (RM), latest of each
   orientacoes: { equipe: OrientacaoRow | null; pessoal: OrientacaoRow | null };
 };

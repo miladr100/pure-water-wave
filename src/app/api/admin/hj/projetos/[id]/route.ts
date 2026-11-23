@@ -5,7 +5,7 @@ import type { ProjetoDoc } from "@/lib/hj/data";
 import type { ProjetoBody } from "@/lib/hj/types";
 import { HjProjeto } from "@/models/hj-projeto";
 
-import { projetosAdmin, validateProject } from "../../_lib/projetos";
+import { projetosAdmin, soEsteAtivo, validateProject } from "../../_lib/projetos";
 import { adminContext } from "../../_lib/shared";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -28,6 +28,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       return validated.response;
     }
     await HjProjeto.updateOne({ _id: current._id }, { $set: validated.value });
+    if (validated.value.ativo === true) {
+      await soEsteAtivo(current._id);
+    }
     const projetos = await projetosAdmin(result.context.hoje);
     return NextResponse.json({ projeto: projetos.find((item) => item.id === id) ?? null, projetos });
   } catch (error) {

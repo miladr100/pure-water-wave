@@ -5,8 +5,14 @@ import { isIsoDay } from "@/lib/hj/dates";
 import { projetoResumo, type EquipeDoc, type ProjetoDoc } from "@/lib/hj/data";
 import { HJ_PROGRAMAS, PROJETO_TIPOS, type ProjetoAdmin, type ProjetoBody } from "@/lib/hj/types";
 import { HjEquipe } from "@/models/hj-equipe";
+import { HjProjeto } from "@/models/hj-projeto";
 
 import { allProjects, intField, textField } from "./shared";
+
+// One project active at a time: the one just switched on turns the rest off.
+export async function soEsteAtivo(id: ProjetoDoc["_id"]) {
+  await HjProjeto.updateMany({ _id: { $ne: id }, ativo: true }, { $set: { ativo: false } });
+}
 
 export async function projetosAdmin(hoje: string): Promise<ProjetoAdmin[]> {
   const projetos = await allProjects();

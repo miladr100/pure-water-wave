@@ -56,7 +56,8 @@ educador responsável, capitão (membro da equipe), membros[], país/cidade
 
 **Critérios de aceite**
 - **Dado** nome, tipo, início e fim **quando** salvo **então** o projeto fica em rascunho; um botão "dividir em períodos de N dias" cria períodos consecutivos (o último pode ser menor); períodos podem ser editados à mão sem sobrepor.
-- Só um projeto de cada tipo pode estar **ativo** ao mesmo tempo (decisão pendente: pode haver RM e testemunho simultâneos? Premissa: sim, um de cada tipo).
+- Só **um** projeto fica **ativo** por vez, de qualquer tipo (Victor, 15/11/2026: nunca há RM e testemunho ativos juntos). Ativar um projeto — ao criar ou ao editar — desativa o que estava ativo; o formulário avisa qual. Um projeto novo começa desativado quando já há outro ativo.
+- O último projeto de cada tipo continua sendo consultado mesmo desativado (equipes, capitães, histórico, caixa), mas o relatório diário só é aceito enquanto o projeto de arrecadação é o ativo.
 - Ativar um projeto de arrecadação exige: moeda, pelo menos um produto, meta diária inicial. Metas por programa são opcionais.
 - Encerrar um projeto bloqueia novos relatórios e novas equipes nele; os dados ficam para consulta e exportação.
 - Mudar datas de um projeto ativo não pode deixar relatórios já enviados fora do intervalo.

@@ -171,7 +171,7 @@ describe("projects", () => {
     resetNextHeaders();
   });
 
-  it("the administrator opens the next period copying the teams, and the active project is the one running today", async () => {
+  it("the administrator prepares the next period copying the teams, switched off until it starts", async () => {
     const { projeto, equipe } = await createTeamSetup();
     const admin = await createAdmin();
     await signInAsPanel(admin);
@@ -179,6 +179,7 @@ describe("projects", () => {
     const response = await newProject({
       nome: "RM 30 dias – próximo",
       tipo: "arrecadacao",
+      ativo: false,
       inicio: addDays(projeto.fim, 1),
       fim: addDays(projeto.fim, 30),
       diasDescanso: [addDays(projeto.fim, 7)],
@@ -196,7 +197,7 @@ describe("projects", () => {
     expect(copied?.nome).toBe(equipe.nome);
     expect(copied?.membroIds).toHaveLength(3);
 
-    // Today's project is still the current one.
+    // The one running stays the active one.
     const home = await readJson<AdminHjInicio>(await getInicio(jsonRequest("/api/admin/hj/inicio")));
     expect(home.projeto?.id).toBe(projeto._id.toString());
 
@@ -217,6 +218,34 @@ describe("projects", () => {
     const edited = await editProject(projeto._id.toString(), { nome: "Renomeado", ativo: false });
     expect(edited.status).toBe(200);
     expect((await readJson<{ projeto: ProjetoAdmin }>(edited)).projeto).toMatchObject({ nome: "Renomeado", ativo: false });
+  });
+
+  it("only one project is active at a time: switching one on switches the others off", async () => {
+    const admin = await createAdmin();
+    await signInAsPanel(admin);
+    const rm = await createProjeto({ nome: "RM" });
+    const anterior = await createProjeto({ nome: "RM anterior", inicio: addDays(hoje, -60), fim: addDays(hoje, -31), ativo: false });
+
+    // a new active project takes over
+    const created = await readJson<{ projeto: ProjetoAdmin; projetos: ProjetoAdmin[] }>(
+      await newProject({ nome: "Testemunho", tipo: "testemunho", inicio: hoje, fim: addDays(hoje, 30) }),
+    );
+    expect(created.projeto.ativo).toBe(true);
+    expect(created.projetos.filter((item) => item.ativo).map((item) => item.id)).toEqual([created.projeto.id]);
+
+    // switching an old one back on turns the testimony off
+    const back = await readJson<{ projetos: ProjetoAdmin[] }>(await editProject(rm._id.toString(), { ativo: true }));
+    expect(back.projetos.filter((item) => item.ativo).map((item) => item.id)).toEqual([rm._id.toString()]);
+
+    // editing without touching the switch changes nothing else
+    const renamed = await readJson<{ projetos: ProjetoAdmin[] }>(await editProject(anterior._id.toString(), { nome: "RM de outubro" }));
+    expect(renamed.projetos.filter((item) => item.ativo).map((item) => item.id)).toEqual([rm._id.toString()]);
+
+    // the fundraising project the panel talks about is still the RM, now off: readable, but closed to reports
+    await editProject(created.projeto.id, { ativo: true });
+    const home = await readJson<AdminHjInicio>(await getInicio(jsonRequest("/api/admin/hj/inicio")));
+    expect(home.projeto?.id).toBe(rm._id.toString());
+    expect(home.projeto?.ativo).toBe(false);
   });
 });
 

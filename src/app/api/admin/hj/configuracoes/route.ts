@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { jsonError, serverError } from "@/lib/academy/http";
-import { activeProject, projetoResumo } from "@/lib/hj/data";
+import { projetoAtivo, projetoResumo } from "@/lib/hj/data";
 import { MODULO_TESTEMUNHO_MODOS, type ConfiguracoesAdmin, type ConfiguracoesBody } from "@/lib/hj/types";
 import { HjConfiguracao, hjConfiguracao } from "@/models/hj-configuracao";
 
@@ -9,7 +9,7 @@ import { adminContext, educatorContext } from "../_lib/shared";
 
 async function shape(hoje: string): Promise<ConfiguracoesAdmin> {
   const config = await hjConfiguracao();
-  const projetoTestemunho = await activeProject("testemunho");
+  const projetoTestemunho = await projetoAtivo("testemunho");
   return {
     modulos: config.modulos,
     projetoTestemunho: projetoTestemunho ? projetoResumo(projetoTestemunho, hoje) : null,

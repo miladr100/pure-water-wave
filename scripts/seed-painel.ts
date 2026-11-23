@@ -283,12 +283,15 @@ async function main() {
     metasPrograma: [],
   });
 
+  // Only one project is active at a time (Victor, 15/11/2026): the demo
+  // starts on the RM; switching the testimony on in Organização moves the
+  // whole panel to it.
   await HjProjeto.create({
     nome: `Testemunho ${year}`,
     tipo: "testemunho",
     inicio: `${year}-01-01`,
     fim: `${year}-12-31`,
-    ativo: true,
+    ativo: false,
     diasDescanso: [],
   });
 
@@ -498,7 +501,7 @@ async function main() {
   const equipe01 = await HjEquipe.findOne({ projetoId: projeto._id, nome: "Equipe 01 – HJA" }).lean();
   if (equipe01) {
     await HjEquipe.updateOne({ _id: equipe01._id }, { $set: { taxaEstadiaCents: 2500 } });
-    const projetoTestemunho = await HjProjeto.findOne({ tipo: "testemunho", ativo: true }).lean();
+    const projetoTestemunho = await HjProjeto.findOne({ tipo: "testemunho" }).sort({ inicio: -1 }).lean();
     const capitaId = ids.get("bia.capita");
     await HjLancamento.insertMany([
       { equipeId: equipe01._id, projetoId: projetoTestemunho?._id ?? null, data: addDays(hoje, -6), tipo: "entrada", categoria: "rm", valorCents: 185000, descricao: "RM da semana", autorId: capitaId, automatico: false },

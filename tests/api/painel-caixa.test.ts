@@ -53,15 +53,17 @@ describe("Caixa da equipe", () => {
 
     await signInAsPanel(capita);
     const estadia = await readJson<CaixaEquipe>(await post({ estadia: { inicio: "2026-11-08", fim: "2026-11-14" } }));
-    // 3 members × 7 days × R$ 25
-    expect(estadia.lancamentos[0]).toMatchObject({ categoria: "estadia", automatico: true, valorCents: 52500, periodo: { inicio: "2026-11-08", fim: "2026-11-14" } });
+    // 3 members × 7 days × R$ 25. Found by category, not by position: the list is
+    // newest day first, and the entry above is dated the day the test runs.
+    const taxa = estadia.lancamentos.find((row) => row.categoria === "estadia");
+    expect(taxa).toMatchObject({ categoria: "estadia", automatico: true, valorCents: 52500, periodo: { inicio: "2026-11-08", fim: "2026-11-14" } });
     expect(estadia.saldoCents).toBe(117950 - 52500);
     expect((await readJson<ErrorBody>(await post({ estadia: { inicio: "2026-11-12", fim: "2026-11-20" } }))).code).toBe("PERIOD_POSTED");
     expect((await readJson<ErrorBody>(await post({ estadia: { inicio: "2026-11-20", fim: "2026-11-10" } }))).code).toBe("INVALID_PERIOD");
 
-    const afterDelete = await readJson<CaixaEquipe>(await del(estadia.lancamentos[0].id));
+    const afterDelete = await readJson<CaixaEquipe>(await del(taxa!.id));
     expect(afterDelete.saldoCents).toBe(117950);
-    expect((await del(estadia.lancamentos[0].id)).status).toBe(404);
+    expect((await del(taxa!.id)).status).toBe(404);
   });
 
   it("the team's educator posts; another educator only reads; the administrator sees every box", async () => {

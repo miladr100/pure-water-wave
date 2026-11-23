@@ -8,9 +8,10 @@ import { Chip } from "@/components/academy/chip";
 import { Bar, Card, Eyebrow, Failed, LoadingBlock, Reais, Stat } from "@/components/painel/bits";
 import { PainelHeading } from "@/components/painel/painel-shell";
 import { usePainelMessages } from "@/components/painel/use-painel";
-import { fmtDia } from "@/lib/hj/dates";
+import { emAndamento, fmtDia, projetoDoInicio } from "@/lib/hj/dates";
 import { fmtReais, pct } from "@/lib/hj/rm";
 import type { AcontecimentoTipo, AdminHjInicio } from "@/lib/hj/types";
+import { cn } from "@/lib/utils";
 
 // "46,1%" — a share, written the Brazilian way
 const parte = (value: number, total: number) => `${String(pct(value, total)).replace(".", ",")}%`;
@@ -26,9 +27,11 @@ const TIPO_ICON: Record<AcontecimentoTipo, typeof Heart> = {
 
 // The educator's and administrator's home: the course's general numbers
 // in cards — people, per program, boys and girls, average age, who
-// stands out in the RM and in the testimony drive — then one line per
-// project running today. The fundraising tables moved to Restauração
-// Material › Resultados (Yeseong, 14/11/2026).
+// stands out in the RM and in the testimony drive — then what the course
+// is doing today: the fundraising card while a fundraising project runs,
+// the testimony one while a testimony drive runs (Victor, 15/11/2026).
+// The fundraising tables live in Restauração Material › Resultados
+// (Yeseong, 14/11/2026).
 export function AdminInicioScreen() {
   const t = usePainelMessages();
   const home = useApi<AdminHjInicio>("/api/admin/hj/inicio");
@@ -42,6 +45,10 @@ export function AdminInicioScreen() {
 
   const { projeto, totais, geral, testemunho } = home.data;
   const hoje = projeto?.hoje ?? testemunho.projeto?.hoje ?? null;
+  // one project on the home, never fundraising and testimony together
+  const doInicio = projetoDoInicio(projeto, testemunho.projeto);
+  const mostra = { rm: doInicio === "rm", testemunho: doInicio === "testemunho" };
+  const correHoje = emAndamento(mostra.rm ? projeto : mostra.testemunho ? testemunho.projeto : null);
 
   return (
     <div className="space-y-8 sm:space-y-10">
@@ -75,7 +82,7 @@ export function AdminInicioScreen() {
           <Stat label={t.admin.girls} value={geral.meninas} hint={geral.pessoas > 0 ? parte(geral.meninas, geral.pessoas) : undefined} />
           <Stat label={t.admin.avgAge} value={geral.idadeMedia !== null ? t.admin.years(geral.idadeMedia) : "—"} hint={geral.comIdade > 0 ? t.admin.withBirthday(geral.comIdade) : undefined} />
         </div>
-        <div className="grid gap-5 lg:grid-cols-2">
+        {mostra.rm ? (
           <Card>
             <div className="mb-3 flex items-center justify-between gap-2">
               <Eyebrow>{t.admin.rmHighlights}</Eyebrow>
@@ -86,13 +93,15 @@ export function AdminInicioScreen() {
             {geral.destaquesRm.length === 0 ? (
               <p className="text-sm text-muted-foreground">{t.admin.noHighlights}</p>
             ) : (
-              <ol className="space-y-2.5">
+              <ol className="grid gap-x-8 gap-y-2.5 md:grid-cols-3">
                 {geral.destaquesRm.map((item, index) => (
                   <Destaque key={item.membro.id} index={index} nome={item.membro.nome} href={`/admin/pessoas/${item.membro.id}`} detail={item.equipe} value={<Reais cents={item.totalCents} className="font-semibold text-primary-deep" />} />
                 ))}
               </ol>
             )}
           </Card>
+        ) : null}
+        {mostra.testemunho ? (
           <Card>
             <div className="mb-3 flex items-center justify-between gap-2">
               <Eyebrow>{t.admin.testemunhoHighlights}</Eyebrow>
@@ -103,20 +112,21 @@ export function AdminInicioScreen() {
             {geral.destaquesTestemunho.length === 0 ? (
               <p className="text-sm text-muted-foreground">{t.admin.noHighlights}</p>
             ) : (
-              <ol className="space-y-2.5">
+              <ol className="grid gap-x-8 gap-y-2.5 md:grid-cols-3">
                 {geral.destaquesTestemunho.map((item, index) => (
-                  <Destaque key={item.membro.id} index={index} nome={item.membro.nome} href={`/admin/pessoas/${item.membro.id}`} detail={item.equipe ?? ""} value={<span className="text-sm font-semibold text-primary-deep">{t.admin.guestsOf(item.convidados, item.jardim)}</span>} />
+                  <Destaque key={item.membro.id} index={index} nome={item.membro.nome} href={`/admin/pessoas/${item.membro.id}`} detail={item.equipe ?? ""} abaixo value={<span className="text-sm font-semibold text-primary-deep">{t.admin.guestsOf(item.convidados, item.jardim)}</span>} />
                 ))}
               </ol>
             )}
           </Card>
-        </div>
+        ) : null}
       </section>
 
-      {/* ---------- Projetos em andamento ---------- */}
+      {/* ---------- Projeto em andamento ---------- */}
       <section className="space-y-4">
-        <SectionTitle label={t.admin.projectsToday} detail={projeto || testemunho.projeto ? "" : t.common.noProject} />
-        <div className="grid gap-5 lg:grid-cols-2">
+        <SectionTitle label={t.admin.projectsToday} detail={correHoje ? "" : doInicio ? t.admin.noProjectTodayLast : t.admin.noProjectToday} />
+        <div className={cn("grid gap-5", mostra.testemunho && "lg:grid-cols-2")}>
+          {mostra.rm ? (
           <Card>
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-2">
@@ -150,6 +160,8 @@ export function AdminInicioScreen() {
               </>
             ) : null}
           </Card>
+          ) : null}
+          {mostra.testemunho ? (
           <Card>
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-2">
@@ -188,14 +200,14 @@ export function AdminInicioScreen() {
               ) : null}
             </div>
           </Card>
-        </div>
-
+          ) : null}
+          {mostra.testemunho ? (
         <Card>
           <Eyebrow className="mb-3">{t.admin.recentEvents}</Eyebrow>
           {testemunho.recentes.length === 0 ? (
             <p className="text-sm text-muted-foreground">{t.admin.noRecentEvents}</p>
           ) : (
-            <ol className="grid gap-3 sm:grid-cols-2">
+            <ol className="grid gap-3">
               {testemunho.recentes.map((item) => {
                 const Icon = TIPO_ICON[item.tipo];
                 return (
@@ -218,12 +230,15 @@ export function AdminInicioScreen() {
             </ol>
           )}
         </Card>
+          ) : null}
+        </div>
       </section>
     </div>
   );
 }
 
-function Destaque({ index, nome, href, detail, value }: { index: number; nome: string; href: string; detail: string; value: React.ReactNode }) {
+// `abaixo`: a value that is a phrase, not a number, goes under the name
+function Destaque({ index, nome, href, detail, value, abaixo }: { index: number; nome: string; href: string; detail: string; value: React.ReactNode; abaixo?: boolean }) {
   return (
     <li className="flex items-center gap-3">
       <span className={index === 0 ? "flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground" : "flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-bold text-primary-deep"}>
@@ -233,9 +248,10 @@ function Destaque({ index, nome, href, detail, value }: { index: number; nome: s
         <Link href={href} className="font-medium hover:text-primary">
           {nome}
         </Link>
+        {abaixo ? <p>{value}</p> : null}
         {detail ? <p className="truncate text-xs text-muted-foreground">{detail}</p> : null}
       </div>
-      {value}
+      {abaixo ? null : value}
     </li>
   );
 }

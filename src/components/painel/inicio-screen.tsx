@@ -10,7 +10,7 @@ import { Card, Eyebrow, Failed, LoadingBlock, Reais } from "@/components/painel/
 import { usePainelEu, usePainelMessages } from "@/components/painel/use-painel";
 import { Button } from "@/components/ui/button";
 import type { SessionPayload } from "@/lib/academy/auth";
-import { fmtDia } from "@/lib/hj/dates";
+import { emAndamento, fmtDia, projetoDoInicio } from "@/lib/hj/dates";
 import { fmtReais } from "@/lib/hj/rm";
 import type { PainelInicio } from "@/lib/hj/types";
 import { cn } from "@/lib/utils";
@@ -34,6 +34,13 @@ export function InicioScreen({ session }: { session: SessionPayload }) {
   const { projeto, hoje, rm, equipeHoje, testemunho, membro } = data;
   const relatorio = hoje.relatorio;
   const continueLesson = me?.continueLesson ?? null;
+  // The home is about the one project the course is doing today, never
+  // fundraising and testimony together (Victor, 15/11/2026). The other
+  // one stays a click away in the menu.
+  const moduloTestemunho = !eu || eu.modulos.testemunho;
+  const doInicio = projetoDoInicio(projeto, moduloTestemunho && testemunho.projeto ? { ...testemunho.projeto, hoje: hoje.data } : null);
+  const testemunhoHoje = doInicio === "testemunho";
+  const rmHoje = !testemunhoHoje;
 
   const todayCard = (() => {
     if (!projeto) {
@@ -95,11 +102,12 @@ export function InicioScreen({ session }: { session: SessionPayload }) {
         </h1>
         <p className="mt-2 text-muted-foreground">
           {fmtDia(hoje.data, "longo")}
-          {projeto ? ` · ${t.common.day(projeto.diaAtual, projeto.totalDias)} do RM` : ""}
+          {projeto && rmHoje && emAndamento(projeto) ? ` · ${t.common.day(projeto.diaAtual, projeto.totalDias)} do RM` : ""}
         </p>
       </section>
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {rmHoje ? (
         <Card className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-2">
             <Eyebrow>
@@ -132,8 +140,9 @@ export function InicioScreen({ session }: { session: SessionPayload }) {
             </Button>
           ) : null}
         </Card>
+        ) : null}
 
-        {rm ? (
+        {rm && rmHoje ? (
           <Card className="flex flex-col gap-3">
             <Eyebrow>{t.inicio.goal}</Eyebrow>
             <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
@@ -170,7 +179,7 @@ export function InicioScreen({ session }: { session: SessionPayload }) {
           </Card>
         ) : null}
 
-        {eu && !eu.modulos.testemunho ? null : (
+        {!testemunhoHoje ? null : (
         <Card className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-2">
             <Eyebrow>{t.inicio.testemunho}</Eyebrow>
@@ -236,7 +245,7 @@ export function InicioScreen({ session }: { session: SessionPayload }) {
             <p className="mt-1 text-xs text-muted-foreground">{t.indicadores.givenBy(data.orientacoes.pessoal.autor.nome, fmtDia(data.orientacoes.pessoal.data))}</p>
           </Card>
         ) : null}
-        {data.orientacoes.equipe && (!eu || eu.modulos.testemunho) ? (
+        {data.orientacoes.equipe && testemunhoHoje ? (
           <Card>
             <Eyebrow>{t.indicadores.teamOrientationMember}</Eyebrow>
             <p className="mt-1 whitespace-pre-wrap text-[15px] leading-relaxed">{data.orientacoes.equipe.texto}</p>
@@ -251,7 +260,7 @@ export function InicioScreen({ session }: { session: SessionPayload }) {
           <CalendarClock className="h-5 w-5 shrink-0 text-primary" />
         </Link>
 
-        {equipeHoje && data.equipe ? (
+        {equipeHoje && data.equipe && rmHoje ? (
           <Link href="/painel/equipe" className="flex flex-col gap-1 rounded-3xl border border-border/60 bg-card p-5 text-foreground shadow-card transition hover:-translate-y-0.5">
             <Eyebrow>{data.equipe.nome}</Eyebrow>
             <p className="font-display text-2xl font-semibold text-primary-deep tabular-nums">

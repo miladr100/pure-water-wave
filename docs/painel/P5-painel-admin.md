@@ -42,7 +42,7 @@ menu próprio (montar equipes do projeto ativo) e Pessoas tem só Membros.
 
 | Área | Telas | Quem |
 |---|---|---|
-| **Início** | Panorama do projeto ativo de cada tipo (ver abaixo) | Educador, Admin |
+| **Início** | Panorama do projeto ativo — um só, RM ou testemunho (ver abaixo) | Educador, Admin |
 | **Arrecadação** | Resultados (panorama, por dia, grade por membro, contabilidade) · Relatórios do dia (fila de validação por equipe, filtro "a validar", "devolvidos", "sem envio") · Metas (por programa, novas metas propostas) · Exportar | Educador, Admin |
 | **Testemunho** | Convidados (lista com filtros, ficha completa, lixeira) · Relatórios (indicadores, por equipe/programa, conferências, evolução) · Importar · Exportar | Educador, Admin |
 | **Pessoas** | Membros (lista, ficha, nova conta, importar CSV) · **Educadores** (lista, novo, promover membro, tirar papel com reatribuição de equipes e membros) · **Administradores** · Pastores (como hoje) | Membros: Educador; o resto: Admin |

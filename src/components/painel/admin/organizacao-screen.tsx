@@ -99,7 +99,8 @@ function ProjetoDialog({ open, onOpenChange, projeto, projetos, onSaved }: { ope
     tipo: "arrecadacao" as ProjetoTipo,
     inicio: "",
     fim: "",
-    ativo: true,
+    // a new project starts switched off while another one is on: only one is active at a time
+    ativo: !projetos.some((item) => item.ativo),
     diasDescanso: "",
     metaDiariaPadrao: "300",
     metaTotal: "",
@@ -133,6 +134,8 @@ function ProjetoDialog({ open, onOpenChange, projeto, projetos, onSaved }: { ope
       copiarDe: "",
     };
   });
+  // the project that switching this one on would turn off
+  const outroAtivo = projetos.find((item) => item.ativo && item.id !== projeto?.id) ?? null;
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -212,6 +215,7 @@ function ProjetoDialog({ open, onOpenChange, projeto, projetos, onSaved }: { ope
               {t.admin.active}
             </label>
           </div>
+          {form.ativo && outroAtivo ? <p className="-mt-2 text-sm text-muted-foreground">{t.admin.activeTakesOver(outroAtivo.nome)}</p> : null}
 
           {isRm ? (
             <>

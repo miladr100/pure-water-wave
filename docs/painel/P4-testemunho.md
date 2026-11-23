@@ -124,7 +124,7 @@ criado em. A linha do tempo é a lista de acontecimentos.
 > Como educador, quero os números de cada centro de testemunho e a visão por região e país (o que o Rev. Kim pede).
 
 - Testemunho › Por área: árvore região → país → local → equipe com convidados, por etapa, fichas, atenção e membros com convidado; totais por programa. Equipes sem local ficam em "Sem área definida".
-- Conta as equipes do projeto de testemunho ativo; enquanto ele não tem equipes, as do projeto de RM ativo.
+- Conta as equipes do projeto de testemunho (o ativo, senão o mais recente); enquanto ele não tem equipes, as do último projeto de RM.
 
 ### US-P4-12 — Os quatro indicadores e o ponto de atenção (implementado 14/11/2026)
 

@@ -162,23 +162,28 @@ export type PanelContext = {
   session: SessionPayload;
   user: UserDoc;
   hoje: string;
-  // the active fundraising project, if any
+  // the fundraising project: the active one, else the most recent
   projeto: ProjetoDoc | null;
   // the member's team in that project, if any
   equipe: EquipeDoc | null;
   papeis: Papeis;
 };
 
-export async function activeProject(tipo: "arrecadacao" | "testemunho" = "arrecadacao") {
-  const hoje = todayInBrazil();
-  // The project running today; failing that, the most recent active one.
-  const running = (await HjProjeto.findOne({ tipo, ativo: true, inicio: { $lte: hoje }, fim: { $gte: hoje } })
-    .sort({ inicio: -1 })
-    .lean()) as ProjetoDoc | null;
-  if (running) {
-    return running;
-  }
+// Only one project is active at a time, of either type (Victor,
+// 15/11/2026): switching one on switches the others off. These two
+// lookups read that from both sides.
+
+// The active project of this type, or null when the active one is of the
+// other type (or none is).
+export async function projetoAtivo(tipo: "arrecadacao" | "testemunho") {
   return (await HjProjeto.findOne({ tipo, ativo: true }).sort({ inicio: -1 }).lean()) as ProjetoDoc | null;
+}
+
+// The project of this type the panel talks about: the active one, else
+// the most recent — so teams, the captain's role and the history stay
+// while the course is on the other project.
+export async function activeProject(tipo: "arrecadacao" | "testemunho" = "arrecadacao") {
+  return (await projetoAtivo(tipo)) ?? ((await HjProjeto.findOne({ tipo }).sort({ inicio: -1 }).lean()) as ProjetoDoc | null);
 }
 
 export async function loadContext(session: SessionPayload): Promise<PanelContext | null> {
@@ -213,7 +218,7 @@ export async function modulosDe(context: PanelContext): Promise<Modulos> {
   }
   const config = await hjConfiguracao();
   const testemunho =
-    config.modulos.testemunho === "visivel" ? true : config.modulos.testemunho === "oculto" ? false : (await activeProject("testemunho")) !== null;
+    config.modulos.testemunho === "visivel" ? true : config.modulos.testemunho === "oculto" ? false : (await projetoAtivo("testemunho")) !== null;
   return { rm: true, testemunho };
 }
 

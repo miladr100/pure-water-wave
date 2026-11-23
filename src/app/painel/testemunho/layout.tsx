@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { getSession } from "@/lib/academy/auth";
 import { connectDB } from "@/lib/mongodb";
-import { activeProject } from "@/lib/hj/data";
+import { projetoAtivo } from "@/lib/hj/data";
 import { hjConfiguracao } from "@/models/hj-configuracao";
 
 // The member's testimony module exists only while the administrator shows
@@ -14,7 +14,7 @@ export default async function PainelTestemunhoLayout({ children }: { children: R
     await connectDB();
     const config = await hjConfiguracao();
     const visivel =
-      config.modulos.testemunho === "visivel" ? true : config.modulos.testemunho === "oculto" ? false : (await activeProject("testemunho")) !== null;
+      config.modulos.testemunho === "visivel" ? true : config.modulos.testemunho === "oculto" ? false : (await projetoAtivo("testemunho")) !== null;
     if (!visivel) {
       redirect("/painel");
     }

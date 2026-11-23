@@ -7,7 +7,7 @@ import type { ProjetoBody } from "@/lib/hj/types";
 import { HjEquipe } from "@/models/hj-equipe";
 import { HjProjeto } from "@/models/hj-projeto";
 
-import { projetosAdmin, validateProject } from "../_lib/projetos";
+import { projetosAdmin, soEsteAtivo, validateProject } from "../_lib/projetos";
 import { adminContext, educatorContext } from "../_lib/shared";
 
 export async function GET() {
@@ -40,6 +40,9 @@ export async function POST(request: Request) {
     }
 
     const created = await HjProjeto.create(validated.value);
+    if (created.ativo) {
+      await soEsteAtivo(created._id);
+    }
 
     let equipesCopiadas = 0;
     if (body.copiarEquipesDe) {

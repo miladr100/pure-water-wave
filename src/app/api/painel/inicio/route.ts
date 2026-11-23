@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { serverError } from "@/lib/academy/http";
 import {
+  activeProject,
   equipeLookup,
   equipeResumo,
   guestsOf,
@@ -72,6 +73,7 @@ export async function GET() {
     const { equipe: equipeTestemunho } = await minhaEquipeTestemunho(context);
     const daEquipe = equipeTestemunho ? await ultimasDasEquipes([equipeTestemunho]) : new Map();
     const pessoais = await ultimasDosMembros([user._id]);
+    const projetoTestemunho = await activeProject("testemunho");
 
     const body: PainelInicio = {
       membro: { id: user._id.toString(), nome: user.fullName, papeis },
@@ -87,6 +89,7 @@ export async function GET() {
       equipeHoje,
       orientacoes: { equipe: equipeTestemunho ? (daEquipe.get(equipeTestemunho._id.toString()) ?? null) : null, pessoal: pessoais.get(user._id.toString()) ?? null },
       testemunho: {
+        projeto: projetoTestemunho ? { ativo: projetoTestemunho.ativo, inicio: projetoTestemunho.inicio, fim: projetoTestemunho.fim } : null,
         total: rows.length,
         atencao: rows
           .filter((row) => row.alerta)

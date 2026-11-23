@@ -72,3 +72,29 @@ export function fmtDia(day: string, style: "curto" | "longo" = "curto") {
 export function fmtDiaNumero(day: string) {
   return isIsoDay(day) ? `${day.slice(8, 10)}/${day.slice(5, 7)}` : day;
 }
+
+type ProjetoNoTempo = { ativo: boolean; inicio: string; fim: string; hoje: string };
+
+// A project is running on a day inside its dates, while it is switched on.
+export function emAndamento(projeto: ProjetoNoTempo | null | undefined): boolean {
+  return Boolean(projeto && projeto.ativo && projeto.inicio <= projeto.hoje && projeto.hoje <= projeto.fim);
+}
+
+// What the home is about: one project, never the two together (Victor,
+// 15/11/2026) — the active one, since only one is active at a time.
+// With none active, the most recent one stays rather than an empty page.
+// Data from before that rule may still have two on: then the one running
+// today, and among those the one that started last.
+export function projetoDoInicio(rm: ProjetoNoTempo | null | undefined, testemunho: ProjetoNoTempo | null | undefined): "rm" | "testemunho" | null {
+  const lados: { tipo: "rm" | "testemunho"; projeto: ProjetoNoTempo }[] = [];
+  if (rm) lados.push({ tipo: "rm", projeto: rm });
+  if (testemunho) lados.push({ tipo: "testemunho", projeto: testemunho });
+  const ativos = lados.filter((lado) => lado.projeto.ativo);
+  const candidatos = ativos.length > 0 ? ativos : lados;
+  // the sort is stable: on the same start day, fundraising stays first
+  return (
+    [...candidatos].sort(
+      (a, b) => Number(emAndamento(b.projeto)) - Number(emAndamento(a.projeto)) || b.projeto.inicio.localeCompare(a.projeto.inicio),
+    )[0]?.tipo ?? null
+  );
+}
