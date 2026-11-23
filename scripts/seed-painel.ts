@@ -99,13 +99,16 @@ const NAMED_HJA_01: Person[] = [
 const FIRST = ["Lucas", "Mariana", "Gabriel", "Beatriz", "Rafael", "Camila", "Thiago", "Larissa", "Felipe", "Isabela", "Bruno", "Letícia", "Daniel", "Amanda", "Mateus", "Juliana", "Guilherme", "Fernanda", "Vinícius", "Natália", "Leonardo", "Carolina", "Eduardo", "Gabriela", "Henrique", "Bianca", "Rodrigo", "Aline", "Diego", "Vanessa", "Caio", "Renata", "Igor", "Patrícia", "Samuel", "Tatiane", "André", "Priscila", "Victor", "Débora", "Jonathan", "Raquel", "Otávio", "Sabrina", "Murilo", "Lívia", "Nicolas", "Yasmin", "Arthur", "Helena", "Davi", "Sofia", "Heitor", "Laura", "Enzo", "Valentina", "Miguel", "Clara", "Theo", "Alice", "Benjamin", "Manuela", "Joaquim", "Cecília", "Hyun-woo", "Ji-eun", "Min-jun", "Soo-ah", "Kenji", "Yuki"];
 const LAST = ["Oliveira", "Santos", "Ferreira", "Rodrigues", "Almeida", "Carvalho", "Gomes", "Martins", "Araújo", "Ribeiro", "Barbosa", "Rocha", "Dias", "Moreira", "Nunes", "Mendes", "Cardoso", "Teixeira", "Correia", "Pinto", "Lopes", "Castro", "Ramos", "Freitas", "Kim", "Park", "Choi", "Yamamoto", "Sato", "Tanaka", "Batista", "Monteiro", "Vieira", "Cunha", "Melo", "Campos", "Duarte", "Reis", "Fonseca", "Machado"];
 
+// The demo cities outside Brazil and their country; every other one is in Brasil.
+const PAIS_DA_CIDADE: Record<string, string> = { "Assunção": "Paraguai", "Montevidéu": "Uruguai", "Santa Cruz de la Sierra": "Bolívia" };
+
 type TeamSpec = { nome: string; programa: HjPrograma; educador: string; tamanho: number; cidades: string[] };
 
 const PROGRAMAS: { programa: HjPrograma; nome: string; equipes: number; tamanho: [number, number]; educadores: string[]; cidades: string[] }[] = [
   { programa: "HJA", nome: "HJ Academy", equipes: 4, tamanho: [5, 7], educadores: ["david.educador", "fernanda.educadora"], cidades: ["São Paulo", "Guarulhos", "Osasco", "Santo André"] },
   { programa: "HJR", nome: "HJ Rang", equipes: 5, tamanho: [5, 8], educadores: ["marcos.educador", "paulo.educador"], cidades: ["Campinas", "Belo Horizonte", "Jundiaí", "Valinhos", "Contagem"] },
-  { programa: "PW", nome: "Pure Water", equipes: 3, tamanho: [4, 6], educadores: ["yeseong.admin", "larissa.educadora"], cidades: ["Curitiba", "Londrina", "Florianópolis"] },
-  { programa: "UPA", nome: "UPA", equipes: 1, tamanho: [4, 5], educadores: ["larissa.educadora"], cidades: ["Porto Alegre"] },
+  { programa: "PW", nome: "Pure Water", equipes: 3, tamanho: [4, 6], educadores: ["yeseong.admin", "larissa.educadora"], cidades: ["Curitiba", "Assunção", "Montevidéu"] },
+  { programa: "UPA", nome: "UPA", equipes: 1, tamanho: [4, 5], educadores: ["larissa.educadora"], cidades: ["Santa Cruz de la Sierra"] },
 ];
 
 function buildTeams(): { spec: TeamSpec; membros: Person[] }[] {
@@ -296,22 +299,23 @@ async function main() {
   });
 
   // Mission areas: Wang Song's five regions with their countries, and one
-  // local per city the demo teams work from, all under Brasil.
+  // local per city the demo teams work from — most under Brasil, a few
+  // abroad so the RM report by region and country has more than one row.
   const locais = new Map<string, Types.ObjectId>();
   {
     let ordem = 0;
-    let brasilId: Types.ObjectId | null = null;
+    const paisIds = new Map<string, Types.ObjectId>();
     for (const item of AREAS_PADRAO) {
       const regiao = await HjArea.create({ tipo: "regiao", nome: item.regiao, paiId: null, ordem: ordem++ });
       let sub = 0;
       for (const pais of item.paises) {
         const doc = await HjArea.create({ tipo: "pais", nome: pais, paiId: regiao._id, ordem: sub++ });
-        if (pais === "Brasil") brasilId = doc._id as Types.ObjectId;
+        paisIds.set(pais, doc._id as Types.ObjectId);
       }
     }
     const cidades = [...new Set(teams.flatMap((team) => team.spec.cidades))].sort((a, b) => a.localeCompare(b, "pt"));
     for (const [index, cidade] of cidades.entries()) {
-      const doc = await HjArea.create({ tipo: "local", nome: cidade, paiId: brasilId, ordem: index });
+      const doc = await HjArea.create({ tipo: "local", nome: cidade, paiId: paisIds.get(PAIS_DA_CIDADE[cidade] ?? "Brasil") ?? null, ordem: index });
       locais.set(cidade, doc._id as Types.ObjectId);
     }
     // Programs and cohorts, as the catalogue seeds them.

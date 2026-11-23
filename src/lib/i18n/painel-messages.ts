@@ -222,6 +222,20 @@ export type PainelMessages = {
     reportsTab: string;
     goalsTab: string;
     accountingTab: string;
+    areasTab: string;
+    areasTitle: string;
+    areasBody: string;
+    byRegion: string;
+    byCountry: string;
+    regions: string;
+    countries: string;
+    gross: string;
+    avgPerReport: string;
+    avgShort: string;
+    reportsShort: string;
+    reportsCounted: (n: number) => string;
+    share: string;
+    noAreaData: string;
     exportCsv: string;
     filters: string;
     project: string;
@@ -738,6 +752,20 @@ const pt: PainelMessages = {
     reportsTab: "Relatórios do dia",
     goalsTab: "Metas",
     accountingTab: "Dinheiro e Pix",
+    areasTab: "Por região e país",
+    areasTitle: "Por região e país",
+    areasBody: "Os números da RM somados pela região e pelo país do local de cada equipe (Organização › Áreas). Seguem os filtros.",
+    byRegion: "Por região",
+    byCountry: "Por país",
+    regions: "Regiões",
+    countries: "Países",
+    gross: "Bruto",
+    avgPerReport: "Média por relatório",
+    avgShort: "Média",
+    reportsShort: "Relatórios",
+    reportsCounted: (n) => (n === 1 ? "1 relatório enviado" : `${n.toLocaleString("pt-BR")} relatórios enviados`),
+    share: "% do total",
+    noAreaData: "Nenhuma equipe com esses filtros.",
     exportCsv: "Exportar CSV",
     filters: "Filtros",
     project: "Projeto",

@@ -552,6 +552,35 @@ export type ResultadoLinha = {
   orientacao: OrientacaoRow | null;
 };
 
+// One row of the RM report by region or by country (Wang Song, 23/11/2026):
+// the numbers of the teams whose local is in that area. Money in cents,
+// in the project's currency; devolvido reports do not count.
+export type ArrecadacaoAreaLinha = {
+  // the area's id; "sem_area" for teams with no local
+  id: string;
+  nome: string;
+  // the region a country belongs to (null on region rows and "sem área")
+  regiao: string | null;
+  equipes: number;
+  membros: number;
+  // reports that count (sent or validated)
+  relatorios: number;
+  dinheiroCents: number;
+  pixCents: number;
+  despesasCents: number;
+  liquidoCents: number;
+  // líquido per report that counts: what a member brings in a day
+  mediaCents: number;
+  // share of the total líquido, 0–1
+  participacao: number;
+};
+
+export type ArrecadacaoPorArea = {
+  regioes: ArrecadacaoAreaLinha[];
+  paises: ArrecadacaoAreaLinha[];
+  total: ArrecadacaoAreaLinha;
+};
+
 export type AdminResultados = {
   projeto: ProjetoResumo | null;
   dias: { data: string; descanso: boolean }[];
@@ -567,6 +596,8 @@ export type AdminResultados = {
   programas: { programa: HjPrograma; liquidoCents: number; metaCents: number; membros: number }[];
   // the whole project, whatever the filters
   panorama: ArrecadacaoPanorama | null;
+  // the same numbers by region and by country, following the filters
+  porArea: ArrecadacaoPorArea;
   filtros: {
     projetos: { id: string; nome: string }[];
     programas: HjPrograma[];

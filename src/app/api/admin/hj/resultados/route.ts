@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 
 import { serverError } from "@/lib/academy/http";
+import { AreasTree } from "@/lib/hj/areas";
 import { projetoResumo } from "@/lib/hj/data";
+import { arrecadacaoPorArea } from "@/lib/hj/rm-areas";
 import { HJ_PROGRAMAS, type AdminResultados, type HjPrograma } from "@/lib/hj/types";
 
 import { allProjects, buildGrid, educatorContext, metaTotal, panoramaArrecadacao, porPrograma, projectFor } from "../_lib/shared";
@@ -27,6 +29,7 @@ export async function GET(request: Request) {
         totais: { porDia: {}, dinheiroCents: 0, pixCents: 0, despesasCents: 0, liquidoCents: 0, metaCents: 0 },
         programas: [],
         panorama: null,
+        porArea: arrecadacaoPorArea([], [], new AreasTree([]), "Sem área definida"),
         filtros: { projetos, programas: [...HJ_PROGRAMAS], equipes: [], educadores: [] },
       };
       return NextResponse.json(empty);
@@ -53,6 +56,17 @@ export async function GET(request: Request) {
       porDia[item.data] = (porDia[item.data] ?? 0) + item.liquidoCents;
     }
 
+    // By region and by country: the teams the filters leave, with only the
+    // members the filters leave (Wang Song, 23/11/2026).
+    const equipesFiltradas = new Set(linhas.map((linha) => linha.equipe.id));
+    const porArea = arrecadacaoPorArea(
+      grid.equipes.filter((team) => equipesFiltradas.has(team._id.toString())),
+      relatorios,
+      await AreasTree.load(),
+      "Sem área definida",
+      (team) => team.membroIds.map(String).filter((id) => membros.has(id)),
+    );
+
     const educadores = new Map<string, string>();
     for (const team of grid.equipes) {
       const doc = team.educadorId ? grid.users.get(String(team.educadorId)) : null;
@@ -75,6 +89,7 @@ export async function GET(request: Request) {
       },
       programas: porPrograma(grid),
       panorama: panoramaArrecadacao(grid, context.hoje),
+      porArea,
       filtros: {
         projetos,
         programas: [...new Set(grid.equipes.map((team) => team.programa))].sort() as HjPrograma[],

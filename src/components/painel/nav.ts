@@ -191,6 +191,7 @@ export function subTabsFor(pathname: string, papeis: Papeis | null, t: PainelMes
       { href: "/admin/arrecadacao?aba=relatorios", label: t.admin.reportsTab, aba: "relatorios" },
       { href: "/admin/arrecadacao?aba=metas", label: t.admin.goalsTab, aba: "metas" },
       { href: "/admin/arrecadacao?aba=contabilidade", label: t.admin.accountingTab, aba: "contabilidade" },
+      { href: "/admin/arrecadacao?aba=areas", label: t.admin.areasTab, aba: "areas" },
       { href: "/admin/equipes", label: t.nav.equipes },
     ];
   }

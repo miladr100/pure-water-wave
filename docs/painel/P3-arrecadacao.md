@@ -134,6 +134,24 @@ data e autor: o educador registra em Arrecadação › Metas (coluna "Meta
 interna") ou na ficha da pessoa; a última aparece para o membro no Início do
 Painel ("Sua meta interna") e na linha do membro na grade de metas.
 
+Victor (23/11): a meta interna é do membro, não só da RM — **durante o
+testemunho também há meta interna** (sempre "meta interna", nunca "meta
+interior"). Ela fica arquivada na fase em que foi dada (módulo `testemunho`
+enquanto o testemunho é o projeto ativo, `rm` no resto); a última, de qualquer
+fase, é a que o membro vê no Início e em Testemunho › Convidados. O educador a
+registra também em Testemunho › Equipes ("Metas internas dos membros"), e o
+histórico da ficha mostra as duas fases.
+
+## Relatório por região e país (implementado 23/11/2026)
+
+Pedido do Wang Song para a RM: Restauração Material › **Por região e país**.
+Duas tabelas (por região, por país) com equipes, membros, relatórios que
+contam (enviados e validados; devolvidos não), dinheiro, pix, despesas,
+líquido, média por relatório e % do total. A equipe pertence ao país e à
+região do seu local (Organização › Áreas); equipes sem local formam a linha
+"Sem área definida". Segue os filtros da tela (projeto, programa, equipe,
+educador, membro) e exporta CSV com as duas tabelas e o total.
+
 ## Fora de escopo
 
 - Controle de estoque de material (decisão do Sr. Sérgio).

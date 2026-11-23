@@ -16,10 +16,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { fmtDia, fmtDiaNumero, isIsoDay, todayInBrazil } from "@/lib/hj/dates";
 import { fmtReais, pct } from "@/lib/hj/rm";
-import type { AdminResultados, ProjetoResumo, RelatorioRow } from "@/lib/hj/types";
+import type { AdminResultados, ArrecadacaoAreaLinha, ProjetoResumo, RelatorioRow } from "@/lib/hj/types";
 import { cn } from "@/lib/utils";
 
-const ABAS = ["resultados", "relatorios", "metas", "contabilidade"] as const;
+const ABAS = ["resultados", "relatorios", "metas", "contabilidade", "areas"] as const;
 type Aba = (typeof ABAS)[number];
 
 const selectClass =
@@ -59,10 +59,11 @@ export function ArrecadacaoScreen() {
         <>
           <PainelHeading
             eyebrow={`${projeto.nome} · ${t.common.day(projeto.diaAtual, projeto.totalDias)}`}
-            title={aba === "resultados" ? t.admin.resultsTab : aba === "metas" ? t.admin.goalsTab : t.admin.accountingTab}
+            title={aba === "resultados" ? t.admin.resultsTab : aba === "metas" ? t.admin.goalsTab : aba === "areas" ? t.admin.areasTitle : t.admin.accountingTab}
+            description={aba === "areas" ? t.admin.areasBody : undefined}
             actions={
-              aba === "resultados" ? (
-                <Button type="button" variant="outline" className="rounded-full" onClick={() => exportCsv(data)}>
+              aba === "resultados" || aba === "areas" ? (
+                <Button type="button" variant="outline" className="rounded-full" onClick={() => (aba === "areas" ? exportAreasCsv(data) : exportCsv(data))}>
                   <Download className="h-4 w-4" />
                   {t.admin.exportCsv}
                 </Button>
@@ -122,7 +123,15 @@ export function ArrecadacaoScreen() {
             </div>
           </Card>
 
-          {aba === "resultados" ? <Resultados data={data} /> : aba === "metas" ? <Metas data={data} onChanged={() => results.reload()} /> : <Contabilidade data={data} />}
+          {aba === "resultados" ? (
+            <Resultados data={data} />
+          ) : aba === "metas" ? (
+            <Metas data={data} onChanged={() => results.reload()} />
+          ) : aba === "areas" ? (
+            <PorArea data={data} />
+          ) : (
+            <Contabilidade data={data} />
+          )}
         </>
       )}
     </div>
@@ -407,6 +416,120 @@ function Contabilidade({ data }: { data: AdminResultados }) {
   );
 }
 
+// RM by region and by country (Wang Song, 23/11/2026): the same numbers as
+// Resultados, added up by the region and the country of each team's local
+// (Organização › Áreas). Follows the filters above.
+function PorArea({ data }: { data: AdminResultados }) {
+  const t = usePainelMessages();
+  const { regioes, paises, total } = data.porArea;
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Stat label={t.admin.net} value={fmtReais(total.liquidoCents)} hint={`${fmtReais(total.dinheiroCents + total.pixCents)} ${t.admin.gross.toLowerCase()} − ${fmtReais(total.despesasCents)}`} />
+        <Stat label={t.admin.regions} value={regioes.filter((row) => row.id !== "sem_area").length} hint={`${paises.filter((row) => row.id !== "sem_area").length} ${t.admin.countries.toLowerCase()}`} />
+        <Stat label={maiuscula(t.admin.teams)} value={total.equipes} hint={`${total.membros} ${t.admin.members}`} />
+        <Stat label={t.admin.avgPerReport} value={fmtReais(total.mediaCents)} hint={t.admin.reportsCounted(total.relatorios)} />
+      </div>
+      <AreaTabela titulo={t.admin.byRegion} coluna={t.missao.regiao} linhas={regioes} total={total} />
+      <AreaTabela titulo={t.admin.byCountry} coluna={t.missao.pais} linhas={paises} total={total} />
+    </>
+  );
+}
+
+const maiuscula = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+
+function AreaTabela({ titulo, coluna, linhas, total }: { titulo: string; coluna: string; linhas: ArrecadacaoAreaLinha[]; total: ArrecadacaoAreaLinha }) {
+  const t = usePainelMessages();
+  if (linhas.length === 0) {
+    return (
+      <Card>
+        <Eyebrow className="mb-2">{titulo}</Eyebrow>
+        <p className="text-sm text-muted-foreground">{t.admin.noAreaData}</p>
+      </Card>
+    );
+  }
+  const numero = "py-2.5 pr-3 text-right tabular-nums";
+  return (
+    <Card>
+      <Eyebrow className="mb-3">{titulo}</Eyebrow>
+      {/* phone: one card per area, nothing to slide sideways */}
+      <ul className="space-y-3 md:hidden">
+        {linhas.map((row) => (
+          <li key={row.id} className="rounded-2xl border border-border/60 p-3">
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="min-w-0 truncate font-semibold">
+                {row.nome}
+                {row.regiao ? <span className="ml-1.5 text-xs font-normal text-muted-foreground">{row.regiao}</span> : null}
+              </p>
+              <Reais cents={row.liquidoCents} className="shrink-0 font-semibold text-primary-deep" />
+            </div>
+            <Bar value={row.liquidoCents} max={total.liquidoCents} className="mt-2" />
+            <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-muted-foreground">
+              <div className="flex justify-between gap-2"><dt>{t.admin.cash}</dt><dd className="tabular-nums text-foreground">{fmtReais(row.dinheiroCents)}</dd></div>
+              <div className="flex justify-between gap-2"><dt>{t.admin.pix}</dt><dd className="tabular-nums text-foreground">{fmtReais(row.pixCents)}</dd></div>
+              <div className="flex justify-between gap-2"><dt>{t.admin.expenses}</dt><dd className="tabular-nums text-foreground">{fmtReais(row.despesasCents)}</dd></div>
+              <div className="flex justify-between gap-2"><dt>{t.admin.share}</dt><dd className="tabular-nums text-foreground">{Math.round(row.participacao * 100)}%</dd></div>
+              <div className="flex justify-between gap-2"><dt>{maiuscula(t.admin.teams)}</dt><dd className="tabular-nums text-foreground">{row.equipes} · {row.membros} {t.admin.members}</dd></div>
+              <div className="flex justify-between gap-2"><dt>{t.admin.avgShort}</dt><dd className="tabular-nums text-foreground">{fmtReais(row.mediaCents)}</dd></div>
+            </dl>
+          </li>
+        ))}
+      </ul>
+      <div className="hidden overflow-x-auto md:block">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
+              <th className="py-2 pr-3 font-semibold">{coluna}</th>
+              <th className="py-2 pr-3 text-right font-semibold">{t.admin.teams}</th>
+              <th className="py-2 pr-3 text-right font-semibold">{t.admin.members}</th>
+              <th className="py-2 pr-3 text-right font-semibold">{t.admin.reportsShort}</th>
+              <th className="py-2 pr-3 text-right font-semibold">{t.admin.cash}</th>
+              <th className="py-2 pr-3 text-right font-semibold">{t.admin.pix}</th>
+              <th className="py-2 pr-3 text-right font-semibold">{t.admin.expenses}</th>
+              <th className="py-2 pr-3 text-right font-semibold">{t.admin.net}</th>
+              <th className="py-2 pr-3 text-right font-semibold">{t.admin.avgPerReport}</th>
+              <th className="py-2 text-right font-semibold">{t.admin.share}</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border/60">
+            {linhas.map((row) => (
+              <tr key={row.id}>
+                <td className="py-2.5 pr-3">
+                  <span className="font-medium">{row.nome}</span>
+                  {row.regiao ? <span className="ml-2 text-xs text-muted-foreground">{row.regiao}</span> : null}
+                </td>
+                <td className={numero}>{row.equipes}</td>
+                <td className={numero}>{row.membros}</td>
+                <td className={numero}>{row.relatorios.toLocaleString("pt-BR")}</td>
+                <td className={numero}>{fmtReais(row.dinheiroCents)}</td>
+                <td className={numero}>{fmtReais(row.pixCents)}</td>
+                <td className={numero}>{fmtReais(row.despesasCents)}</td>
+                <td className={cn(numero, "font-semibold text-primary-deep")}>{fmtReais(row.liquidoCents)}</td>
+                <td className={numero}>{fmtReais(row.mediaCents)}</td>
+                <td className="py-2.5 text-right tabular-nums">{Math.round(row.participacao * 100)}%</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="border-t-2 border-border font-semibold">
+              <td className="py-2.5 pr-3">{maiuscula(t.equipe.total)}</td>
+              <td className={numero}>{total.equipes}</td>
+              <td className={numero}>{total.membros}</td>
+              <td className={numero}>{total.relatorios.toLocaleString("pt-BR")}</td>
+              <td className={numero}>{fmtReais(total.dinheiroCents)}</td>
+              <td className={numero}>{fmtReais(total.pixCents)}</td>
+              <td className={numero}>{fmtReais(total.despesasCents)}</td>
+              <td className={cn(numero, "text-primary-deep")}>{fmtReais(total.liquidoCents)}</td>
+              <td className={numero}>{fmtReais(total.mediaCents)}</td>
+              <td className="py-2.5 text-right tabular-nums">100%</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </Card>
+  );
+}
+
 function RelatoriosDoDia({ projeto }: { projeto: ProjetoResumo }) {
   const t = usePainelMessages();
   const [data, setData] = useState(projeto.hoje);
@@ -468,19 +591,52 @@ function exportCsv(data: AdminResultados) {
     (linha.totalCents / 100).toFixed(2),
     ...dias.map((dia) => (linha.porDia[dia] ? (linha.porDia[dia].liquidoCents / 100).toFixed(2) : "")),
   ]);
+  baixarCsv([header, ...lines], `resultados-${slugOf(data)}.csv`);
+}
+
+// The report by region and by country, both tables in one file (Wang Song).
+function exportAreasCsv(data: AdminResultados) {
+  const reais = (cents: number) => (cents / 100).toFixed(2);
+  const header = ["Nível", "Nome", "Região", "Equipes", "Membros", "Relatórios", "Dinheiro", "Pix", "Despesas", "Líquido", "Média por relatório", "% do total"];
+  const row = (nivel: string, item: ArrecadacaoAreaLinha) => [
+    nivel,
+    item.nome,
+    item.regiao ?? "",
+    item.equipes,
+    item.membros,
+    item.relatorios,
+    reais(item.dinheiroCents),
+    reais(item.pixCents),
+    reais(item.despesasCents),
+    reais(item.liquidoCents),
+    reais(item.mediaCents),
+    (item.participacao * 100).toFixed(1),
+  ];
+  const { regioes, paises, total } = data.porArea;
+  baixarCsv(
+    [header, ...regioes.map((item) => row("Região", item)), ...paises.map((item) => row("País", item)), row("Total", total)],
+    `rm-por-regiao-e-pais-${slugOf(data)}.csv`,
+  );
+}
+
+function slugOf(data: AdminResultados) {
+  const slug = (data.projeto?.nome ?? "rm").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-+|-+$/g, "").toLowerCase();
+  return slug || "rm";
+}
+
+function baixarCsv(rows: unknown[][], nome: string) {
   // A cell that starts like a formula (=, +, -, @) gets a leading apostrophe
   // so a spreadsheet shows it as text instead of evaluating it.
   const safe = (cell: unknown) => {
     const text = String(cell);
     return /^[=+\-@]/.test(text) ? `'${text}` : text;
   };
-  const csv = [header, ...lines].map((row) => row.map((cell) => `"${safe(cell).replace(/"/g, '""')}"`).join(";")).join("\n");
+  const csv = rows.map((row) => row.map((cell) => `"${safe(cell).replace(/"/g, '""')}"`).join(";")).join("\n");
   const blob = new Blob([`﻿${csv}`], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  const slug = (data.projeto?.nome ?? "rm").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-+|-+$/g, "").toLowerCase();
-  link.download = `resultados-${slug || "rm"}.csv`;
+  link.download = nome;
   link.click();
   URL.revokeObjectURL(url);
 }
