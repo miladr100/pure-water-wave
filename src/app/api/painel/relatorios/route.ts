@@ -11,12 +11,37 @@ import {
   usersById,
   type RelatorioDoc,
 } from "@/lib/hj/data";
-import type { MeusRelatorios, RelatorioBody, RelatorioRow } from "@/lib/hj/types";
+import { CATEGORIAS_DESPESA } from "@/lib/hj/contabilidade";
+import type { DespesaItem, MeusRelatorios, RelatorioBody, RelatorioRow } from "@/lib/hj/types";
 import { HjRelatorio } from "@/models/hj-relatorio";
 
 import { intField, panelContext, textField } from "../_lib/context";
 
 const MAX_CENTS = 100_000_000; // R$ 1.000.000,00 in one day is a typo
+
+const CATEGORIAS = new Set(CATEGORIAS_DESPESA.map((item) => item.id));
+
+// The day's expenses by category, in the order of the list: rows of the same
+// category are added up and empty ones dropped. null when a row is not one
+// of the categories or its amount is not a plain number of cents.
+function despesasItensOf(raw: unknown): DespesaItem[] | null {
+  if (!Array.isArray(raw)) {
+    return null;
+  }
+  const porCategoria = new Map<string, number>();
+  for (const row of raw as Partial<DespesaItem>[]) {
+    const categoria = typeof row?.categoria === "string" ? row.categoria : "";
+    const valorCents = intField(row?.valorCents, -1);
+    if (!CATEGORIAS.has(categoria) || valorCents < 0 || valorCents > MAX_CENTS) {
+      return null;
+    }
+    porCategoria.set(categoria, (porCategoria.get(categoria) ?? 0) + valorCents);
+  }
+  return CATEGORIAS_DESPESA.filter((item) => (porCategoria.get(item.id) ?? 0) > 0).map((item) => ({
+    categoria: item.id,
+    valorCents: porCategoria.get(item.id) ?? 0,
+  }));
+}
 
 // GET: my reports in the active project, newest first, with the goal.
 export async function GET() {
@@ -58,7 +83,8 @@ export async function POST(request: Request) {
     }
     const { user, hoje, projeto, equipe } = result.context;
 
-    if (!projeto) {
+    // the last fundraising project stays readable, but takes reports only while it is the active one
+    if (!projeto || !projeto.ativo) {
       return jsonError("Não há um projeto de arrecadação ativo", 409, { code: "NO_PROJECT" });
     }
     if (!equipe) {
@@ -79,7 +105,14 @@ export async function POST(request: Request) {
 
     const dinheiroCents = intField(body.dinheiroCents, -1);
     const pixCents = intField(body.pixCents, -1);
-    const despesasCents = intField(body.despesasCents, -1);
+    // With the categories, the total is their sum; a client that only knows
+    // the total still sends despesasCents alone.
+    const despesasItens = body.despesasItens === undefined ? [] : despesasItensOf(body.despesasItens);
+    if (despesasItens === null) {
+      return jsonError("Confira as despesas: categoria ou valor inválido", 400, { code: "INVALID_EXPENSE" });
+    }
+    const despesasCents =
+      body.despesasItens === undefined ? intField(body.despesasCents, -1) : despesasItens.reduce((sum, item) => sum + item.valorCents, 0);
     if ([dinheiroCents, pixCents, despesasCents].some((value) => value < 0 || value > MAX_CENTS)) {
       return jsonError("Confira os valores: use números sem sinal", 400, { code: "INVALID_AMOUNT" });
     }
@@ -97,6 +130,7 @@ export async function POST(request: Request) {
       dinheiroCents,
       pixCents,
       despesasCents,
+      despesasItens,
       liquidoCents: computeLiquido({ dinheiroCents, pixCents, despesasCents }),
       itens: intField(body.itens),
       contatos: intField(body.contatos),

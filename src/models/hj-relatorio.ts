@@ -16,6 +16,12 @@ const hjRelatorioSchema = new Schema(
     dinheiroCents: { type: Number, default: 0 },
     pixCents: { type: Number, default: 0 },
     despesasCents: { type: Number, default: 0 },
+    // the day's expenses by category (Bonn Yoo's list); despesasCents is
+    // their sum. Empty on reports sent before the categories existed.
+    despesasItens: {
+      type: [{ _id: false, categoria: { type: String, required: true }, valorCents: { type: Number, required: true } }],
+      default: [],
+    },
     // dinheiro + pix − despesas, stored so the grids never recompute it
     liquidoCents: { type: Number, default: 0 },
     itens: { type: Number, default: 0 },

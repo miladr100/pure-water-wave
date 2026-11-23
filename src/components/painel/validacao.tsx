@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/academy/api-client";
+import { categoriaDespesa } from "@/lib/hj/contabilidade";
 import { fmtDia } from "@/lib/hj/dates";
 import { fmtReais } from "@/lib/hj/rm";
 import type { RelatorioRow } from "@/lib/hj/types";
@@ -82,6 +83,15 @@ export function RelatorioLinha({
           <EstadoChip estado={row.estado} />
         </p>
         <p className="text-xs text-muted-foreground">{detail}</p>
+        {row.despesasItens.length > 0 ? (
+          <ul className="mt-1 flex flex-wrap gap-1.5" aria-label={t.relatorio.despesas}>
+            {row.despesasItens.map((item) => (
+              <li key={item.categoria} className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                {categoriaDespesa(item.categoria).nome} <span className="tabular-nums text-foreground">{fmtReais(item.valorCents, { centavos: true })}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
         {row.observacoes ? <p className="text-xs italic text-muted-foreground">“{row.observacoes}”</p> : null}
         {row.estado === "devolvido" && row.motivoDevolucao ? (
           <p className="text-xs text-coral">

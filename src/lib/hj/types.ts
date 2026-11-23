@@ -306,12 +306,18 @@ export type EquipeResumo = {
   educador: PessoaRef | null;
 };
 
+// One expense of the day in the RM report: a category of the accounting
+// list (transporte, alimentacao, …) and how much.
+export type DespesaItem = { categoria: string; valorCents: number };
+
 export type RelatorioRow = {
   id: string;
   data: string;
   dinheiroCents: number;
   pixCents: number;
   despesasCents: number;
+  // always adds up to despesasCents; a report without categories comes as one "outros"
+  despesasItens: DespesaItem[];
   liquidoCents: number;
   itens: number;
   contatos: number;
@@ -329,7 +335,9 @@ export type RelatorioBody = {
   data: string;
   dinheiroCents: number;
   pixCents: number;
-  despesasCents: number;
+  // either the total alone, or the items (their sum is then the total)
+  despesasCents?: number;
+  despesasItens?: DespesaItem[];
   itens?: number;
   contatos?: number;
   observacoes?: string;

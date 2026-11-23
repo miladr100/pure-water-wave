@@ -51,6 +51,76 @@ describe("the member's RM report", () => {
     expect(list.rm?.diasEnviados).toBe(1);
   });
 
+  it("takes the day's expenses by category and adds them up", async () => {
+    const { membro } = await createTeamSetup();
+    await signInAsPanel(membro);
+
+    const response = await send({
+      dinheiroCents: 30000,
+      pixCents: 10000,
+      despesasItens: [
+        { categoria: "alimentacao", valorCents: 1850 },
+        { categoria: "transporte", valorCents: 900 },
+        { categoria: "transporte", valorCents: 600 },
+        { categoria: "estadia", valorCents: 0 },
+      ],
+    });
+    expect(response.status).toBe(201);
+    const { relatorio } = await readJson<SendReply>(response);
+    // same category merged, zeros dropped, in the order of the list
+    expect(relatorio.despesasItens).toEqual([
+      { categoria: "transporte", valorCents: 1500 },
+      { categoria: "alimentacao", valorCents: 1850 },
+    ]);
+    expect(relatorio.despesasCents).toBe(3350);
+    expect(relatorio.liquidoCents).toBe(36650);
+  });
+
+  it("refuses an expense outside the list, and reads an old total as Outros", async () => {
+    const { membro } = await createTeamSetup();
+    await signInAsPanel(membro);
+
+    const unknown = await send({ dinheiroCents: 100, pixCents: 0, despesasItens: [{ categoria: "presente", valorCents: 500 }] });
+    expect(unknown.status).toBe(400);
+    expect((await readJson<ErrorBody>(unknown)).code).toBe("INVALID_EXPENSE");
+    const negative = await send({ dinheiroCents: 100, pixCents: 0, despesasItens: [{ categoria: "transporte", valorCents: -5 }] });
+    expect((await readJson<ErrorBody>(negative)).code).toBe("INVALID_EXPENSE");
+
+    const old = await send({ dinheiroCents: 5000, pixCents: 0, despesasCents: 700 });
+    const { relatorio } = await readJson<SendReply>(old);
+    expect(relatorio.despesasItens).toEqual([{ categoria: "outros", valorCents: 700 }]);
+    expect(relatorio.liquidoCents).toBe(4300);
+  });
+
+  it("with both the total and the categories, the categories are the total", async () => {
+    const { membro } = await createTeamSetup();
+    await signInAsPanel(membro);
+
+    const both = await send({ dinheiroCents: 5000, pixCents: 0, despesasCents: 9999, despesasItens: [{ categoria: "transporte", valorCents: 800 }] });
+    expect(both.status).toBe(201);
+    const { relatorio } = await readJson<SendReply>(both);
+    expect(relatorio.despesasCents).toBe(800);
+    expect(relatorio.liquidoCents).toBe(4200);
+
+    // each row fits, the day does not
+    const tooMuch = await send({
+      dinheiroCents: 100,
+      pixCents: 0,
+      despesasItens: [
+        { categoria: "transporte", valorCents: 60_000_000 },
+        { categoria: "estadia", valorCents: 60_000_000 },
+      ],
+    });
+    expect(tooMuch.status).toBe(400);
+    expect((await readJson<ErrorBody>(tooMuch)).code).toBe("INVALID_AMOUNT");
+
+    for (const despesasItens of ["transporte", { categoria: "transporte", valorCents: 5 }, [null], null]) {
+      const malformed = await send({ dinheiroCents: 100, pixCents: 0, despesasItens });
+      expect(malformed.status).toBe(400);
+      expect((await readJson<ErrorBody>(malformed)).code).toBe("INVALID_EXPENSE");
+    }
+  });
+
   it("sending the same day again replaces the numbers and goes back to enviado", async () => {
     const { membro, projeto, equipe } = await createTeamSetup();
     await createRelatorio(projeto._id, equipe._id, membro._id, { estado: "devolvido", motivoDevolucao: "Confere o pix" });

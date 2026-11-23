@@ -353,6 +353,8 @@ async function main() {
         const pix = Math.round((base * random() * 0.8) / 100) * 100;
         const despesas = random() < 0.3 ? Math.round((random() * 4000) / 100) * 100 : 0;
         const old = dia < addDays(hoje, -2);
+        // the day's expenses, split the way most days go: the bus and lunch
+        const transporte = Math.round((despesas * 0.6) / 100) * 100;
         docs.push({
           projetoId: projeto._id,
           equipeId: equipe._id,
@@ -361,6 +363,10 @@ async function main() {
           dinheiroCents: dinheiro,
           pixCents: pix,
           despesasCents: despesas,
+          despesasItens: [
+            { categoria: "transporte", valorCents: transporte },
+            { categoria: "alimentacao", valorCents: despesas - transporte },
+          ].filter((item) => item.valorCents > 0),
           liquidoCents: liquido(dinheiro, pix, despesas),
           itens: Math.round(random() * 12),
           contatos: Math.round(random() * 30),

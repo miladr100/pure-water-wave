@@ -11,6 +11,7 @@ import type {
   Modulos,
   PessoaRow,
   ConvidadoRow,
+  DespesaItem,
   DiaResumo,
   EquipeResumo,
   HjPrograma,
@@ -87,6 +88,7 @@ export type RelatorioDoc = {
   dinheiroCents: number;
   pixCents: number;
   despesasCents: number;
+  despesasItens?: DespesaItem[];
   liquidoCents: number;
   itens: number;
   contatos: number;
@@ -285,6 +287,16 @@ export function equipeResumo(equipe: EquipeDoc, users: Map<string, UserDoc>): Eq
   };
 }
 
+// The expenses of a report by category. One sent before the categories
+// existed (or by a client that only knows the total) is a single "outros".
+export function despesasItensDe(doc: Pick<RelatorioDoc, "despesasCents" | "despesasItens">): DespesaItem[] {
+  const itens = (doc.despesasItens ?? []).map((item) => ({ categoria: item.categoria, valorCents: item.valorCents }));
+  if (itens.length > 0) {
+    return itens;
+  }
+  return doc.despesasCents > 0 ? [{ categoria: "outros", valorCents: doc.despesasCents }] : [];
+}
+
 export function relatorioRow(
   doc: RelatorioDoc,
   users: Map<string, UserDoc>,
@@ -298,6 +310,7 @@ export function relatorioRow(
     dinheiroCents: doc.dinheiroCents,
     pixCents: doc.pixCents,
     despesasCents: doc.despesasCents,
+    despesasItens: despesasItensDe(doc),
     liquidoCents: doc.liquidoCents,
     itens: doc.itens,
     contatos: doc.contatos,
