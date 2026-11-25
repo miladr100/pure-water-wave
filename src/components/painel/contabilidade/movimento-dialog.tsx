@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowDown, Paperclip, Trash2, X } from "lucide-react";
+import { ArrowDown, Loader2, Paperclip, Trash2, X } from "lucide-react";
 import { useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
@@ -8,13 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { fmtMoeda, MEIO_NOME, MOEDAS, parseValor, valorParaCampo, type Meio, type Moeda, type Movimento, type MovimentoNovo } from "@/lib/hj/contabilidade";
-import { INICIO_DEMO } from "@/lib/hj/contabilidade-mock";
+import { fmtMoeda, MEIO_NOME, MOEDAS, parseValor, valorParaCampo, type Comprovante, type Meio, type Moeda, type Movimento, type MovimentoNovo } from "@/lib/hj/contabilidade";
 import { addDays } from "@/lib/hj/dates";
 import { cn } from "@/lib/utils";
 
 import { campo, corDe, ICONES, Segmentado } from "./pieces";
-import { useContabilidade, type Rascunho } from "./store";
+import { urlComprovante, useContabilidade, type Rascunho } from "./store";
+
+const DATA_MINIMA = "2020-01-01";
+const erroDe = (error: unknown, padrao: string) => (error instanceof Error && error.message ? error.message : padrao);
 
 // O formulário de um movimento: gasto, entrada ou transferência. Serve para
 // lançar um novo, para conferir o que o assistente propôs e para editar.
@@ -39,7 +41,7 @@ const FEITO: Record<Tipo, string> = {
 };
 
 export function MovimentoDialog({ rascunho, aoSalvar }: { rascunho: Rascunho; aoSalvar?: (mov: Movimento) => void }) {
-  const { doEscopo, combinado, moedas, categorias, pessoas, eu, hoje, salvar, remover, restaurar, fecharEditor, abrirEditor } = useContabilidade();
+  const { doEscopo, combinado, moedas, categorias, pessoas, eu, hoje, salvar, remover, restaurar, fecharEditor, abrirEditor, enviarComprovante } = useContabilidade();
   const editando = Boolean(rascunho.id);
   const arquivo = useRef<HTMLInputElement>(null);
 
@@ -55,7 +57,9 @@ export function MovimentoDialog({ rascunho, aoSalvar }: { rascunho: Rascunho; ao
   const [data, setData] = useState(rascunho.data ?? hoje);
   const [descricao, setDescricao] = useState(rascunho.descricao ?? "");
   const [responsavel, setResponsavel] = useState(rascunho.responsavel ?? eu.nome);
-  const [comprovante, setComprovante] = useState<string | null>(rascunho.comprovante ?? null);
+  const [comprovante, setComprovante] = useState<Comprovante | null>(rascunho.comprovante ?? null);
+  const [enviando, setEnviando] = useState(false);
+  const [salvando, setSalvando] = useState(false);
   const [pendente, setPendente] = useState(rascunho.pendente ?? false);
 
   const opcoesMoeda = moedas.includes(moeda) ? moedas : [...moedas, moeda];
@@ -69,7 +73,7 @@ export function MovimentoDialog({ rascunho, aoSalvar }: { rascunho: Rascunho; ao
   const recebido = cambio ? parseValor(paraValor, paraMoeda) : valorMinor;
   const mesmoLugar = tipo === "transferencia" && paraMoeda === moeda && paraMeio === meio;
   const categoriaOk = tipo === "transferencia" || doTipo.some((item) => item.id === categoriaId);
-  const valido = Boolean(projetoId && valorMinor && categoriaOk && data >= INICIO_DEMO && data <= hoje && (tipo !== "transferencia" || (recebido && !mesmoLugar)));
+  const valido = Boolean(projetoId && valorMinor && categoriaOk && data >= DATA_MINIMA && data <= hoje && (tipo !== "transferencia" || (recebido && !mesmoLugar)));
 
   function trocarTipo(next: Tipo) {
     setTipo(next);
@@ -98,30 +102,69 @@ export function MovimentoDialog({ rascunho, aoSalvar }: { rascunho: Rascunho; ao
     };
   }
 
-  function submit(event: FormEvent, outro = false) {
+  async function submit(event: FormEvent, outro = false) {
     event.preventDefault();
     const novo = montar();
-    if (!novo) {
+    if (!novo || salvando || enviando) {
       return;
     }
-    // fora do `?.()`: sem `aoSalvar` a chamada opcional nem avaliaria o argumento, e nada seria salvo
-    const salvo = salvar(novo, rascunho.id);
-    aoSalvar?.(salvo);
-    toast.success(editando ? "Movimento atualizado" : FEITO[tipo]);
-    if (outro) {
-      abrirEditor({ tipo, projetoId, moeda, meio, data, responsavel });
-    } else {
-      fecharEditor();
+    setSalvando(true);
+    try {
+      const salvo = await salvar(novo, rascunho.id);
+      aoSalvar?.(salvo);
+      toast.success(editando ? "Movimento atualizado" : FEITO[tipo]);
+      if (outro) {
+        abrirEditor({ tipo, projetoId, moeda, meio, data, responsavel });
+      } else {
+        fecharEditor();
+      }
+    } catch (error) {
+      toast.error(erroDe(error, "Não foi possível salvar o movimento"));
+      setSalvando(false);
     }
   }
 
-  function excluir() {
+  async function excluir() {
     if (!rascunho.id) {
       return;
     }
-    const apagado = remover(rascunho.id);
-    fecharEditor();
-    toast("Movimento excluído", apagado ? { action: { label: "Desfazer", onClick: () => restaurar(apagado) } } : undefined);
+    try {
+      const apagado = await remover(rascunho.id);
+      fecharEditor();
+      toast(
+        "Movimento excluído",
+        apagado
+          ? {
+              action: {
+                label: "Desfazer",
+                onClick: () => {
+                  restaurar(apagado).catch(() => toast.error("Não foi possível desfazer"));
+                },
+              },
+            }
+          : undefined,
+      );
+    } catch (error) {
+      toast.error(erroDe(error, "Não foi possível excluir"));
+    }
+  }
+
+  async function anexar(arquivoEscolhido: File | undefined) {
+    if (!arquivoEscolhido) {
+      return;
+    }
+    if (!projetoId) {
+      toast.error("Escolha a equipe antes de anexar o comprovante.");
+      return;
+    }
+    setEnviando(true);
+    try {
+      setComprovante(await enviarComprovante(arquivoEscolhido, projetoId));
+    } catch (error) {
+      toast.error(erroDe(error, "Não foi possível anexar o comprovante"));
+    } finally {
+      setEnviando(false);
+    }
   }
 
   // "1 US$ = R$ 5,42": a cotação que sai dos dois valores digitados
@@ -163,7 +206,7 @@ export function MovimentoDialog({ rascunho, aoSalvar }: { rascunho: Rascunho; ao
           <DialogTitle>{editando ? "Editar movimento" : "Novo movimento"}</DialogTitle>
           <DialogDescription className="sr-only">Registre um gasto, uma entrada ou uma transferência.</DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4">
+        <form onSubmit={(event) => void submit(event)} className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4">
           <Segmentado full label="Tipo de movimento" value={tipo} onChange={trocarTipo} options={TIPOS} />
 
           {combinado || !projetoId ? (
@@ -284,7 +327,7 @@ export function MovimentoDialog({ rascunho, aoSalvar }: { rascunho: Rascunho; ao
                     {atalho.nome}
                   </button>
                 ))}
-                <input id="mv-data" type="date" min={INICIO_DEMO} max={hoje} value={data} onChange={(event) => setData(event.target.value)} className={cn(campo, "min-w-0 flex-1 px-2")} />
+                <input id="mv-data" type="date" min={DATA_MINIMA} max={hoje} value={data} onChange={(event) => setData(event.target.value)} className={cn(campo, "min-w-0 flex-1 px-2")} />
               </div>
             </div>
             <div className="grid gap-1.5">
@@ -318,7 +361,7 @@ export function MovimentoDialog({ rascunho, aoSalvar }: { rascunho: Rascunho; ao
               accept="image/*,application/pdf"
               className="hidden"
               onChange={(event) => {
-                setComprovante(event.target.files?.[0]?.name ?? comprovante);
+                void anexar(event.target.files?.[0]);
                 // sem isto, escolher de novo o mesmo arquivo não avisa
                 event.target.value = "";
               }}
@@ -326,7 +369,9 @@ export function MovimentoDialog({ rascunho, aoSalvar }: { rascunho: Rascunho; ao
             {comprovante ? (
               <span className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-secondary py-1 pl-3 pr-1 text-sm font-medium text-primary-deep">
                 <Paperclip className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                <span className="truncate">{comprovante}</span>
+                <a href={urlComprovante(comprovante)} target="_blank" rel="noreferrer" className="truncate underline-offset-2 hover:underline">
+                  {comprovante.nome}
+                </a>
                 <button
                   type="button"
                   aria-label="Tirar o comprovante"
@@ -337,9 +382,9 @@ export function MovimentoDialog({ rascunho, aoSalvar }: { rascunho: Rascunho; ao
                 </button>
               </span>
             ) : (
-              <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => arquivo.current?.click()}>
-                <Paperclip className="h-4 w-4" aria-hidden />
-                Anexar comprovante
+              <Button type="button" variant="outline" size="sm" className="rounded-full" disabled={enviando} onClick={() => arquivo.current?.click()}>
+                {enviando ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Paperclip className="h-4 w-4" aria-hidden />}
+                {enviando ? "Enviando…" : "Anexar comprovante"}
               </Button>
             )}
             <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground">
@@ -350,12 +395,12 @@ export function MovimentoDialog({ rascunho, aoSalvar }: { rascunho: Rascunho; ao
 
           <DialogFooter className="sticky -bottom-6 z-10 -mx-6 -mb-6 gap-2 border-t border-border/60 bg-background px-6 py-4 sm:items-center sm:justify-between">
             {editando ? (
-              <Button type="button" variant="ghost" className="text-destructive hover:text-destructive sm:mr-auto" onClick={excluir}>
+              <Button type="button" variant="ghost" className="text-destructive hover:text-destructive sm:mr-auto" onClick={() => void excluir()}>
                 <Trash2 className="h-4 w-4" aria-hidden />
                 Excluir
               </Button>
             ) : (
-              <Button type="button" variant="ghost" disabled={!valido} className="sm:mr-auto" onClick={(event) => submit(event, true)}>
+              <Button type="button" variant="ghost" disabled={!valido || salvando || enviando} className="sm:mr-auto" onClick={(event) => void submit(event, true)}>
                 Salvar e adicionar outro
               </Button>
             )}
@@ -363,8 +408,8 @@ export function MovimentoDialog({ rascunho, aoSalvar }: { rascunho: Rascunho; ao
               <Button type="button" variant="ghost" onClick={fecharEditor}>
                 Cancelar
               </Button>
-              <Button type="submit" disabled={!valido}>
-                Salvar
+              <Button type="submit" disabled={!valido || salvando || enviando}>
+                {salvando ? "Salvando…" : "Salvar"}
               </Button>
             </div>
           </DialogFooter>

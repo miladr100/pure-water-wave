@@ -18,9 +18,12 @@ import type { EquipeAdmin } from "@/lib/hj/types";
 
 import { slug, useExportar } from "./linha";
 import { CatIcone, Etiqueta, Segmentado } from "./pieces";
-import { atualizarEstado, useContabilidade } from "./store";
+import { useContabilidade } from "./store";
 
-const MCP_URL = "https://purewaterwave.org/api/mcp/contabilidade";
+// o endereço do conector é o deste site (o demo, o de testes ou o de verdade)
+const mcpUrl = () => (typeof window === "undefined" ? "/api/mcp/contabilidade" : `${window.location.origin}/api/mcp/contabilidade`);
+
+const erroDe = (error: unknown) => (error instanceof Error && error.message ? error.message : "Não foi possível salvar. Tente de novo.");
 
 const PODE = [
   "Lançar gastos e entradas, um ou vários de uma vez",
@@ -31,7 +34,7 @@ const PODE = [
 ];
 
 export function AjustesScreen() {
-  const { administrador, lado } = useContabilidade();
+  const { administrador, lado, podeConectar } = useContabilidade();
   return (
     <div className="space-y-6">
       <PainelHeading eyebrow="Contabilidade" title="Ajustes" description="Moedas, categorias, exportação e a ligação com um agente." />
@@ -40,7 +43,7 @@ export function AjustesScreen() {
         <Exportar />
         <Categorias />
         <div className="space-y-6">
-          <Agente />
+          {podeConectar ? <Agente /> : null}
           {administrador && lado === "admin" ? <Acesso /> : null}
         </div>
       </div>
@@ -59,7 +62,8 @@ function Bloco({ titulo, descricao, children }: { titulo: string; descricao: Rea
 }
 
 function Moedas() {
-  const { doEscopo, combinado, movimentos, moedas } = useContabilidade();
+  const { doEscopo, combinado, movimentos, moedas, moedasLigadas, ligarMoedas } = useContabilidade();
+  const [salvando, setSalvando] = useState(false);
   const unico = combinado ? null : doEscopo[0];
   const emUso = new Set<Moeda>(["BRL"]);
   for (const mov of movimentos) {
@@ -69,14 +73,19 @@ function Moedas() {
     }
   }
 
-  function alternar(moeda: Moeda, ligada: boolean) {
+  async function alternar(moeda: Moeda, ligada: boolean) {
     if (!unico) {
       return;
     }
-    atualizarEstado((atual) => {
-      const antes = atual.moedas[unico.id] ?? [];
-      return { ...atual, moedas: { ...atual.moedas, [unico.id]: ligada ? [...new Set([...antes, moeda])] : antes.filter((item) => item !== moeda) } };
-    });
+    const antes = moedasLigadas[unico.id] ?? [];
+    setSalvando(true);
+    try {
+      await ligarMoedas(unico.id, ligada ? [...new Set([...antes, moeda])] : antes.filter((item) => item !== moeda));
+    } catch (error) {
+      toast.error(erroDe(error));
+    } finally {
+      setSalvando(false);
+    }
   }
 
   return (
@@ -101,7 +110,7 @@ function Moedas() {
                   {moeda === "BRL" ? "Sempre ligada" : presa ? "Em uso: já tem movimentos" : ligada ? "Ligada, ainda sem movimentos" : "Desligada"}
                 </span>
               </span>
-              <Switch aria-label={MOEDAS[moeda].nome} checked={ligada} disabled={!unico || presa} onCheckedChange={(value) => alternar(moeda, value)} />
+              <Switch aria-label={MOEDAS[moeda].nome} checked={ligada} disabled={!unico || presa || salvando} onCheckedChange={(value) => void alternar(moeda, value)} />
             </li>
           );
         })}
@@ -149,14 +158,14 @@ function Exportar() {
 }
 
 function Categorias() {
-  const { categorias, estado } = useContabilidade();
+  const { categorias, categoriasEmUso, criarCategoria, apagarCategoria } = useContabilidade();
   const [nome, setNome] = useState("");
   const [tipo, setTipo] = useState<"saida" | "entrada">("saida");
-  // só o que foi lançado ou editado aqui pode usar uma categoria criada aqui;
+  const [salvando, setSalvando] = useState(false);
   // vale para todas as contabilidades, não só a do seletor
-  const usadas = new Set([...estado.adicionados, ...Object.values(estado.editados)].map((mov) => mov.categoriaId));
+  const usadas = new Set(categoriasEmUso);
 
-  function criar(event: FormEvent) {
+  async function criar(event: FormEvent) {
     event.preventDefault();
     const limpo = nome.trim();
     if (!limpo) {
@@ -166,17 +175,32 @@ function Categorias() {
       toast.error("Já existe uma categoria com esse nome.");
       return;
     }
-    const nova: Categoria = { id: `c:${slug(limpo)}-${Date.now().toString(36)}`, nome: limpo, tipo, icone: "etiqueta", cor: 0 };
-    atualizarEstado((atual) => ({ ...atual, categorias: [...atual.categorias, nova] }));
-    setNome("");
-    toast.success("Categoria criada");
+    setSalvando(true);
+    try {
+      await criarCategoria(limpo, tipo);
+      setNome("");
+      toast.success("Categoria criada");
+    } catch (error) {
+      toast.error(erroDe(error));
+    } finally {
+      setSalvando(false);
+    }
   }
 
-  function apagar(categoria: Categoria) {
-    atualizarEstado((atual) => ({ ...atual, categorias: atual.categorias.filter((item) => item.id !== categoria.id) }));
-    toast("Categoria apagada", {
-      action: { label: "Desfazer", onClick: () => atualizarEstado((atual) => ({ ...atual, categorias: [...atual.categorias, categoria] })) },
-    });
+  async function apagar(categoria: Categoria) {
+    try {
+      await apagarCategoria(categoria.id);
+      toast("Categoria apagada", {
+        action: {
+          label: "Desfazer",
+          onClick: () => {
+            criarCategoria(categoria.nome, categoria.tipo).catch((error: unknown) => toast.error(erroDe(error)));
+          },
+        },
+      });
+    } catch (error) {
+      toast.error(erroDe(error));
+    }
   }
 
   const grupo = (titulo: string, qual: "saida" | "entrada") => (
@@ -196,7 +220,7 @@ function Categorias() {
               ) : (
                 <button
                   type="button"
-                  onClick={() => apagar(item)}
+                  onClick={() => void apagar(item)}
                   aria-label={`Apagar ${item.nome}`}
                   className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-destructive"
                 >
@@ -218,7 +242,7 @@ function Categorias() {
         {grupo("Gastos", "saida")}
         {grupo("Entradas", "entrada")}
       </div>
-      <form onSubmit={criar} className="mt-5 space-y-3 border-t border-border/60 pt-4">
+      <form onSubmit={(event) => void criar(event)} className="mt-5 space-y-3 border-t border-border/60 pt-4">
         <Label htmlFor="categoria-nova">Nova categoria</Label>
         <div className="flex flex-wrap items-center gap-2">
           <Input id="categoria-nova" value={nome} onChange={(event) => setNome(event.target.value)} placeholder="Ex.: Combustível" maxLength={40} className="h-10 min-w-0 flex-1 basis-40 rounded-xl" />
@@ -231,7 +255,7 @@ function Categorias() {
               { value: "entrada", label: "Entrada" },
             ]}
           />
-          <Button type="submit" className="rounded-full" disabled={!nome.trim()}>
+          <Button type="submit" className="rounded-full" disabled={!nome.trim() || salvando}>
             <Plus className="h-4 w-4" aria-hidden />
             Criar
           </Button>
@@ -242,13 +266,14 @@ function Categorias() {
 }
 
 function Agente() {
-  const { estado, escopoNome } = useContabilidade();
+  const { agentes, desconectarAgente } = useContabilidade();
   const [aberto, setAberto] = useState(false);
   const [copiado, setCopiado] = useState(false);
+  const url = mcpUrl();
 
   async function copiar() {
     try {
-      await navigator.clipboard.writeText(MCP_URL);
+      await navigator.clipboard.writeText(url);
       setCopiado(true);
       window.setTimeout(() => setCopiado(false), 2000);
     } catch {
@@ -256,29 +281,35 @@ function Agente() {
     }
   }
 
-  function desconectar(id: string, nome: string) {
-    const antes = estado.agentes;
-    atualizarEstado((atual) => ({ ...atual, agentes: atual.agentes.filter((agente) => agente.id !== id) }));
-    toast(`${nome} desconectado`, { action: { label: "Desfazer", onClick: () => atualizarEstado((atual) => ({ ...atual, agentes: antes })) } });
+  async function desconectar(id: string, nome: string) {
+    try {
+      await desconectarAgente(id);
+      toast(`${nome} desconectado. Para voltar, conecte de novo no agente.`);
+    } catch (error) {
+      toast.error(erroDe(error));
+    }
   }
 
   return (
     <Bloco
       titulo="Conectar a um agente"
-      descricao="Ligue o Claude, o ChatGPT ou outro agente que fale MCP à contabilidade, e lance gastos conversando com ele, de onde estiver."
+      descricao="Ligue o Claude, o ChatGPT ou outro agente que fale MCP à contabilidade, e lance gastos conversando com ele, de onde estiver. Só educadores e administradores conectam um agente."
     >
-      {estado.agentes.length ? (
+      {agentes.length ? (
         <ul className="mb-4 divide-y divide-border/60">
-          {estado.agentes.map((agente) => (
+          {agentes.map((agente) => (
             <li key={agente.id} className="flex items-center gap-3 py-2.5">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary-deep">
                 <Bot className="h-4 w-4" aria-hidden />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold text-foreground">{agente.nome}</span>
-                <span className="block text-xs text-muted-foreground">Conectado desde {fmtDia(agente.desde, "longo")}</span>
+                <span className="block text-xs text-muted-foreground">
+                  Conectado desde {fmtDia(agente.desde.slice(0, 10), "longo")}
+                  {agente.usadoEm ? ` · usado pela última vez em ${fmtDia(agente.usadoEm.slice(0, 10), "longo")}` : ""}
+                </span>
               </span>
-              <Button type="button" variant="ghost" size="sm" className="rounded-full text-muted-foreground" onClick={() => desconectar(agente.id, agente.nome)}>
+              <Button type="button" variant="ghost" size="sm" className="rounded-full text-muted-foreground" onClick={() => void desconectar(agente.id, agente.nome)}>
                 Desconectar
               </Button>
             </li>
@@ -297,15 +328,15 @@ function Agente() {
           <DialogHeader>
             <DialogTitle>Conectar um agente</DialogTitle>
             <DialogDescription>
-              No seu agente, adicione um conector (servidor MCP) com este endereço e entre com a sua conta da Pure Water Wave. Ele vê as mesmas
-              contabilidades que você: agora, {escopoNome}.
+              No seu agente, adicione um conector (servidor MCP) com este endereço. Ele abre esta página para você entrar com a sua conta da Pure
+              Water Wave e permitir. O agente vê as mesmas contabilidades que você.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
               <Label htmlFor="mcp-url">Endereço do conector</Label>
               <div className="mt-1.5 flex gap-2">
-                <Input id="mcp-url" readOnly value={MCP_URL} onFocus={(event) => event.target.select()} className="h-10 min-w-0 flex-1 rounded-xl font-mono text-xs" />
+                <Input id="mcp-url" readOnly value={url} onFocus={(event) => event.target.select()} className="h-10 min-w-0 flex-1 rounded-xl font-mono text-xs" />
                 <Button type="button" variant="outline" className="shrink-0 rounded-full" onClick={copiar}>
                   {copiado ? <Check className="h-4 w-4" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
                   {copiado ? "Copiado" : "Copiar"}
@@ -343,7 +374,7 @@ type EquipesReply = { equipes: EquipeAdmin[] };
 // Só o administrador: quais educadores veem todas as contabilidades, e não só
 // as das equipes de que cuidam.
 function Acesso() {
-  const { eu, estado } = useContabilidade();
+  const { eu, veTodas, setVeTodas } = useContabilidade();
   const { data } = useApi<EquipesReply>("/api/admin/hj/equipes");
   const educadores = new Map<string, { nome: string; equipes: string[] }>();
   for (const equipe of data?.equipes ?? []) {
@@ -356,7 +387,7 @@ function Acesso() {
   }
 
   function alternar(id: string, liga: boolean) {
-    atualizarEstado((atual) => ({ ...atual, veTodas: liga ? [...new Set([...atual.veTodas, id])] : atual.veTodas.filter((item) => item !== id) }));
+    setVeTodas(id, liga).catch((error: unknown) => toast.error(erroDe(error)));
   }
 
   return (
@@ -387,10 +418,10 @@ function Acesso() {
             <span className="min-w-0 flex-1">
               <span className="block text-sm font-semibold text-foreground">{educador.nome}</span>
               <span className="block text-xs leading-snug text-muted-foreground">
-                {estado.veTodas.includes(id) ? "Vê todas as contabilidades" : `Só as suas: ${educador.equipes.join(", ")}`}
+                {veTodas.includes(id) ? "Vê todas as contabilidades" : `Só as suas: ${educador.equipes.join(", ")}`}
               </span>
             </span>
-            <Switch aria-label={`${educador.nome} vê todas as contabilidades`} checked={estado.veTodas.includes(id)} onCheckedChange={(value) => alternar(id, value)} />
+            <Switch aria-label={`${educador.nome} vê todas as contabilidades`} checked={veTodas.includes(id)} onCheckedChange={(value) => alternar(id, value)} />
           </li>
         ))}
       </ul>

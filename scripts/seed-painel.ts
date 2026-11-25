@@ -17,6 +17,11 @@ import { HjPrograma } from "@/models/hj-programa";
 import { HjProjeto } from "@/models/hj-projeto";
 import { HjRelatorio } from "@/models/hj-relatorio";
 import { SystemUser } from "@/models/system-user";
+import { HjContabComprovante } from "@/models/hj-contab-comprovante";
+import { HjContabConfig } from "@/models/hj-contab-config";
+import { HjContabMovimento } from "@/models/hj-contab-movimento";
+
+import { seedContabilidade } from "./seed-contabilidade";
 
 // `npm run seed:painel`: a demo HJ Team the size of the real one — one RM
 // project running today, thirteen teams across HJ Academy, HJ Rang, Pure
@@ -171,6 +176,9 @@ async function main() {
     HjLancamento.deleteMany({}),
     HjReuniao.deleteMany({}),
     HjOrientacao.deleteMany({}),
+    HjContabMovimento.deleteMany({}),
+    HjContabComprovante.deleteMany({}),
+    HjContabConfig.deleteMany({}),
     AcademyUser.deleteMany({ email: demoEmails, login: { $not: /^(tutor|aluno|hjteam\.teste)@/ } }),
     SystemUser.deleteMany({ email: demoEmails, role: "pastor" }),
   ]);
@@ -533,6 +541,9 @@ async function main() {
     { membroId: ids.get("carlos.membro"), educadorId: ids.get("david.educador"), motivo: "Estou com dificuldade de bater a meta e queria conversar sobre como abordar as pessoas.", disponibilidade: "qualquer dia depois das 19h", estado: "solicitada" },
     { membroId: ids.get("ana.membro"), educadorId: ids.get("david.educador"), motivo: "Quero orientação sobre a jornada da Marina (Sistema 1).", disponibilidade: "sábado de manhã", estado: "confirmada", dataHora: new Date(`${addDays(hoje, 2)}T19:00:00-03:00`), local: "Centro de São Paulo", resposta: "Combinado, te espero lá.", respondidaEm: new Date(), vistaPeloEducadorEm: new Date() },
   ]);
+
+  const contabilidade = await seedContabilidade();
+  console.log(`Contabilidade: ${contabilidade} movimentos de demonstração.`);
 
   const membros = teams.reduce((sum, team) => sum + team.membros.length, 0);
   console.log(`Painel demo pronto: projeto "${projeto.nome}", ${teams.length} equipes, ${membros} membros, ${EDUCADORES.length} educadores, ${PASTORES.length} pastores, ${relatorios} relatórios, ${guests.length} convidados.`);

@@ -95,7 +95,48 @@ export function EquipeScreen() {
 
           <Card>
             <Eyebrow className="mb-3">{t.equipe.membersToday}</Eyebrow>
-            <div className="overflow-x-auto">
+            {/* no celular, um cartão por membro: a tabela de cinco colunas não cabe */}
+            <ul className="divide-y divide-border/60 sm:hidden">
+              {membros.map((membro) => (
+                <li key={membro.id} className="py-3">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="min-w-0 text-sm">
+                      <span className="font-medium">{membro.nome}</span>
+                      {membro.capitao ? <span className="ml-2 text-xs text-muted-foreground">{t.equipe.captain.toLowerCase()}</span> : null}
+                    </span>
+                    {membro.hoje ? (
+                      <span className="flex shrink-0 items-center gap-2 text-sm">
+                        <Reais cents={membro.hoje.liquidoCents} className="font-semibold" />
+                        <EstadoChip estado={membro.hoje.estado} />
+                      </span>
+                    ) : (
+                      <span className="shrink-0 text-sm text-coral">{t.equipe.notSent}</span>
+                    )}
+                  </div>
+                  <dl className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-muted-foreground">
+                    <div className="flex gap-1">
+                      <dt>{t.equipe.meta}</dt>
+                      <dd className="tabular-nums text-foreground">
+                        <Reais cents={membro.metaCents} />
+                      </dd>
+                    </div>
+                    <div className="flex gap-1">
+                      <dt>{t.equipe.media}</dt>
+                      <dd className="tabular-nums">
+                        <Reais cents={membro.mediaCents} />
+                      </dd>
+                    </div>
+                    <div className="flex gap-1">
+                      <dt>{t.equipe.total}</dt>
+                      <dd className="font-semibold tabular-nums text-foreground">
+                        <Reais cents={membro.totalCents} />
+                      </dd>
+                    </div>
+                  </dl>
+                </li>
+              ))}
+            </ul>
+            <div className="hidden overflow-x-auto sm:block">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">

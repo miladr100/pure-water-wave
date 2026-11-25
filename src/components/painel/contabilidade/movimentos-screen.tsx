@@ -11,8 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { fmtMes, fmtMoeda, MOEDAS, mesDe, resumo, saldoDe, saldoNoDia, saldoPorDia, semAcento, valorSimples, type Moeda, type Origem } from "@/lib/hj/contabilidade";
-import { INICIO_DEMO } from "@/lib/hj/contabilidade-mock";
-import { fmtDia } from "@/lib/hj/dates";
+import { fmtDia, maiuscula } from "@/lib/hj/dates";
 
 import { LinhaMovimento, slug, useExportar } from "./linha";
 import { campo, corEntrada, MesStepper, MoedaPills, Segmentado, Vazio } from "./pieces";
@@ -25,7 +24,7 @@ const SEM_FILTRO: Filtros = { categoria: "", responsavel: "", origem: "", penden
 const PASSO = 60;
 
 export function MovimentosScreen() {
-  const { movimentos, moedas, hoje, categorias, categoria, projeto, combinado, escopoNome } = useContabilidade();
+  const { movimentos, moedas, hoje, inicio, categorias, categoria, projeto, combinado, escopoNome } = useContabilidade();
   const exportar = useExportar();
   const [mes, setMes] = useState(mesDe(hoje));
   const [moedaEscolhida, setMoeda] = useState<Moeda>("BRL");
@@ -107,7 +106,7 @@ export function MovimentosScreen() {
       />
 
       <div className="!mt-0 flex flex-wrap items-center gap-3">
-        <MesStepper mes={mes} onChange={setMes} min={mesDe(INICIO_DEMO)} max={mesDe(hoje)} />
+        <MesStepper mes={mes} onChange={setMes} min={mesDe(inicio)} max={mesDe(hoje)} />
         <MoedaPills moedas={moedas} value={moeda} onChange={setMoeda} />
       </div>
 
@@ -121,6 +120,7 @@ export function MovimentosScreen() {
       <Card className="!p-4 sm:!p-5">
         <div className="flex flex-wrap items-center gap-2">
           <Segmentado
+            cheioNoCelular
             label="Tipo de movimento"
             value={tipo}
             onChange={setTipo}
@@ -215,7 +215,7 @@ export function MovimentosScreen() {
             {dias.map((grupo) => (
               <section key={grupo.dia} className="mt-4 first:mt-2">
                 <div className="flex items-center justify-between gap-3 border-b border-border/60 pb-2">
-                  <h2 className="text-sm font-semibold capitalize text-primary-deep">{grupo.dia === hoje ? "Hoje" : fmtDia(grupo.dia, "longo")}</h2>
+                  <h2 className="text-sm font-semibold text-primary-deep">{grupo.dia === hoje ? "Hoje" : maiuscula(fmtDia(grupo.dia, "longo"))}</h2>
                   <span className="rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-semibold tabular-nums text-muted-foreground" title={`Saldo em ${MOEDAS[moeda].nome.toLowerCase()} ao final do dia`}>
                     Saldo {fmtMoeda(saldoNoDia(corrente, grupo.dia), moeda)}
                   </span>

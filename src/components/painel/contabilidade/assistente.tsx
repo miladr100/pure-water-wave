@@ -1,32 +1,33 @@
 "use client";
 
-import { Camera, Check, Mic, Paperclip, Pencil, Send, Sparkles, X } from "lucide-react";
+import { Camera, Check, Loader2, Mic, Paperclip, Pencil, Send, Sparkles, Square, X } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { fmtMes, fmtMoeda, MEIO_NOME, MOEDAS, mesDe, saldos, somaMes } from "@/lib/hj/contabilidade";
+import { toast } from "sonner";
+
+import { fmtMes, fmtMoeda, MEIO_NOME, MOEDAS, mesDe, saldos, somaMes, type Comprovante } from "@/lib/hj/contabilidade";
 import { interpretar, perguntaDe, type Pergunta, type Proposta } from "@/lib/hj/contabilidade-assistente";
-import { INICIO_DEMO } from "@/lib/hj/contabilidade-mock";
 import { addDays, fmtDia } from "@/lib/hj/dates";
 import { cn } from "@/lib/utils";
 
 import { CatIcone, corEntrada, Etiqueta } from "./pieces";
-import { useContabilidade } from "./store";
+import { apiForm, BASE_API, encolherFoto, urlComprovante, useContabilidade } from "./store";
 
-// O assistente: a pessoa escreve (ou fala, ou fotografa o comprovante) e ele
-// devolve cartões de movimento para confirmar. Também responde perguntas sobre
-// o saldo e os gastos. Neste protótipo a leitura é feita por regras no próprio
-// navegador; foto e áudio são simulados.
+// O assistente: a pessoa escreve, fala (nota de voz) ou fotografa o comprovante,
+// e o servidor (Claude; o áudio passa antes pelo Whisper) devolve cartões de
+// movimento para confirmar, ou responde perguntas sobre os números. Nada é
+// salvo sem a pessoa confirmar cada cartão.
 
 type Cartao = Proposta & {
   id: string;
-  estado: "aberta" | "confirmada" | "descartada";
-  comprovante: string | null;
+  estado: "aberta" | "salvando" | "confirmada" | "descartada";
+  comprovante: Comprovante | null;
   // a contabilidade em que foi salvo: o seletor pode mudar depois
   salvoEm?: string;
 };
-type Mensagem = { id: number; de: "eu" | "assistente"; texto?: string; cartoes?: Cartao[]; anexo?: string };
+type Mensagem = { id: number; de: "eu" | "assistente"; texto?: string; cartoes?: Cartao[]; anexo?: string; voz?: boolean };
 
 const SUGESTOES = [
   "Gastei 18 de ônibus e 32 no almoço",
@@ -35,27 +36,60 @@ const SUGESTOES = [
   "Qual é o saldo?",
 ];
 
-const DITADO = "Ontem paguei 45 de gasolina no pix e 12,50 de lanche";
+// a nota de voz para sozinha aos dois minutos
+const MAX_GRAVACAO_S = 120;
+
+type Resposta = { texto: string; propostas: Proposta[]; comprovante?: Comprovante; transcricao?: string; semAudio?: boolean };
 
 export function Assistente() {
-  const { assistenteAberto, setAssistenteAberto, eu, hoje, doEscopo, escopoNome, movimentos, moedas, categorias, categoria, projeto, salvar, abrirEditor } =
-    useContabilidade();
+  const {
+    assistenteAberto,
+    setAssistenteAberto,
+    eu,
+    hoje,
+    inicio,
+    doEscopo,
+    escopoNome,
+    movimentos,
+    moedas,
+    categorias,
+    categoria,
+    projeto,
+    salvar,
+    abrirEditor,
+    assistenteIA,
+  } = useContabilidade();
   const [mensagens, setMensagens] = useState<Mensagem[]>([]);
   const [texto, setTexto] = useState("");
   const [pensando, setPensando] = useState(false);
-  const [ouvindo, setOuvindo] = useState(false);
+  const [gravando, setGravando] = useState<number | null>(null);
   const [destinoId, setDestinoId] = useState("");
   const conta = useRef(0);
   const fim = useRef<HTMLDivElement>(null);
   const arquivo = useRef<HTMLInputElement>(null);
   const camera = useRef<HTMLInputElement>(null);
+  const gravador = useRef<{ recorder: MediaRecorder; stream: MediaStream; partes: Blob[]; timer: number } | null>(null);
 
-  const destino = doEscopo.some((projeto) => projeto.id === destinoId) ? destinoId : (doEscopo[0]?.id ?? "");
+  const destino = doEscopo.some((item) => item.id === destinoId) ? destinoId : (doEscopo[0]?.id ?? "");
   const primeiroNome = eu.nome.split(" ")[0];
+  const podeGravar = assistenteIA.audio && typeof window !== "undefined" && "MediaRecorder" in window && Boolean(navigator.mediaDevices?.getUserMedia);
 
   useEffect(() => {
     fim.current?.scrollIntoView({ block: "end" });
   }, [mensagens, pensando]);
+
+  // fechar o painel no meio de uma gravação solta o microfone
+  useEffect(() => {
+    if (!assistenteAberto && gravador.current) {
+      const atual = gravador.current;
+      gravador.current = null;
+      window.clearInterval(atual.timer);
+      atual.recorder.onstop = null;
+      atual.recorder.stop();
+      atual.stream.getTracks().forEach((track) => track.stop());
+      setGravando(null);
+    }
+  }, [assistenteAberto]);
 
   function nova(mensagem: Omit<Mensagem, "id">) {
     conta.current += 1;
@@ -63,13 +97,14 @@ export function Assistente() {
     setMensagens((atual) => [...atual, { ...mensagem, id }]);
   }
 
-  function cartoesDe(propostas: Proposta[], comprovante: string | null = null): Cartao[] {
+  function cartoesDe(propostas: Proposta[], comprovante: Comprovante | null = null): Cartao[] {
     return propostas.map((proposta) => {
       conta.current += 1;
       return { ...proposta, id: `c${conta.current}`, estado: "aberta", comprovante };
     });
   }
 
+  // Sem chave de IA no ambiente, o texto ainda é lido por regras aqui mesmo.
   function responderPergunta(pergunta: Pergunta): string {
     if (pergunta.kind === "saldo") {
       const linhas = saldos(movimentos, moedas)
@@ -102,13 +137,13 @@ export function Assistente() {
     return `${quando} ${verbo} ${fmtMoeda(total, "BRL")}${oQue} em ${escopoNome}, em ${achados.length} ${achados.length === 1 ? "movimento" : "movimentos"}.`;
   }
 
-  function responder(mensagem: string) {
+  function responderLocal(mensagem: string) {
     const pergunta = perguntaDe(mensagem);
     if (pergunta) {
       nova({ de: "assistente", texto: responderPergunta(pergunta) });
       return;
     }
-    const propostas = interpretar(mensagem, hoje, categorias, { inicio: INICIO_DEMO });
+    const propostas = interpretar(mensagem, hoje, categorias, { inicio });
     if (!propostas.length) {
       nova({ de: "assistente", texto: "Não encontrei um valor nessa mensagem. Tente algo como “gastei 18 de ônibus e 32 no almoço”." });
       return;
@@ -120,54 +155,161 @@ export function Assistente() {
     });
   }
 
-  function enviar(mensagem: string) {
+  // Uma volta com o servidor: o texto, a foto ou o áudio vão juntos com a conversa até aqui.
+  async function perguntar(partes: { mensagem?: string; foto?: File; audio?: Blob }) {
+    const form = new FormData();
+    form.append("livroId", destino);
+    form.append("livroIds", doEscopo.map((item) => item.id).join(","));
+    form.append(
+      "historico",
+      JSON.stringify(
+        mensagens
+          .filter((item) => item.texto)
+          .slice(-8)
+          .map((item) => ({ de: item.de, texto: item.texto })),
+      ),
+    );
+    if (partes.mensagem) {
+      form.append("mensagem", partes.mensagem);
+    }
+    if (partes.foto) {
+      form.append("foto", await encolherFoto(partes.foto));
+    }
+    if (partes.audio) {
+      form.append("audio", partes.audio, "nota");
+    }
+    return apiForm<Resposta>(`${BASE_API}/assistente`, form);
+  }
+
+  function mostrar(resposta: Resposta) {
+    nova({
+      de: "assistente",
+      texto: resposta.texto,
+      cartoes: resposta.propostas.length ? cartoesDe(resposta.propostas, resposta.comprovante ?? null) : undefined,
+    });
+  }
+
+  const falhou = (error: unknown) =>
+    nova({ de: "assistente", texto: error instanceof Error && error.message ? error.message : "O assistente não respondeu agora. Tente de novo." });
+
+  async function enviar(mensagem: string) {
     const limpa = mensagem.trim();
     if (!limpa || pensando) {
       return;
     }
     nova({ de: "eu", texto: limpa });
     setTexto("");
+    if (!assistenteIA.texto) {
+      responderLocal(limpa);
+      return;
+    }
     setPensando(true);
-    window.setTimeout(() => {
+    try {
+      mostrar(await perguntar({ mensagem: limpa }));
+    } catch (error) {
+      falhou(error);
+    } finally {
       setPensando(false);
-      responder(limpa);
-    }, 500);
+    }
   }
 
   function submit(event: FormEvent) {
     event.preventDefault();
-    enviar(texto);
+    void enviar(texto);
   }
 
-  // No protótipo, qualquer foto vira o mesmo cupom lido.
-  function anexar(nome: string | undefined) {
-    if (!nome || pensando) {
+  async function anexar(foto: File | undefined) {
+    if (!foto || pensando) {
       return;
     }
-    nova({ de: "eu", anexo: nome });
+    if (!assistenteIA.foto) {
+      nova({ de: "assistente", texto: "A leitura de comprovantes ainda não está ligada neste ambiente. Use “+ Novo” e anexe a foto ao movimento." });
+      return;
+    }
+    nova({ de: "eu", anexo: foto.name || "Foto", texto: texto.trim() || undefined });
+    const junto = texto.trim();
+    setTexto("");
     setPensando(true);
-    window.setTimeout(() => {
+    try {
+      mostrar(await perguntar({ foto, mensagem: junto || undefined }));
+    } catch (error) {
+      falhou(error);
+    } finally {
       setPensando(false);
-      nova({
-        de: "assistente",
-        texto: "Li o comprovante. O valor e a data vieram do cupom; confira a categoria:",
-        cartoes: cartoesDe(
-          [{ tipo: "saida", valorMinor: 4790, moeda: "BRL", meio: "conta", categoriaId: "alimentacao", data: hoje, descricao: "Supermercado Bom Preço", revisar: true }],
-          nome,
-        ),
-      });
-    }, 900);
+    }
   }
 
-  function ditar() {
-    if (ouvindo || pensando) {
+  async function gravar() {
+    if (pensando) {
       return;
     }
-    setOuvindo(true);
-    window.setTimeout(() => {
-      setOuvindo(false);
-      setTexto(DITADO);
-    }, 1200);
+    if (gravador.current) {
+      parar();
+      return;
+    }
+    let stream: MediaStream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch {
+      nova({ de: "assistente", texto: "Não tenho acesso ao microfone. Libere o microfone para este site e tente de novo, ou escreva." });
+      return;
+    }
+    const tipo = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg"].find((item) => MediaRecorder.isTypeSupported(item));
+    const recorder = new MediaRecorder(stream, tipo ? { mimeType: tipo } : undefined);
+    const partes: Blob[] = [];
+    recorder.ondataavailable = (event) => {
+      if (event.data.size) {
+        partes.push(event.data);
+      }
+    };
+    recorder.onstop = () => {
+      stream.getTracks().forEach((track) => track.stop());
+      const audio = new Blob(partes, { type: recorder.mimeType || "audio/webm" });
+      void enviarAudio(audio);
+    };
+    // conta em quartos de segundo: basta para o relógio e para o limite
+    let quartos = 0;
+    const timer = window.setInterval(() => {
+      quartos += 1;
+      const segundos = Math.floor(quartos / 4);
+      setGravando(segundos);
+      if (segundos >= MAX_GRAVACAO_S) {
+        parar();
+      }
+    }, 250);
+    gravador.current = { recorder, stream, partes, timer };
+    recorder.start();
+    setGravando(0);
+  }
+
+  function parar() {
+    const atual = gravador.current;
+    if (!atual) {
+      return;
+    }
+    gravador.current = null;
+    window.clearInterval(atual.timer);
+    setGravando(null);
+    atual.recorder.stop();
+  }
+
+  async function enviarAudio(audio: Blob) {
+    if (audio.size < 1000) {
+      nova({ de: "assistente", texto: "O áudio ficou curto demais. Segure um pouco mais e fale." });
+      return;
+    }
+    setPensando(true);
+    try {
+      const resposta = await perguntar({ audio });
+      if (resposta.transcricao) {
+        nova({ de: "eu", texto: resposta.transcricao, voz: true });
+      }
+      mostrar(resposta);
+    } catch (error) {
+      falhou(error);
+    } finally {
+      setPensando(false);
+    }
   }
 
   function marcar(id: string, mudou: Partial<Cartao>) {
@@ -195,9 +337,15 @@ export function Assistente() {
     };
   }
 
-  function confirmar(cartao: Cartao) {
-    salvar(rascunhoDe(cartao));
-    marcar(cartao.id, { estado: "confirmada", salvoEm: doEscopo.find((projeto) => projeto.id === destino)?.nome ?? escopoNome });
+  async function confirmar(cartao: Cartao) {
+    marcar(cartao.id, { estado: "salvando" });
+    try {
+      const mov = await salvar(rascunhoDe(cartao));
+      marcar(cartao.id, { estado: "confirmada", salvoEm: projeto(mov.projetoId)?.nome ?? escopoNome });
+    } catch (error) {
+      marcar(cartao.id, { estado: "aberta" });
+      toast.error(error instanceof Error ? error.message : "Não foi possível salvar");
+    }
   }
 
   // O cartão continua aberto enquanto o formulário não salva: quem cancela lá
@@ -258,7 +406,7 @@ export function Assistente() {
                   <button
                     key={sugestao}
                     type="button"
-                    onClick={() => enviar(sugestao)}
+                    onClick={() => void enviar(sugestao)}
                     className="cursor-pointer rounded-2xl border border-border/70 bg-card px-3.5 py-2 text-left text-sm text-foreground transition-colors hover:border-primary/50 hover:bg-secondary"
                   >
                     {sugestao}
@@ -277,9 +425,13 @@ export function Assistente() {
                       <Paperclip className="h-4 w-4 shrink-0" aria-hidden />
                       <span className="truncate">{mensagem.anexo}</span>
                     </span>
-                  ) : (
-                    mensagem.texto
-                  )}
+                  ) : null}
+                  {mensagem.texto ? (
+                    <span className={cn("flex items-start gap-2", mensagem.anexo && "mt-1")}>
+                      {mensagem.voz ? <Mic className="mt-0.5 h-3.5 w-3.5 shrink-0 opacity-80" aria-label="Nota de voz" /> : null}
+                      <span>{mensagem.texto}</span>
+                    </span>
+                  ) : null}
                 </div>
               </div>
             ) : (
@@ -303,7 +455,16 @@ export function Assistente() {
                         ["Categoria", categoria(cartao.categoriaId)?.nome ?? "Outros"],
                         ["Moeda", `${MOEDAS[cartao.moeda].nome} · ${MEIO_NOME[cartao.meio]}`],
                         ["Data", cartao.data === hoje ? "Hoje" : cartao.data === addDays(hoje, -1) ? "Ontem" : fmtDia(cartao.data)],
-                        ...(cartao.comprovante ? [["Comprovante", cartao.comprovante]] : []),
+                        ...(cartao.comprovante
+                          ? [
+                              [
+                                "Comprovante",
+                                <a key="c" href={urlComprovante(cartao.comprovante)} target="_blank" rel="noreferrer" className="text-primary underline-offset-2 hover:underline">
+                                  {cartao.comprovante.nome}
+                                </a>,
+                              ] as const,
+                            ]
+                          : []),
                       ].map(([rotulo, valor]) => (
                         <div key={rotulo} className="flex items-baseline justify-between gap-4 py-1.5">
                           <dt className="shrink-0 text-muted-foreground">{rotulo}</dt>
@@ -311,13 +472,13 @@ export function Assistente() {
                         </div>
                       ))}
                     </dl>
-                    {cartao.estado === "aberta" ? (
+                    {cartao.estado === "aberta" || cartao.estado === "salvando" ? (
                       <div className="mt-3 flex items-center gap-2">
-                        <Button type="button" size="sm" className="rounded-full" onClick={() => confirmar(cartao)}>
-                          <Check className="h-4 w-4" aria-hidden />
+                        <Button type="button" size="sm" className="rounded-full" disabled={cartao.estado === "salvando"} onClick={() => void confirmar(cartao)}>
+                          {cartao.estado === "salvando" ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Check className="h-4 w-4" aria-hidden />}
                           Confirmar
                         </Button>
-                        <Button type="button" size="sm" variant="outline" className="rounded-full" onClick={() => editar(cartao)}>
+                        <Button type="button" size="sm" variant="outline" className="rounded-full" disabled={cartao.estado === "salvando"} onClick={() => editar(cartao)}>
                           <Pencil className="h-3.5 w-3.5" aria-hidden />
                           Editar
                         </Button>
@@ -355,16 +516,17 @@ export function Assistente() {
 
         <form onSubmit={submit} className="border-t border-border/60 px-3 pb-3 pt-2.5">
           <div className="flex items-center gap-1 rounded-3xl border border-input bg-card py-1 pl-1 pr-1.5 focus-within:ring-2 focus-within:ring-ring">
-            <button type="button" className={iconeBotao} aria-label="Anexar comprovante" disabled={pensando} onClick={() => arquivo.current?.click()}>
+            <button type="button" className={iconeBotao} aria-label="Anexar comprovante" disabled={pensando || gravando !== null} onClick={() => arquivo.current?.click()}>
               <Paperclip className="h-[18px] w-[18px]" />
             </button>
-            <button type="button" className={cn(iconeBotao, "sm:hidden")} aria-label="Tirar foto" disabled={pensando} onClick={() => camera.current?.click()}>
+            <button type="button" className={cn(iconeBotao, "sm:hidden")} aria-label="Tirar foto" disabled={pensando || gravando !== null} onClick={() => camera.current?.click()}>
               <Camera className="h-[18px] w-[18px]" />
             </button>
             <input
               value={texto}
               onChange={(event) => setTexto(event.target.value)}
-              placeholder={ouvindo ? "Ouvindo…" : "Gastei 18 de ônibus…"}
+              placeholder={gravando !== null ? `Gravando… ${Math.floor(gravando / 60)}:${String(gravando % 60).padStart(2, "0")} — toque no quadrado para enviar` : "Gastei 18 de ônibus…"}
+              disabled={gravando !== null}
               aria-label="Mensagem para o assistente"
               className="h-10 min-w-0 flex-1 bg-transparent px-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
             />
@@ -372,15 +534,43 @@ export function Assistente() {
               <button type="submit" aria-label="Enviar" disabled={pensando} className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground disabled:opacity-50">
                 <Send className="h-4 w-4" />
               </button>
-            ) : (
-              <button type="button" className={cn(iconeBotao, ouvindo && "bg-coral/15 text-coral")} aria-label="Ditar" aria-pressed={ouvindo} onClick={ditar}>
-                <Mic className="h-[18px] w-[18px]" />
+            ) : podeGravar ? (
+              <button
+                type="button"
+                className={cn(iconeBotao, gravando !== null && "bg-coral/15 text-coral")}
+                aria-label={gravando !== null ? "Parar e enviar a nota de voz" : "Gravar nota de voz"}
+                aria-pressed={gravando !== null}
+                disabled={pensando}
+                onClick={() => void gravar()}
+              >
+                {gravando !== null ? <Square className="h-4 w-4 fill-current" /> : <Mic className="h-[18px] w-[18px]" />}
               </button>
-            )}
+            ) : null}
           </div>
-          <p className="mt-2 px-2 text-center text-[11px] text-muted-foreground">Protótipo: a foto e o áudio são simulados.</p>
-          <input ref={arquivo} type="file" accept="image/*,application/pdf" className="hidden" onChange={(event) => { anexar(event.target.files?.[0]?.name); event.target.value = ""; }} />
-          <input ref={camera} type="file" accept="image/*" capture="environment" className="hidden" onChange={(event) => { anexar(event.target.files?.[0]?.name); event.target.value = ""; }} />
+          {!assistenteIA.texto ? (
+            <p className="mt-2 px-2 text-center text-[11px] text-muted-foreground">A IA não está ligada neste ambiente: o texto é lido por regras, sem foto nem áudio.</p>
+          ) : null}
+          <input
+            ref={arquivo}
+            type="file"
+            accept="image/*,application/pdf"
+            className="hidden"
+            onChange={(event) => {
+              void anexar(event.target.files?.[0]);
+              event.target.value = "";
+            }}
+          />
+          <input
+            ref={camera}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={(event) => {
+              void anexar(event.target.files?.[0]);
+              event.target.value = "";
+            }}
+          />
         </form>
       </SheetContent>
     </Sheet>

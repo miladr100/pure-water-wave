@@ -2,8 +2,8 @@
 // é um "projeto" com movimentos em uma ou mais moedas. Os saldos nunca são
 // convertidos nem somados entre moedas — cada moeda tem o seu.
 //
-// Este arquivo é só tipos e contas, sem banco: o primeiro desenho roda com
-// dados gerados no navegador (ver contabilidade-mock.ts).
+// Este arquivo é só tipos e contas, sem banco: vale no navegador e no
+// servidor (o banco fica em contabilidade-server.ts).
 
 export const MOEDAS = {
   BRL: { nome: "Real", simbolo: "R$", decimais: 2 },
@@ -39,12 +39,14 @@ export type Movimento = {
   origem: Origem;
   // marcado para conferir depois (falta o comprovante, valor a confirmar…)
   pendente: boolean;
-  comprovante: string | null;
+  comprovante: Comprovante | null;
   // transferência: o lado que recebe (outra moeda = câmbio; outro meio = depósito)
   para?: { moeda: Moeda; meio: Meio; valorMinor: number };
   // ordem dentro do dia
   seq: number;
 };
+
+export type Comprovante = { id: string; nome: string; mime: string };
 
 export type MovimentoNovo = Omit<Movimento, "id" | "seq">;
 
@@ -376,3 +378,29 @@ export function csvDe(
   }
   return `﻿${linhas.map((linha) => linha.map(celula).join(";")).join("\r\n")}\r\n`;
 }
+
+// ---- API ------------------------------------------------------------------
+
+export type Agente = { id: string; nome: string; desde: string; usadoEm: string | null };
+
+// GET /api/painel/contabilidade: tudo o que as telas precisam de um lado.
+export type ContabilidadeReply = {
+  lado: "painel" | "admin";
+  hoje: string;
+  livros: ProjetoContabil[];
+  grupos: { id: string; nome: string; projetoIds: string[] }[];
+  administrador: boolean;
+  // ligar um agente (MCP) fica com educadores e administradores
+  podeConectar: boolean;
+  movimentos: Movimento[];
+  categorias: Categoria[];
+  // categorias criadas que já têm movimento (não se apagam)
+  categoriasEmUso: string[];
+  // moedas ligadas à mão em cada livro
+  moedasLigadas: Record<string, Moeda[]>;
+  // só para o administrador: educadores que veem todas as contabilidades
+  veTodas: string[];
+  agentes: Agente[];
+  // o assistente lê foto e áudio (há chave de IA no ambiente)
+  assistenteIA: { texto: boolean; foto: boolean; audio: boolean };
+};

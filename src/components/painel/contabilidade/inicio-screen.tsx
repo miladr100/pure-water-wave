@@ -30,16 +30,15 @@ import {
   type Moeda,
   type Saldo,
 } from "@/lib/hj/contabilidade";
-import { INICIO_DEMO } from "@/lib/hj/contabilidade-mock";
 import { cn } from "@/lib/utils";
 
 import { Colunas, dobrar, Rosca } from "./charts";
 import { LinhaMovimento } from "./linha";
 import { corEntrada, MesStepper, MoedaPills, Segmentado, Vazio } from "./pieces";
-import { atualizarEstado, useContabilidade } from "./store";
+import { useContabilidade } from "./store";
 
 export function InicioScreen() {
-  const { escopoNome, combinado, doEscopo, movimentos, moedas, hoje, base, categoria, setEscopo } = useContabilidade();
+  const { escopoNome, combinado, doEscopo, movimentos, moedas, moedasLigadas, ligarMoedas, inicio, hoje, base, categoria, setEscopo } = useContabilidade();
   const [mes, setMes] = useState(mesDe(hoje));
   const [moedaEscolhida, setMoeda] = useState<Moeda>("BRL");
   const [ajuste, setAjuste] = useState<Saldo | null>(null);
@@ -79,12 +78,16 @@ export function InicioScreen() {
           .filter(Boolean)
           .join(" · ");
 
-  function adicionarMoeda(nova: Moeda) {
+  async function adicionarMoeda(nova: Moeda) {
     if (!unico) {
       return;
     }
-    atualizarEstado((estado) => ({ ...estado, moedas: { ...estado.moedas, [unico.id]: [...(estado.moedas[unico.id] ?? []), nova] } }));
-    toast.success(`${MOEDAS[nova].nome} adicionado a ${unico.nome}`);
+    try {
+      await ligarMoedas(unico.id, [...(moedasLigadas[unico.id] ?? []), nova]);
+      toast.success(`${MOEDAS[nova].nome} adicionado a ${unico.nome}`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível adicionar a moeda");
+    }
   }
 
   return (
@@ -106,7 +109,7 @@ export function InicioScreen() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="rounded-xl">
                 {faltam.map((item) => (
-                  <DropdownMenuItem key={item} onSelect={() => adicionarMoeda(item)} className="gap-2">
+                  <DropdownMenuItem key={item} onSelect={() => void adicionarMoeda(item)} className="gap-2">
                     <span className="w-8 text-xs font-semibold text-muted-foreground">{MOEDAS[item].simbolo}</span>
                     {MOEDAS[item].nome}
                   </DropdownMenuItem>
@@ -157,7 +160,7 @@ export function InicioScreen() {
 
       <section aria-label="Resumo do mês" className="space-y-4">
         <div className="flex flex-wrap items-center gap-3">
-          <MesStepper mes={mes} onChange={setMes} min={mesDe(INICIO_DEMO)} max={mesDe(hoje)} />
+          <MesStepper mes={mes} onChange={setMes} min={mesDe(inicio)} max={mesDe(hoje)} />
           <MoedaPills moedas={moedas} value={moeda} onChange={setMoeda} />
         </div>
         <div className="grid gap-3 sm:grid-cols-3">
@@ -261,6 +264,7 @@ export function InicioScreen() {
 // diferença entra como um movimento de ajuste, à vista de todos.
 function AjusteDialog({ saldo, projetoId, onClose }: { saldo: Saldo; projetoId: string; onClose: () => void }) {
   const { salvar, eu, hoje } = useContabilidade();
+  const [salvando, setSalvando] = useState(false);
   const [meio, setMeio] = useState<Meio>("dinheiro");
   const atual = saldo[meio];
   const [texto, setTexto] = useState("");
@@ -271,12 +275,14 @@ function AjusteDialog({ saldo, projetoId, onClose }: { saldo: Saldo; projetoId: 
   const real = lido !== null && /^\s*[-−]/.test(texto) ? -lido : lido;
   const diferenca = real === null ? null : real - atual;
 
-  function submit(event: FormEvent) {
+  async function submit(event: FormEvent) {
     event.preventDefault();
-    if (!diferenca) {
+    if (!diferenca || salvando) {
       return;
     }
-    salvar({
+    setSalvando(true);
+    try {
+      await salvar({
       projetoId,
       tipo: "ajuste",
       valorMinor: diferenca,
@@ -289,9 +295,13 @@ function AjusteDialog({ saldo, projetoId, onClose }: { saldo: Saldo; projetoId: 
       origem: "manual",
       pendente: false,
       comprovante: null,
-    });
-    toast.success("Saldo ajustado");
-    onClose();
+      });
+      toast.success("Saldo ajustado");
+      onClose();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível ajustar o saldo");
+      setSalvando(false);
+    }
   }
 
   return (
@@ -301,7 +311,7 @@ function AjusteDialog({ saldo, projetoId, onClose }: { saldo: Saldo; projetoId: 
           <DialogTitle>Ajustar saldo em {MOEDAS[saldo.moeda].nome.toLowerCase()}</DialogTitle>
           <DialogDescription>Diga quanto há de verdade. A diferença entra como um ajuste na lista de movimentos.</DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
+        <form onSubmit={(event) => void submit(event)} className="space-y-4">
           <Segmentado
             full
             label="Onde"
@@ -332,7 +342,7 @@ function AjusteDialog({ saldo, projetoId, onClose }: { saldo: Saldo; projetoId: 
             <Button type="button" variant="ghost" onClick={onClose}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={!diferenca}>
+            <Button type="submit" disabled={!diferenca || salvando}>
               Ajustar
             </Button>
           </DialogFooter>

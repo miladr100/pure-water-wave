@@ -2,7 +2,7 @@
 
 import { Check, ChevronDown, Landmark, Layers, MapPinned, Plus, Sparkles, UsersRound } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import type { PainelEu } from "@/app/api/painel/eu/route";
 import { toApiError, useApi } from "@/components/academy/use-api";
@@ -17,29 +17,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { ProjetoContabil } from "@/lib/hj/contabilidade";
-import type { EquipeAdmin, EquipePainel } from "@/lib/hj/types";
+import type { ContabilidadeReply } from "@/lib/hj/contabilidade";
 
 import { Assistente } from "./assistente";
 import { MovimentoDialog } from "./movimento-dialog";
-import { ContabilidadeProvider, useContabilidade, useEstadoContabil, type Grupo } from "./store";
+import { ContabilidadeProvider, useContabilidade } from "./store";
 
 // A moldura da Contabilidade: descobre quais contabilidades a pessoa pode ver,
 // e desenha a barra com o projeto escolhido, o assistente e o "+ Novo" por
 // cima de cada tela.
-
-export const GERAL_ID = "geral";
-
-const GERAL: ProjetoContabil = {
-  id: GERAL_ID,
-  nome: "Time HJ — Geral",
-  tipo: "geral",
-  programa: null,
-  area: null,
-  educador: null,
-  capitao: null,
-  membros: [],
-};
 
 export function ContabilidadeFrame({ lado, children }: { lado: "painel" | "admin"; children: ReactNode }) {
   const eu = usePainelEu();
@@ -81,66 +67,11 @@ function SemEu() {
   return <LoadingBlock />;
 }
 
-type EquipesReply = { projeto: { id: string; nome: string } | null; equipes: EquipeAdmin[] };
-
 function LadoAdmin({ eu, children }: { eu: PainelEu; children: ReactNode }) {
-  const { data, error, loading, reload } = useApi<EquipesReply>("/api/admin/hj/equipes");
-  const estado = useEstadoContabil();
-  const veTudo = eu.papeis.administrador || estado.veTodas.includes(eu.id);
-
-  const { projetos, grupos } = useMemo(() => {
-    const equipes = (data?.equipes ?? []).filter((equipe) => veTudo || equipe.educador?.id === eu.id);
-    const lista: ProjetoContabil[] = equipes.map((equipe) => ({
-      id: equipe.id,
-      nome: equipe.nome,
-      tipo: "equipe",
-      programa: equipe.programa,
-      area: equipe.area?.local.nome ?? null,
-      educador: equipe.educador?.nome ?? null,
-      capitao: equipe.capitao?.nome ?? null,
-      membros: equipe.membros.map((membro) => membro.nome),
-    }));
-    // uma área vira um conjunto quando junta mais de uma equipe, sem ser todas
-    const porArea = new Map<string, Grupo>();
-    for (const equipe of equipes) {
-      for (const area of [equipe.area?.regiao, equipe.area?.pais, equipe.area?.local]) {
-        if (!area) {
-          continue;
-        }
-        const grupo = porArea.get(area.id) ?? { id: area.id, nome: area.nome, projetoIds: [] };
-        grupo.projetoIds.push(equipe.id);
-        porArea.set(area.id, grupo);
-      }
-    }
-    const vistos = new Set<string>();
-    const conjuntos = [...porArea.values()].filter((grupo) => {
-      const chave = [...grupo.projetoIds].sort().join(",");
-      if (grupo.projetoIds.length < 2 || grupo.projetoIds.length >= equipes.length || vistos.has(chave)) {
-        return false;
-      }
-      vistos.add(chave);
-      return true;
-    });
-    return { projetos: veTudo ? [...lista, GERAL] : lista, grupos: conjuntos };
-  }, [data, veTudo, eu.id]);
-
-  if (loading && !data) {
-    return <LoadingBlock />;
-  }
-  if (error) {
-    return <Failed error={error} onRetry={reload} />;
-  }
-  if (!projetos.length) {
-    return (
-      <Aviso titulo="Nenhuma contabilidade para você ainda">
-        Você vê a contabilidade das equipes de que é educador. Quando uma equipe for ligada a você, ela aparece aqui.
-      </Aviso>
-    );
-  }
   return (
-    <ContabilidadeProvider lado="admin" eu={eu} projetos={projetos} grupos={grupos}>
-      <Moldura>{children}</Moldura>
-    </ContabilidadeProvider>
+    <Carregar eu={eu} lado="admin">
+      {children}
+    </Carregar>
   );
 }
 
@@ -158,40 +89,36 @@ function LadoPainel({ eu, children }: { eu: PainelEu; children: ReactNode }) {
       </Aviso>
     );
   }
-  return <DoCapitao eu={eu}>{children}</DoCapitao>;
+  return (
+    <Carregar eu={eu} lado="painel">
+      {children}
+    </Carregar>
+  );
 }
 
-function DoCapitao({ eu, children }: { eu: PainelEu; children: ReactNode }) {
-  const { data, error, loading, reload } = useApi<EquipePainel>("/api/painel/equipe");
-  const equipe = eu.equipe;
-  const projetos = useMemo<ProjetoContabil[]>(
-    () =>
-      equipe
-        ? [
-            {
-              id: equipe.id,
-              nome: equipe.nome,
-              tipo: "equipe",
-              programa: equipe.programa,
-              area: null,
-              educador: equipe.educador?.nome ?? null,
-              capitao: equipe.capitao?.nome ?? null,
-              membros: (data?.membros ?? []).map((membro) => membro.nome),
-            },
-          ]
-        : [],
-    [equipe, data],
-  );
-  const grupos = useMemo<Grupo[]>(() => [], []);
-
+// Os livros, os movimentos e os ajustes deste lado, do servidor.
+function Carregar({ eu, lado, children }: { eu: PainelEu; lado: "painel" | "admin"; children: ReactNode }) {
+  const { data, error, loading, reload } = useApi<ContabilidadeReply>(`/api/painel/contabilidade?lado=${lado}`);
   if (loading && !data) {
     return <LoadingBlock />;
   }
   if (error) {
     return <Failed error={error} onRetry={reload} />;
   }
+  if (!data) {
+    return <LoadingBlock />;
+  }
+  if (!data.livros.length) {
+    return lado === "admin" ? (
+      <Aviso titulo="Nenhuma contabilidade para você ainda">
+        Você vê a contabilidade das equipes de que é educador. Quando uma equipe for ligada a você, ela aparece aqui.
+      </Aviso>
+    ) : (
+      <Aviso titulo="A sua equipe ainda não tem contabilidade">Quando houver um projeto de RM com a sua equipe, a contabilidade dela aparece aqui.</Aviso>
+    );
+  }
   return (
-    <ContabilidadeProvider lado="painel" eu={eu} projetos={projetos} grupos={grupos}>
+    <ContabilidadeProvider eu={eu} dados={data}>
       <Moldura>{children}</Moldura>
     </ContabilidadeProvider>
   );

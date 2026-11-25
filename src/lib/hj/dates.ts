@@ -69,6 +69,10 @@ export function fmtDia(day: string, style: "curto" | "longo" = "curto") {
   ).format(value);
 }
 
+// "sábado, 14 de novembro" → "Sábado, 14 de novembro": só a primeira letra
+// (o `capitalize` do CSS punha "De" e "Novembro" em maiúscula).
+export const maiuscula = (text: string) => (text ? text[0].toLocaleUpperCase("pt-BR") + text.slice(1) : text);
+
 export function fmtDiaNumero(day: string) {
   return isIsoDay(day) ? `${day.slice(8, 10)}/${day.slice(5, 7)}` : day;
 }

@@ -3,58 +3,31 @@
 import { createContext, useCallback, useContext, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 
 import type { PainelEu } from "@/app/api/painel/eu/route";
+import { api, ApiError } from "@/lib/academy/api-client";
 import {
-  CATEGORIAS_BASE,
   MOEDA_ORDEM,
-  MOEDAS,
-  ORIGEM_NOME,
   ordenar,
+  type Agente,
   type Categoria,
+  type Comprovante,
+  type ContabilidadeReply,
   type Moeda,
   type Movimento,
   type MovimentoNovo,
   type ProjetoContabil,
 } from "@/lib/hj/contabilidade";
-import { gerarMovimentos } from "@/lib/hj/contabilidade-mock";
-import { todayInBrazil } from "@/lib/hj/dates";
 
-// Primeiro desenho da Contabilidade: os movimentos são gerados no navegador a
-// partir das equipes reais, e o que a pessoa lança, edita ou apaga fica
-// guardado só neste navegador. Nada disto toca o banco ainda.
+// A Contabilidade no navegador: os livros, os movimentos e os ajustes vêm do
+// servidor (/api/painel/contabilidade) e cada mudança vai para lá antes de
+// aparecer. Só a contabilidade escolhida no seletor fica neste navegador.
 
-export type Agente = { id: string; nome: string; desde: string };
+export const BASE_API = "/api/painel/contabilidade";
 
-export type Estado = {
-  adicionados: Movimento[];
-  editados: Record<string, Movimento>;
-  removidos: string[];
-  // categorias criadas pela equipe, além das da lista fixa
-  categorias: Categoria[];
-  // moedas ligadas à mão em cada projeto (as que têm movimento aparecem sozinhas)
-  moedas: Record<string, Moeda[]>;
-  // educadores que o administrador deixou ver todas as contabilidades
-  veTodas: string[];
-  agentes: Agente[];
-};
-
-const VAZIO: Estado = {
-  adicionados: [],
-  editados: {},
-  removidos: [],
-  categorias: [],
-  moedas: {},
-  veTodas: [],
-  agentes: [{ id: "claude", nome: "Claude", desde: "2026-11-10" }],
-};
-
-// Um valor guardado no navegador, lido por `useSyncExternalStore`: o servidor
-// desenha o estado vazio e o navegador adota o que está salvo sem um
-// `setState` dentro de um efeito.
+// Um valor guardado no navegador, lido por `useSyncExternalStore`.
 function criarLoja<T>(key: string, vazio: T, ler: (raw: unknown) => T) {
   const listeners = new Set<() => void>();
   let lido: string | null | undefined;
   let valor = vazio;
-  // sem acesso ao armazenamento, o valor vive só enquanto a página está aberta
   let memoria: string | null = null;
 
   function texto() {
@@ -104,57 +77,44 @@ function criarLoja<T>(key: string, vazio: T, ler: (raw: unknown) => T) {
   return { get, set, subscribe, vazio: () => vazio };
 }
 
-// O que está guardado pode ser de outra versão ou ter sido mexido à mão: só
-// entra o que tem a forma esperada, e uma tela não quebra por um item torto.
-const objeto = (raw: unknown): raw is Record<string, unknown> => typeof raw === "object" && raw !== null && !Array.isArray(raw);
-const lista = <T,>(raw: unknown, serve: (item: unknown) => item is T): T[] => (Array.isArray(raw) ? raw.filter(serve) : []);
-const ehTexto = (raw: unknown): raw is string => typeof raw === "string";
-const ehMoeda = (raw: unknown): raw is Moeda => typeof raw === "string" && Object.hasOwn(MOEDAS, raw);
-const ehMeio = (raw: unknown) => raw === "dinheiro" || raw === "conta";
-const ehMovimento = (raw: unknown): raw is Movimento =>
-  objeto(raw) &&
-  ehTexto(raw.id) &&
-  ehTexto(raw.projetoId) &&
-  (raw.tipo === "saida" || raw.tipo === "entrada" || raw.tipo === "transferencia" || raw.tipo === "ajuste") &&
-  ehTexto(raw.origem) &&
-  Object.hasOwn(ORIGEM_NOME, raw.origem) &&
-  ehTexto(raw.data) &&
-  ehTexto(raw.descricao) &&
-  ehTexto(raw.responsavel) &&
-  ehMoeda(raw.moeda) &&
-  ehMeio(raw.meio) &&
-  Number.isFinite(raw.valorMinor) &&
-  Number.isFinite(raw.seq) &&
-  (raw.para === undefined || (objeto(raw.para) && ehMoeda(raw.para.moeda) && ehMeio(raw.para.meio) && Number.isFinite(raw.para.valorMinor)));
-const ehCategoria = (raw: unknown): raw is Categoria =>
-  objeto(raw) && ehTexto(raw.id) && ehTexto(raw.nome) && (raw.tipo === "saida" || raw.tipo === "entrada") && ehTexto(raw.icone) && Number.isFinite(raw.cor);
-const ehAgente = (raw: unknown): raw is Agente => objeto(raw) && ehTexto(raw.id) && ehTexto(raw.nome) && ehTexto(raw.desde);
-
-function lerEstado(raw: unknown): Estado {
-  if (!objeto(raw)) {
-    return VAZIO;
-  }
-  return {
-    adicionados: lista(raw.adicionados, ehMovimento),
-    editados: Object.fromEntries(Object.entries(objeto(raw.editados) ? raw.editados : {}).filter((par): par is [string, Movimento] => ehMovimento(par[1]))),
-    removidos: lista(raw.removidos, ehTexto),
-    categorias: lista(raw.categorias, ehCategoria),
-    moedas: Object.fromEntries(Object.entries(objeto(raw.moedas) ? raw.moedas : {}).map(([id, moedas]) => [id, lista(moedas, ehMoeda)])),
-    veTodas: lista(raw.veTodas, ehTexto),
-    agentes: Array.isArray(raw.agentes) ? lista(raw.agentes, ehAgente) : VAZIO.agentes,
-  };
-}
-
-const lojaEstado = criarLoja<Estado>("pww_contabilidade_v1", VAZIO, lerEstado);
 const lojaEscopo = criarLoja<string>("pww_contabilidade_escopo", "", (raw) => (typeof raw === "string" ? raw : ""));
 
-export function useEstadoContabil() {
-  return useSyncExternalStore(lojaEstado.subscribe, lojaEstado.get, lojaEstado.vazio);
+// multipart (arquivos), com as mesmas respostas de erro de `api`
+export async function apiForm<T>(path: string, form: FormData): Promise<T> {
+  let response: Response;
+  try {
+    response = await fetch(path, { method: "POST", credentials: "same-origin", body: form });
+  } catch {
+    throw new ApiError(0, { error: "Sem conexão" });
+  }
+  const data = (await response.json().catch(() => ({}))) as Record<string, unknown>;
+  if (!response.ok) {
+    throw new ApiError(response.status, data);
+  }
+  return data as T;
 }
 
-export function atualizarEstado(change: (estado: Estado) => Estado) {
-  lojaEstado.set(change(lojaEstado.get()));
+// Fotos grandes de celular viram um JPEG de até 1600 px antes de subir: o
+// comprovante continua legível e o envio cabe no limite.
+export async function encolherFoto(arquivo: File): Promise<File> {
+  if (!arquivo.type.startsWith("image/") || arquivo.size < 600_000) {
+    return arquivo;
+  }
+  try {
+    const bitmap = await createImageBitmap(arquivo);
+    const escala = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * escala);
+    canvas.height = Math.round(bitmap.height * escala);
+    canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
+    return blob ? new File([blob], arquivo.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" }) : arquivo;
+  } catch {
+    return arquivo;
+  }
 }
+
+export const urlComprovante = (comprovante: Comprovante) => `${BASE_API}/comprovantes/${comprovante.id}`;
 
 // Um conjunto de equipes que se olha junto: uma área de missão.
 export type Grupo = { id: string; nome: string; projetoIds: string[] };
@@ -165,33 +125,41 @@ export type Rascunho = Partial<Movimento>;
 
 type Contexto = {
   lado: "painel" | "admin";
-  // onde a Contabilidade mora deste lado: /painel/contabilidade ou /admin/contabilidade
   base: string;
   eu: PainelEu;
   hoje: string;
   administrador: boolean;
-  // todos os projetos que a pessoa pode ver
+  podeConectar: boolean;
   projetos: ProjetoContabil[];
   grupos: Grupo[];
   escopo: string;
   setEscopo: (escopo: string) => void;
   escopoNome: string;
-  // os projetos do escopo escolhido; mais de um = visão combinada
   doEscopo: ProjetoContabil[];
   combinado: boolean;
   // movimentos do escopo, do mais novo para o mais antigo
   movimentos: Movimento[];
+  // o dia mais antigo com movimento no escopo (os seletores de mês param nele)
+  inicio: string;
   moedas: Moeda[];
+  moedasLigadas: Record<string, Moeda[]>;
   categorias: Categoria[];
+  categoriasEmUso: string[];
+  veTodas: string[];
+  agentes: Agente[];
+  assistenteIA: ContabilidadeReply["assistenteIA"];
   categoria: (id: string | null) => Categoria | undefined;
   projeto: (id: string) => ProjetoContabil | undefined;
-  // quem pode aparecer como responsável por um lançamento
   pessoas: (projetoId: string) => string[];
-  estado: Estado;
-  salvar: (novo: MovimentoNovo, id?: string) => Movimento;
-  remover: (id: string) => Movimento | null;
-  restaurar: (mov: Movimento) => void;
-  // `aoSalvar`: quem abriu o formulário fica sabendo do movimento salvo
+  salvar: (novo: MovimentoNovo, id?: string) => Promise<Movimento>;
+  remover: (id: string) => Promise<Movimento | null>;
+  restaurar: (mov: Movimento) => Promise<void>;
+  enviarComprovante: (arquivo: File, livroId: string) => Promise<Comprovante>;
+  criarCategoria: (nome: string, tipo: "saida" | "entrada") => Promise<Categoria>;
+  apagarCategoria: (id: string) => Promise<void>;
+  ligarMoedas: (livroId: string, moedas: Moeda[]) => Promise<void>;
+  setVeTodas: (educadorId: string, ve: boolean) => Promise<void>;
+  desconectarAgente: (id: string) => Promise<void>;
   editor: { chave: number; rascunho: Rascunho; aoSalvar?: (mov: Movimento) => void } | null;
   abrirEditor: (rascunho?: Rascunho, aoSalvar?: (mov: Movimento) => void) => void;
   fecharEditor: () => void;
@@ -211,34 +179,17 @@ export function useContabilidade() {
 
 let contador = 0;
 
-export function ContabilidadeProvider({
-  lado,
-  eu,
-  projetos,
-  grupos,
-  children,
-}: {
-  lado: "painel" | "admin";
-  eu: PainelEu;
-  projetos: ProjetoContabil[];
-  grupos: Grupo[];
-  children: ReactNode;
-}) {
-  const estado = useEstadoContabil();
+export function ContabilidadeProvider({ eu, dados, children }: { eu: PainelEu; dados: ContabilidadeReply; children: ReactNode }) {
+  const { lado, hoje, livros: projetos, grupos } = dados;
   const escopoSalvo = useSyncExternalStore(lojaEscopo.subscribe, lojaEscopo.get, lojaEscopo.vazio);
   const [editor, setEditor] = useState<Contexto["editor"]>(null);
   const [assistenteAberto, setAssistenteAberto] = useState(false);
-  const hoje = todayInBrazil();
-
-  const gerados = useMemo(() => projetos.flatMap((projeto) => gerarMovimentos(projeto, hoje)), [projetos, hoje]);
-
-  // os gerados com as edições deste navegador por cima
-  const todos = useMemo(() => {
-    const visiveis = new Set(projetos.map((projeto) => projeto.id));
-    const removidos = new Set(estado.removidos);
-    const base = gerados.filter((mov) => !removidos.has(mov.id)).map((mov) => estado.editados[mov.id] ?? mov);
-    return [...base, ...estado.adicionados].filter((mov) => visiveis.has(mov.projetoId));
-  }, [gerados, estado.removidos, estado.editados, estado.adicionados, projetos]);
+  const [todos, setTodos] = useState<Movimento[]>(dados.movimentos);
+  const [categorias, setCategorias] = useState<Categoria[]>(dados.categorias);
+  const [categoriasEmUso, setCategoriasEmUso] = useState<string[]>(dados.categoriasEmUso);
+  const [moedasLigadas, setMoedasLigadas] = useState(dados.moedasLigadas);
+  const [veTodas, setVeTodasState] = useState(dados.veTodas);
+  const [agentes, setAgentes] = useState(dados.agentes);
 
   const escopo = useMemo(() => {
     if (projetos.length === 1) {
@@ -267,6 +218,8 @@ export function ContabilidadeProvider({
     return ordenar(todos.filter((mov) => ids.has(mov.projetoId)));
   }, [todos, doEscopo]);
 
+  const inicio = useMemo(() => movimentos.reduce((menor, mov) => (mov.data < menor ? mov.data : menor), hoje), [movimentos, hoje]);
+
   const moedas = useMemo(() => {
     const usadas = new Set<Moeda>(["BRL"]);
     for (const mov of movimentos) {
@@ -276,14 +229,13 @@ export function ContabilidadeProvider({
       }
     }
     for (const projeto of doEscopo) {
-      for (const moeda of estado.moedas[projeto.id] ?? []) {
+      for (const moeda of moedasLigadas[projeto.id] ?? []) {
         usadas.add(moeda);
       }
     }
     return MOEDA_ORDEM.filter((moeda) => usadas.has(moeda));
-  }, [movimentos, doEscopo, estado.moedas]);
+  }, [movimentos, doEscopo, moedasLigadas]);
 
-  const categorias = useMemo(() => [...CATEGORIAS_BASE, ...estado.categorias], [estado.categorias]);
   const categoria = useCallback((id: string | null) => (id ? categorias.find((item) => item.id === id) : undefined), [categorias]);
   const projeto = useCallback((id: string) => projetos.find((item) => item.id === id), [projetos]);
 
@@ -296,47 +248,65 @@ export function ContabilidadeProvider({
     [projetos, eu.nome],
   );
 
-  const salvar = useCallback(
-    (novo: MovimentoNovo, id?: string) => {
-      if (id) {
-        const anterior = todos.find((mov) => mov.id === id);
-        const editado: Movimento = { ...novo, id, seq: anterior?.seq ?? 0 };
-        atualizarEstado((atual) =>
-          atual.adicionados.some((mov) => mov.id === id)
-            ? { ...atual, adicionados: atual.adicionados.map((mov) => (mov.id === id ? editado : mov)) }
-            : { ...atual, editados: { ...atual.editados, [id]: editado } },
-        );
-        return editado;
-      }
-      contador += 1;
-      // depois de tudo o que já foi lançado: a ordem dentro do dia é a de chegada
-      const seq = lojaEstado.get().adicionados.reduce((maior, mov) => Math.max(maior, mov.seq), 1_000_000) + 1;
-      const criado: Movimento = { ...novo, id: `novo:${Date.now().toString(36)}-${contador}`, seq };
-      atualizarEstado((atual) => ({ ...atual, adicionados: [...atual.adicionados, criado] }));
-      return criado;
-    },
-    [todos],
-  );
+  const salvar = useCallback(async (novo: MovimentoNovo, id?: string) => {
+    const body = { ...novo, comprovanteId: novo.comprovante?.id ?? null };
+    const { movimento } = id
+      ? await api<{ movimento: Movimento }>(`${BASE_API}/movimentos/${id}`, { method: "PATCH", body })
+      : await api<{ movimento: Movimento }>(`${BASE_API}/movimentos`, { method: "POST", body });
+    setTodos((atual) => [...atual.filter((mov) => mov.id !== movimento.id), movimento]);
+    if (movimento.categoriaId?.startsWith("c:")) {
+      setCategoriasEmUso((atual) => (atual.includes(movimento.categoriaId as string) ? atual : [...atual, movimento.categoriaId as string]));
+    }
+    return movimento;
+  }, []);
 
   const remover = useCallback(
-    (id: string) => {
+    async (id: string) => {
       const mov = todos.find((item) => item.id === id) ?? null;
-      atualizarEstado((atual) =>
-        atual.adicionados.some((item) => item.id === id)
-          ? { ...atual, adicionados: atual.adicionados.filter((item) => item.id !== id) }
-          : { ...atual, removidos: [...atual.removidos, id] },
-      );
+      await api(`${BASE_API}/movimentos/${id}`, { method: "DELETE" });
+      setTodos((atual) => atual.filter((item) => item.id !== id));
       return mov;
     },
     [todos],
   );
 
-  const restaurar = useCallback((mov: Movimento) => {
-    atualizarEstado((atual) =>
-      mov.id.startsWith("novo:")
-        ? { ...atual, adicionados: [...atual.adicionados.filter((item) => item.id !== mov.id), mov] }
-        : { ...atual, removidos: atual.removidos.filter((id) => id !== mov.id) },
-    );
+  const restaurar = useCallback(async (mov: Movimento) => {
+    const { movimento } = await api<{ movimento: Movimento | null }>(`${BASE_API}/movimentos/${mov.id}/restaurar`, { method: "POST" });
+    setTodos((atual) => [...atual.filter((item) => item.id !== mov.id), movimento ?? mov]);
+  }, []);
+
+  const enviarComprovante = useCallback(async (arquivo: File, livroId: string) => {
+    const form = new FormData();
+    form.append("arquivo", await encolherFoto(arquivo));
+    form.append("livroId", livroId);
+    const { comprovante } = await apiForm<{ comprovante: Comprovante }>(`${BASE_API}/comprovantes`, form);
+    return comprovante;
+  }, []);
+
+  const criarCategoria = useCallback(async (nome: string, tipo: "saida" | "entrada") => {
+    const { categoria: nova } = await api<{ categoria: Categoria }>(`${BASE_API}/categorias`, { method: "POST", body: { nome, tipo } });
+    setCategorias((atual) => [...atual, nova]);
+    return nova;
+  }, []);
+
+  const apagarCategoria = useCallback(async (id: string) => {
+    await api(`${BASE_API}/categorias?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+    setCategorias((atual) => atual.filter((item) => item.id !== id));
+  }, []);
+
+  const ligarMoedas = useCallback(async (livroId: string, lista: Moeda[]) => {
+    const resposta = await api<{ livroId: string; moedas: Moeda[] }>(`${BASE_API}/moedas`, { method: "PUT", body: { livroId, moedas: lista } });
+    setMoedasLigadas((atual) => ({ ...atual, [resposta.livroId]: resposta.moedas }));
+  }, []);
+
+  const setVeTodas = useCallback(async (educadorId: string, ve: boolean) => {
+    const resposta = await api<{ veTodas: string[] }>(`${BASE_API}/acesso`, { method: "PUT", body: { educadorId, ve } });
+    setVeTodasState(resposta.veTodas);
+  }, []);
+
+  const desconectarAgente = useCallback(async (id: string) => {
+    const resposta = await api<{ agentes: Agente[] }>(`${BASE_API}/agentes?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+    setAgentes(resposta.agentes);
   }, []);
 
   const abrirEditor = useCallback((rascunho: Rascunho = {}, aoSalvar?: (mov: Movimento) => void) => {
@@ -357,7 +327,8 @@ export function ContabilidadeProvider({
     base: lado === "admin" ? "/admin/contabilidade" : "/painel/contabilidade",
     eu,
     hoje,
-    administrador: eu.papeis.administrador,
+    administrador: dados.administrador,
+    podeConectar: dados.podeConectar,
     projetos,
     grupos,
     escopo,
@@ -366,15 +337,26 @@ export function ContabilidadeProvider({
     doEscopo,
     combinado: doEscopo.length > 1,
     movimentos,
+    inicio,
     moedas,
+    moedasLigadas,
     categorias,
+    categoriasEmUso,
+    veTodas,
+    agentes,
+    assistenteIA: dados.assistenteIA,
     categoria,
     projeto,
     pessoas,
-    estado,
     salvar,
     remover,
     restaurar,
+    enviarComprovante,
+    criarCategoria,
+    apagarCategoria,
+    ligarMoedas,
+    setVeTodas,
+    desconectarAgente,
     editor,
     abrirEditor,
     fecharEditor,

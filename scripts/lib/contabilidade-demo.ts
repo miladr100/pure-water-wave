@@ -1,10 +1,11 @@
-// Dados de demonstração da Contabilidade: os mesmos movimentos a cada visita
-// (o gerador parte do id do projeto), no formato que o banco terá depois.
-// Nada daqui é gravado — só o que a pessoa lança no protótipo fica no navegador.
+// Dados de demonstração da Contabilidade, gravados no banco por
+// scripts/seed-contabilidade.ts: o que a capitã e a educadora lançam à mão
+// desde junho. A arrecadação da RM não está aqui: entra sozinha pelos
+// relatórios validados.
 
 import { addDays } from "@/lib/hj/dates";
 
-import { diasDoMes, MESES, type Meio, type Moeda, type Movimento, type ProjetoContabil } from "./contabilidade";
+import { diasDoMes, MESES, type Meio, type Moeda, type Movimento, type ProjetoContabil } from "@/lib/hj/contabilidade";
 
 export const INICIO_DEMO = "2026-06-01";
 
@@ -34,7 +35,9 @@ const TAXA_ESTADIA = 3300;
 
 type Rascunho = Partial<Movimento> & Pick<Movimento, "tipo" | "valorMinor" | "data" | "descricao">;
 
-export function gerarMovimentos(projeto: ProjetoContabil, hoje: string): Movimento[] {
+// `rmDesde`: o primeiro dia do projeto de RM no painel; antes dele a capitã
+// lançava a arrecadação da semana à mão, depois ela vem dos relatórios.
+export function gerarMovimentos(projeto: ProjetoContabil, hoje: string, rmDesde = hoje): Movimento[] {
   const rand = mulberry(semente(projeto.id));
   const entre = (min: number, max: number) => Math.round(min + rand() * (max - min));
   const um = <T,>(lista: T[]) => lista[Math.floor(rand() * lista.length)];
@@ -83,13 +86,8 @@ export function gerarMovimentos(projeto: ProjetoContabil, hoje: string): Movimen
 
   const manual = (mov: Rascunho) => {
     // os dois sorteios saem sempre, para o dia de hoje não mudar os seguintes
-    const comComprovante = rand() < 0.55;
     const aConferir = rand() < 0.2;
-    lancar({
-      ...mov,
-      comprovante: comComprovante ? `comprovante-${mov.data.slice(5).replace("-", "")}.jpg` : null,
-      pendente: aConferir && mov.data >= addDays(hoje, -9),
-    });
+    lancar({ ...mov, pendente: aConferir && mov.data >= addDays(hoje, -9) });
   };
 
   if (hoje < INICIO_DEMO) {
@@ -154,28 +152,10 @@ export function gerarMovimentos(projeto: ProjetoContabil, hoje: string): Movimen
     const semana = new Date(`${dia}T12:00:00Z`).getUTCDay();
     const chance = semana === 0 ? 0 : semana === 1 ? 0.12 : 0.7;
 
-    // o relatório de RM validado de cada membro entra na contabilidade
+    // o que os membros gastam de bolso e a capitã reembolsa
     for (const membro of pessoas) {
-      if (rand() >= chance) {
-        continue;
-      }
-      const total = entre(6, 34) * 1000 + entre(0, 9) * 100;
-      const pix = rand() < 0.25 ? 0 : Math.round((total * (0.2 + rand() * 0.6)) / 100) * 100;
-      const dinheiro = total - pix;
-      if (dinheiro > 0) {
-        lancar({ tipo: "entrada", valorMinor: dinheiro, meio: "dinheiro", categoriaId: "rm", data: dia, descricao: "Relatório de RM", responsavel: membro, origem: "relatorio" });
-      }
-      if (pix > 0) {
-        lancar({ tipo: "entrada", valorMinor: pix, meio: "conta", categoriaId: "rm", data: dia, descricao: "Relatório de RM · Pix", responsavel: membro, origem: "relatorio" });
-      }
-      if (rand() < 0.75) {
-        lancar({ tipo: "saida", valorMinor: entre(8, 32) * 100, categoriaId: "transporte", data: dia, descricao: um(["Ônibus", "Ônibus (ida e volta)", "Metrô", "Uber até o ponto"]), responsavel: membro, origem: "relatorio" });
-      }
-      if (rand() < 0.4) {
-        lancar({ tipo: "saida", valorMinor: entre(15, 42) * 100, categoriaId: "alimentacao", data: dia, descricao: um(["Almoço", "Lanche", "Marmita", "Almoço e água"]), responsavel: membro, origem: "relatorio" });
-      }
-      if (rand() < 0.04) {
-        lancar({ tipo: "saida", valorMinor: entre(5, 30) * 100, categoriaId: "outros", data: dia, descricao: um(["Água", "Banheiro da rodoviária", "Guarda-volumes"]), responsavel: membro, origem: "relatorio" });
+      if (rand() < chance * 0.1) {
+        lancar({ tipo: "saida", valorMinor: entre(8, 32) * 100, categoriaId: "transporte", data: dia, descricao: um(["Ônibus", "Metrô", "Uber até o ponto"]), responsavel: membro });
       }
     }
 
@@ -213,6 +193,17 @@ export function gerarMovimentos(projeto: ProjetoContabil, hoje: string): Movimen
     }
     if (comDolar && numero === 21 && mes % 2 === 1) {
       manual({ tipo: "entrada", valorMinor: entre(5, 30) * 1000, moeda: "USD", categoriaId: "doacao", data: dia, descricao: "Doação em dólar" });
+    }
+
+    if (semana === 6 && dia < rmDesde) {
+      lancar({
+        tipo: "entrada",
+        valorMinor: pessoas.length * entre(250, 400) * 100,
+        meio: "dinheiro",
+        categoriaId: "rm",
+        data: dia,
+        descricao: "Arrecadação da RM da semana",
+      });
     }
 
     // o dinheiro juntado vai para a conta

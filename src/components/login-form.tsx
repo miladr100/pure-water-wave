@@ -63,7 +63,7 @@ export function LoginForm() {
 
       // A protected page that bounced here says where to go back to.
       const next = searchParams.get("next");
-      const target = next && next.startsWith("/") ? next : (data.redirectTo ?? "/biblioteca");
+      const target = next && next.startsWith("/") && !next.startsWith("//") ? next : (data.redirectTo ?? "/biblioteca");
       router.push(target);
       router.refresh();
     } catch {

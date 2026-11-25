@@ -175,6 +175,7 @@ export function Segmentado<T extends string>({
   label,
   className,
   full,
+  cheioNoCelular,
 }: {
   value: T;
   onChange: (value: T) => void;
@@ -182,9 +183,20 @@ export function Segmentado<T extends string>({
   label: string;
   className?: string;
   full?: boolean;
+  // no celular ocupa a linha toda e as opções dividem o espaço, sem cortar nem deslizar
+  cheioNoCelular?: boolean;
 }) {
   return (
-    <div role="radiogroup" aria-label={label} className={cn("inline-flex max-w-full overflow-x-auto rounded-full bg-muted p-0.5", full && "flex w-full", className)}>
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className={cn(
+        "inline-flex max-w-full overflow-x-auto rounded-full bg-muted p-0.5",
+        full && "flex w-full",
+        cheioNoCelular && "flex w-full sm:inline-flex sm:w-auto",
+        className,
+      )}
+    >
       {options.map((option) => (
         <button
           key={option.value}
@@ -195,6 +207,7 @@ export function Segmentado<T extends string>({
           className={cn(
             "h-9 shrink-0 cursor-pointer whitespace-nowrap rounded-full px-3.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary-deep",
             full && "flex-1",
+            cheioNoCelular && "flex-1 px-2 text-[13px] sm:flex-none sm:px-3.5 sm:text-sm",
             option.value === value && "bg-card font-semibold text-primary-deep shadow-sm",
           )}
         >

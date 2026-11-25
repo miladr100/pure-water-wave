@@ -7,7 +7,6 @@ import { Card } from "@/components/painel/bits";
 import { PainelHeading } from "@/components/painel/painel-shell";
 import { Button } from "@/components/ui/button";
 import { diasDoMes, fmtMes, fmtMoeda, MOEDAS, mesDe, porCategoria, resumo, saldoDe, somaMes, type Moeda } from "@/lib/hj/contabilidade";
-import { INICIO_DEMO } from "@/lib/hj/contabilidade-mock";
 import { fmtDiaNumero } from "@/lib/hj/dates";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +30,7 @@ const INFORMES: { id: Informe; nome: string; resumo: string; combinado?: boolean
 const pct = (parte: number, total: number) => (total > 0 ? `${Math.round((parte / total) * 100)}%` : "–");
 
 export function InformesScreen() {
-  const { movimentos, moedas, hoje, categoria, combinado, doEscopo, escopoNome } = useContabilidade();
+  const { movimentos, moedas, hoje, inicio, categoria, combinado, doEscopo, escopoNome } = useContabilidade();
   const exportar = useExportar();
   const [escolhido, setInforme] = useState<Informe>("gastos-categoria");
   const [periodo, setPeriodo] = useState<Periodo>("mes");
@@ -130,7 +129,7 @@ export function InformesScreen() {
             ]}
           />
         ) : null}
-        {!comPeriodo || periodo !== "tudo" ? <MesStepper mes={mes} onChange={setMes} min={mesDe(INICIO_DEMO)} max={mesDe(hoje)} /> : null}
+        {!comPeriodo || periodo !== "tudo" ? <MesStepper mes={mes} onChange={setMes} min={mesDe(inicio)} max={mesDe(hoje)} /> : null}
         <MoedaPills moedas={moedas} value={moeda} onChange={setMoeda} />
       </div>
 
@@ -234,7 +233,18 @@ export function InformesScreen() {
               }
               rodape={informe === "balanco" ? (index) => ({ nome: "Balanço", valor: fmtMoeda(porMes[index].balanco, moeda, { sinal: true }) }) : undefined}
             />
-            <Tabela titulo="Mês a mês">
+            <Tabela
+              titulo="Mês a mês"
+              celular={meses.map((item, index) => ({
+                chave: item,
+                titulo: fmtMes(item),
+                linhas: [
+                  ...(informe === "balanco" ? [{ rotulo: "Entradas", valor: <span className={corEntrada}>{fmtMoeda(porMes[index].entradas, moeda)}</span> }] : []),
+                  { rotulo: "Saídas", valor: fmtMoeda(porMes[index].saidas, moeda) },
+                  ...(informe === "balanco" ? [{ rotulo: "Balanço", valor: fmtMoeda(porMes[index].balanco, moeda, { sinal: true }), forte: true }] : []),
+                ],
+              }))}
+            >
               <thead>
                 <tr className="text-left">
                   <th className={cabeca}>Mês</th>
@@ -246,7 +256,7 @@ export function InformesScreen() {
               <tbody className="divide-y divide-border/60">
                 {meses.map((item, index) => (
                   <tr key={item}>
-                    <td className="px-2 py-2.5 capitalize">{fmtMes(item)}</td>
+                    <td className="px-2 py-2.5">{fmtMes(item)}</td>
                     {informe === "balanco" ? <td className={cn(numero, corEntrada)}>{fmtMoeda(porMes[index].entradas, moeda)}</td> : null}
                     <td className={numero}>{fmtMoeda(porMes[index].saidas, moeda)}</td>
                     {informe === "balanco" ? <td className={cn(numero, "font-medium")}>{fmtMoeda(porMes[index].balanco, moeda, { sinal: true })}</td> : null}
@@ -260,7 +270,19 @@ export function InformesScreen() {
         {informe === "equipes" ? (
           <>
             {fatiasEquipe.length ? <BarrasCategoria fatias={fatiasEquipe} moeda={moeda} /> : <Vazio titulo="Nenhum gasto nesse período" />}
-            <Tabela titulo="Equipe por equipe">
+            <Tabela
+              titulo="Equipe por equipe"
+              celular={equipes.map((item) => ({
+                chave: item.projeto.id,
+                titulo: item.projeto.nome,
+                linhas: [
+                  { rotulo: "Entradas", valor: <span className={corEntrada}>{fmtMoeda(item.entradas, moeda)}</span> },
+                  { rotulo: "Saídas", valor: fmtMoeda(item.saidas, moeda) },
+                  { rotulo: "Balanço", valor: fmtMoeda(item.balanco, moeda, { sinal: true }) },
+                  { rotulo: "Saldo hoje", valor: fmtMoeda(item.saldo, moeda), forte: true },
+                ],
+              }))}
+            >
               <thead>
                 <tr className="text-left">
                   <th className={cabeca}>Equipe</th>
@@ -291,13 +313,34 @@ export function InformesScreen() {
 
 // A mesma informação do gráfico em tabela: para ler o número exato, e para
 // quem não distingue as cores.
-function Tabela({ titulo, children }: { titulo: string; children: React.ReactNode }) {
+// No celular, quando vem `celular`, cada linha vira um cartão: nada de tabela
+// mais larga que a tela.
+type CartaoCelular = { chave: string; titulo: string; linhas: { rotulo: string; valor: React.ReactNode; forte?: boolean }[] };
+
+function Tabela({ titulo, children, celular }: { titulo: string; children: React.ReactNode; celular?: CartaoCelular[] }) {
   return (
     <div className="mt-6 border-t border-border/60 pt-4">
       <h3 className="mb-1 text-sm font-semibold text-primary-deep">{titulo}</h3>
-      <div className="-mx-2 overflow-x-auto">
+      <div className={cn("-mx-2 overflow-x-auto", celular && "hidden sm:block")}>
         <table className="w-full text-sm">{children}</table>
       </div>
+      {celular ? (
+        <ul className="mt-2 space-y-2 sm:hidden">
+          {celular.map((cartao) => (
+            <li key={cartao.chave} className="rounded-2xl border border-border/60 px-3.5 py-2.5">
+              <p className="text-sm font-semibold text-primary-deep">{cartao.titulo}</p>
+              <dl className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 text-sm">
+                {cartao.linhas.map((linha) => (
+                  <div key={linha.rotulo} className="contents">
+                    <dt className="text-muted-foreground">{linha.rotulo}</dt>
+                    <dd className={cn("text-right tabular-nums", linha.forte && "font-semibold text-primary-deep")}>{linha.valor}</dd>
+                  </div>
+                ))}
+              </dl>
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </div>
   );
 }

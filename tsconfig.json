@@ -53,6 +53,8 @@
     "src/components/admin/**/*.tsx",
     "scripts/seed.ts",
     "scripts/local-mongo.ts",
+    "scripts/seed-contabilidade.ts",
+    "scripts/lib/**/*.ts",
     "src/components/ui/alert-dialog.tsx",
     "src/components/ui/badge.tsx",
     "src/components/ui/card.tsx",

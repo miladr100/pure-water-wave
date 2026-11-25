@@ -8,7 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { csvDe, MEIO_NOME, semAcento, type Movimento } from "@/lib/hj/contabilidade";
 
 import { CatIcone, Etiqueta, OrigemEtiqueta, Valor } from "./pieces";
-import { useContabilidade } from "./store";
+import { urlComprovante, useContabilidade } from "./store";
 
 // Uma linha da lista de movimentos, igual no Início e em Movimentos.
 export function LinhaMovimento({ mov }: { mov: Movimento }) {
@@ -29,10 +29,21 @@ export function LinhaMovimento({ mov }: { mov: Movimento }) {
     combinado ? projeto(mov.projetoId)?.nome : null,
   ].filter(Boolean);
 
-  function excluir() {
-    const removido = remover(mov.id);
-    if (removido) {
-      toast("Movimento excluído", { action: { label: "Desfazer", onClick: () => restaurar(removido) } });
+  async function excluir() {
+    try {
+      const removido = await remover(mov.id);
+      if (removido) {
+        toast("Movimento excluído", {
+          action: {
+            label: "Desfazer",
+            onClick: () => {
+              restaurar(removido).catch(() => toast.error("Não foi possível desfazer"));
+            },
+          },
+        });
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível excluir");
     }
   }
 
@@ -43,7 +54,7 @@ export function LinhaMovimento({ mov }: { mov: Movimento }) {
         <OrigemEtiqueta origem={mov.origem} />
         {mov.pendente ? <Etiqueta tom="aviso">A conferir</Etiqueta> : null}
         {mov.comprovante ? (
-          <span className="inline-flex text-muted-foreground" title={mov.comprovante}>
+          <span className="inline-flex text-muted-foreground" title={mov.comprovante.nome}>
             <Paperclip className="h-3.5 w-3.5" aria-label="Com comprovante" />
           </span>
         ) : null}
@@ -83,7 +94,15 @@ export function LinhaMovimento({ mov }: { mov: Movimento }) {
                 Editar
               </DropdownMenuItem>
             ) : null}
-            <DropdownMenuItem onSelect={excluir} className="gap-2 text-destructive focus:text-destructive">
+            {mov.comprovante ? (
+              <DropdownMenuItem asChild className="gap-2">
+                <a href={urlComprovante(mov.comprovante)} target="_blank" rel="noreferrer">
+                  <Paperclip className="h-4 w-4" aria-hidden />
+                  Ver comprovante
+                </a>
+              </DropdownMenuItem>
+            ) : null}
+            <DropdownMenuItem onSelect={() => void excluir()} className="gap-2 text-destructive focus:text-destructive">
               <Trash2 className="h-4 w-4" aria-hidden />
               Excluir
             </DropdownMenuItem>
