@@ -1,10 +1,9 @@
 "use client";
 
-import { Camera, Check, Loader2, Mic, Paperclip, Pencil, Send, Sparkles, Square, X } from "lucide-react";
+import { Camera, Check, Loader2, Mic, Paperclip, Pencil, Send, Sparkles, Square, SquarePen, X } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "sonner";
 
 import { fmtMes, fmtMoeda, MEIO_NOME, MOEDAS, mesDe, saldos, somaMes, type Comprovante } from "@/lib/hj/contabilidade";
@@ -12,6 +11,7 @@ import { interpretar, perguntaDe, type Pergunta, type Proposta } from "@/lib/hj/
 import { addDays, fmtDia } from "@/lib/hj/dates";
 import { cn } from "@/lib/utils";
 
+import { PainelFlutuante } from "./flutuante";
 import { CatIcone, corEntrada, Etiqueta } from "./pieces";
 import { apiForm, BASE_API, encolherFoto, urlComprovante, useContabilidade } from "./store";
 
@@ -371,15 +371,32 @@ export function Assistente() {
     "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-primary-deep disabled:pointer-events-none disabled:opacity-40";
 
   return (
-    <Sheet open={assistenteAberto} onOpenChange={setAssistenteAberto}>
-      <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-md">
-        <SheetHeader className="space-y-0.5 border-b border-border/60 px-5 py-4 pr-12 text-left">
-          <SheetTitle className="flex items-center gap-2 font-display text-xl font-semibold text-primary-deep">
+    !assistenteAberto ? null : (
+    <PainelFlutuante
+      onFechar={() => setAssistenteAberto(false)}
+      titulo={
+          <p className="flex items-center gap-2 font-display text-lg font-semibold text-primary-deep">
             <Sparkles className="h-5 w-5 text-primary" aria-hidden />
             Assistente
-          </SheetTitle>
-          <SheetDescription>Escreva, fale ou fotografe o comprovante. Nada é salvo sem você confirmar.</SheetDescription>
-        </SheetHeader>
+          </p>
+      }
+      acoes={
+        mensagens.length ? (
+          <button
+            type="button"
+            className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-primary-deep disabled:opacity-40"
+            aria-label="Nova conversa"
+            title="Nova conversa"
+            disabled={pensando || gravando !== null}
+            onClick={() => setMensagens([])}
+          >
+            <SquarePen className="h-4 w-4" />
+          </button>
+        ) : null
+      }
+    >
+      {(cheio) => (
+      <>
 
         {doEscopo.length > 1 ? (
           <div className="flex items-center gap-2 border-b border-border/60 bg-muted/40 px-5 py-2.5">
@@ -396,11 +413,12 @@ export function Assistente() {
           </div>
         ) : null}
 
-        <div className="flex-1 space-y-4 overflow-y-auto px-5 py-5">
+        <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-5">
+          <div className={cn("space-y-4", cheio && "mx-auto max-w-[680px]")}>
           {mensagens.length === 0 ? (
             <div className="pt-4">
               <p className="font-display text-2xl font-semibold leading-tight text-primary-deep">Olá, {primeiroNome}.</p>
-              <p className="mt-1 text-muted-foreground">Diga um gasto ou envie um comprovante. Eu preencho o movimento e você confirma.</p>
+              <p className="mt-1 text-muted-foreground">Diga um gasto, fale ou envie a foto de um comprovante. Eu preencho o movimento e você confirma: nada é salvo sem você.</p>
               <div className="mt-5 flex flex-col items-start gap-2">
                 {SUGESTOES.map((sugestao) => (
                   <button
@@ -512,9 +530,10 @@ export function Assistente() {
             </div>
           ) : null}
           <div ref={fim} />
+          </div>
         </div>
 
-        <form onSubmit={submit} className="border-t border-border/60 px-3 pb-3 pt-2.5">
+        <form onSubmit={submit} className={cn("w-full border-t border-border/60 px-3 pb-3 pt-2.5", cheio && "sm:px-[max(0.75rem,calc((100%-680px)/2))]")}>
           <div className="flex items-center gap-1 rounded-3xl border border-input bg-card py-1 pl-1 pr-1.5 focus-within:ring-2 focus-within:ring-ring">
             <button type="button" className={iconeBotao} aria-label="Anexar comprovante" disabled={pensando || gravando !== null} onClick={() => arquivo.current?.click()}>
               <Paperclip className="h-[18px] w-[18px]" />
@@ -572,7 +591,9 @@ export function Assistente() {
             }}
           />
         </form>
-      </SheetContent>
-    </Sheet>
+      </>
+      )}
+    </PainelFlutuante>
+    )
   );
 }
