@@ -207,7 +207,9 @@ export function CourseDetail({ slug }: { slug: string }) {
             </span>
             <div className="min-w-0 flex-1">
               <h2 className="font-display text-2xl font-semibold">{t.course.completedTitle}</h2>
-              <p className="mt-1 text-primary-foreground/85">{t.course.completedBody}</p>
+              <p className="mt-1 text-primary-foreground/85">
+                {course.unlocks.length > 0 ? t.course.completedBody : t.course.completedBodyNoUnlocks}
+              </p>
               {course.unlocks.length > 0 ? (
                 <div className="mt-4">
                   <p className="text-sm font-semibold">{t.course.unlocksTitle}</p>
