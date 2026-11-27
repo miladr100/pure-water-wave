@@ -243,6 +243,7 @@ export function adminLesson(lesson: LessonDoc, hasProgress: boolean): AdminLesso
       provider: lesson.video?.provider ?? "bunny",
       youtubeId: lesson.video?.youtubeId ?? "",
       bunnyVideoId: lesson.video?.bunnyVideoId ?? "",
+      versions: (lesson.video?.versions ?? []).map((item) => ({ language: item.language, bunnyVideoId: item.bunnyVideoId })),
     },
     materials: (lesson.materials ?? []).map((item) => ({ label: item.label, url: item.url })),
     published: Boolean(lesson.published),

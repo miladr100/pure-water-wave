@@ -3,7 +3,7 @@
 import { ArrowLeft, ArrowRight, ExternalLink, FileText, Lock } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { BunnyPlayer } from "@/components/academy/bunny-player";
@@ -15,7 +15,13 @@ import { YouTubePlayer } from "@/components/academy/youtube-player";
 import { useLocale } from "@/components/academy/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { LessonPlayerData } from "@/lib/academy/types";
+import type { LessonPlayerData, VideoPlayback } from "@/lib/academy/types";
+import type { UserLanguage } from "@/lib/user-languages";
+import { cn } from "@/lib/utils";
+
+// Each language written in itself: a student looking for their language
+// recognises its own name.
+const NATIVE_LANGUAGE_NAMES: Record<UserLanguage, string> = { pt: "Português", es: "Español", en: "English" };
 
 const AUTO_NEXT_SEC = 5;
 
@@ -25,6 +31,9 @@ export function LessonPlayer({ slug, lessonId, isTutor }: Props) {
   const { t } = useLocale();
   const { data, error, loading, reload } = useApi<LessonPlayerData>(`/api/academia/aulas/${lessonId}`);
   const [ended, setEnded] = useState(false);
+  // The recording the student switched to, and where they were when they did.
+  const [switched, setSwitched] = useState<{ language: UserLanguage; startPercent: number; maxPercent: number } | null>(null);
+  const position = useRef({ percent: 0, ceilingPercent: 0 });
   const courseHref = `/academia/cursos/${slug}`;
 
   useEffect(() => {
@@ -72,7 +81,19 @@ export function LessonPlayer({ slug, lessonId, isTutor }: Props) {
     );
   }
 
-  const { lesson, course, video, next } = data;
+  const { lesson, course, next } = data;
+  const video = playbackFor(data.video, switched);
+  const versions = data.video.provider === "bunny" ? data.video.versions : [];
+
+  function switchLanguage(language: UserLanguage) {
+    if (video.provider !== "bunny" || language === video.language) return;
+    setEnded(false);
+    setSwitched({
+      language,
+      startPercent: position.current.percent,
+      maxPercent: Math.max(video.maxPercent, position.current.ceilingPercent),
+    });
+  }
   const nextTarget = nextLink(next, slug, t);
 
   return (
@@ -96,11 +117,43 @@ export function LessonPlayer({ slug, lessonId, isTutor }: Props) {
         </p>
       </div>
 
+      {versions.length > 1 && video.provider === "bunny" ? (
+        <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t.player.videoLanguage}>
+          <span className="text-sm text-muted-foreground">{t.player.videoLanguage}</span>
+          {versions.map((item) => (
+            <button
+              key={item.language}
+              type="button"
+              aria-pressed={item.language === video.language}
+              onClick={() => switchLanguage(item.language)}
+              className={cn(
+                "rounded-full border px-3 py-1 text-sm font-medium transition",
+                item.language === video.language
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border/60 bg-card text-foreground hover:border-primary/50 hover:text-primary",
+              )}
+            >
+              {NATIVE_LANGUAGE_NAMES[item.language]}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black shadow-card">
         {video.provider === "youtube" ? (
           <YouTubePlayer video={video} lessonId={lesson.id} isTutor={isTutor} onEnded={() => setEnded(true)} />
         ) : (
-          <BunnyPlayer video={video} lessonId={lesson.id} isTutor={isTutor} onEnded={() => setEnded(true)} />
+          <BunnyPlayer
+            key={video.language}
+            video={video}
+            lessonId={lesson.id}
+            isTutor={isTutor}
+            onEnded={() => setEnded(true)}
+            startPercent={switched?.startPercent}
+            onPosition={(next) => {
+              position.current = next;
+            }}
+          />
         )}
         {ended ? <NextCard target={nextTarget} courseHref={courseHref} onDismiss={() => setEnded(false)} /> : null}
       </div>
@@ -149,6 +202,26 @@ export function LessonPlayer({ slug, lessonId, isTutor }: Props) {
       <LessonQuestions lessonId={lesson.id} />
     </div>
   );
+}
+
+// The playback for the recording on screen: the one the API chose, or the
+// one the student switched to, carrying over how far they had watched.
+function playbackFor(
+  video: VideoPlayback,
+  switched: { language: UserLanguage; maxPercent: number } | null,
+): VideoPlayback {
+  if (video.provider !== "bunny" || !switched) return video;
+  const version = video.versions.find((item) => item.language === switched.language);
+  if (!version) return video;
+  return {
+    ...video,
+    url: version.url,
+    authQuery: version.authQuery,
+    expiresAt: version.expiresAt,
+    language: version.language,
+    resume: null,
+    maxPercent: Math.min(100, Math.round(switched.maxPercent)),
+  };
 }
 
 type NextTarget = { href: string; label: string; kicker: string; auto: boolean };

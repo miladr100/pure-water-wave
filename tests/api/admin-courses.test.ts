@@ -296,6 +296,25 @@ describe("/api/admin/aulas", () => {
     expect((await editLesson("000000000000000000000000", { title: "x" })).status).toBe(404);
   });
 
+  it("stores the versions of a lesson in other languages and refuses a repeated or unknown language", async () => {
+    await tutorSession();
+    const sample = await createSampleCourse();
+    const id = sample.lessons[0]._id.toString();
+
+    const ok = await editLesson(id, {
+      video: { provider: "bunny", bunnyVideoId: "main-guid", versions: [{ language: "es", bunnyVideoId: " es-guid " }, { language: "en", bunnyVideoId: "" }] },
+    });
+    expect(ok.status).toBe(200);
+    const body = await readJson<{ lesson: AdminLesson }>(ok);
+    expect(body.lesson.video).toMatchObject({ bunnyVideoId: "main-guid", versions: [{ language: "es", bunnyVideoId: "es-guid" }] });
+
+    const repeated = await editLesson(id, { video: { versions: [{ language: "es", bunnyVideoId: "a" }, { language: "es", bunnyVideoId: "b" }] } });
+    expect(repeated.status).toBe(400);
+    expect((await readJson<ErrorBody>(repeated)).code).toBe("invalid_version_language");
+    expect((await editLesson(id, { video: { versions: [{ language: "ko", bunnyVideoId: "a" }] } })).status).toBe(400);
+    expect((await editLesson(id, { video: { versions: "es" } })).status).toBe(400);
+  });
+
   it("renumbers the course when a lesson moves", async () => {
     await tutorSession();
     const sample = await createSampleCourse();

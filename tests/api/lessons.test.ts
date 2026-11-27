@@ -146,6 +146,45 @@ describe("GET /api/academia/aulas/[lessonId]", () => {
     expect(body.video.completedBefore).toBe(false);
   });
 
+  it("offers every recording of a Bunny lesson and starts in the student language", async () => {
+    vi.stubEnv("BUNNY_STREAM_CDN_HOST", "vz-test.b-cdn.net");
+    vi.stubEnv("BUNNY_STREAM_TOKEN_KEY", "test-key");
+    try {
+      const sample = await createSampleCourse();
+      await Lesson.updateOne(
+        { _id: sample.lessons[0]._id },
+        { video: { provider: "bunny", youtubeId: "", bunnyVideoId: "pt-guid", versions: [{ language: "es", bunnyVideoId: "es-guid" }] } },
+      );
+      const id = sample.lessons[0]._id.toString();
+
+      const student = await createUser({ language: "es" });
+      await signInAs(student);
+      await enroll(student._id, sample.course._id);
+      const spanish = await readJson<LessonPlayerData>(await lesson(id));
+      if (spanish.video.provider !== "bunny") throw new Error("expected bunny");
+      expect(spanish.video.language).toBe("es");
+      expect(spanish.video.url).toContain("/es-guid/playlist.m3u8");
+      expect(spanish.video.versions.map((item) => item.language)).toEqual(["pt", "es"]);
+      expect(spanish.video.versions[0].url).toContain("/pt-guid/");
+
+      // No recording in English: the course language plays.
+      const english = await createUser({ language: "en" });
+      await signInAs(english);
+      await enroll(english._id, sample.course._id);
+      const fallback = await readJson<LessonPlayerData>(await lesson(id));
+      if (fallback.video.provider !== "bunny") throw new Error("expected bunny");
+      expect(fallback.video.language).toBe("pt");
+
+      // A single recording offers no choice.
+      await Lesson.updateOne({ _id: sample.lessons[0]._id }, { "video.versions": [] });
+      const single = await readJson<LessonPlayerData>(await lesson(id));
+      if (single.video.provider !== "bunny") throw new Error("expected bunny");
+      expect(single.video.versions).toEqual([]);
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
   it("answers video_not_ready for a Bunny lesson while Bunny is not configured", async () => {
     const sample = await createSampleCourse();
     await Lesson.updateOne(

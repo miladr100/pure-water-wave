@@ -56,7 +56,12 @@ export type LessonDoc = {
   title: Localized;
   description: Localized;
   durationMinutes: number;
-  video: { provider: "youtube" | "bunny"; youtubeId: string; bunnyVideoId: string };
+  video: {
+    provider: "youtube" | "bunny";
+    youtubeId: string;
+    bunnyVideoId: string;
+    versions?: { language: UserLanguage; bunnyVideoId: string }[];
+  };
   materials: { label: string; url: string }[];
   published: boolean;
 };

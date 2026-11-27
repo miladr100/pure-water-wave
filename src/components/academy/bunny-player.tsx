@@ -20,17 +20,24 @@ type Props = {
   lessonId: string;
   isTutor: boolean;
   onEnded: () => void;
+  // Set when the student switched the video language mid-lesson: start
+  // straight at this point of the other recording, without asking.
+  startPercent?: number;
+  // Reports where the student is, so a language switch can carry it over.
+  onPosition?: (position: { percent: number; ceilingPercent: number }) => void;
 };
 
 // iOS Safari has no element-level fullscreen; the video itself can go.
 type IosVideo = HTMLVideoElement & { webkitEnterFullscreen?: () => void };
 
-export function BunnyPlayer({ video, lessonId, isTutor, onEnded }: Props) {
+export function BunnyPlayer({ video, lessonId, isTutor, onEnded, startPercent, onPosition }: Props) {
   const { t } = useLocale();
   const frameRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const endedRef = useRef(false);
   const onEndedRef = useRef(onEnded);
+  const onPositionRef = useRef(onPosition);
+  const startRef = useRef(startPercent);
   const gate = useVideoGate({ video, lessonId, isTutor });
   const [playing, setPlaying] = useState(false);
   const [current, setCurrent] = useState(0);
@@ -38,11 +45,12 @@ export function BunnyPlayer({ video, lessonId, isTutor, onEnded }: Props) {
   const [ceiling, setCeiling] = useState(0);
   const [speed, setSpeed] = useState(1);
   const [fullscreen, setFullscreen] = useState(false);
-  const [resumePending, setResumePending] = useState(Boolean(video.resume));
+  const [resumePending, setResumePending] = useState(Boolean(video.resume) && startPercent === undefined);
 
   useEffect(() => {
     onEndedRef.current = onEnded;
-  }, [onEnded]);
+    onPositionRef.current = onPosition;
+  }, [onEnded, onPosition]);
 
   useEffect(() => {
     const element = videoRef.current;
@@ -95,6 +103,10 @@ export function BunnyPlayer({ video, lessonId, isTutor, onEnded }: Props) {
       }
       setCurrent(element.currentTime);
       setCeiling(verdict.ceiling);
+      onPositionRef.current?.({
+        percent: (element.currentTime / total) * 100,
+        ceilingPercent: (verdict.ceiling / total) * 100,
+      });
     };
 
     // Media keys and the OS overlay bypass the on-screen controls.
@@ -111,7 +123,14 @@ export function BunnyPlayer({ video, lessonId, isTutor, onEnded }: Props) {
 
     const onLoadedMetadata = () => {
       setDuration(element.duration);
-      setCeiling(gate.ceilingFor(element.duration));
+      const cap = gate.ceilingFor(element.duration);
+      setCeiling(cap);
+      const start = startRef.current;
+      if (start !== undefined && element.duration > 0) {
+        startRef.current = undefined;
+        element.currentTime = Math.min((start / 100) * element.duration, cap);
+        void element.play().catch(() => {});
+      }
     };
 
     const onPlay = () => setPlaying(true);

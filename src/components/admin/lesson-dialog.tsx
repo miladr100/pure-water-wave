@@ -24,7 +24,10 @@ import { api } from "@/lib/academy/api-client";
 import type { LibraryVideo } from "@/lib/academy/bunny";
 import type { AdminLesson } from "@/lib/academy/types";
 import { EMPTY_LOCALIZED, type Localized } from "@/lib/academy/localized";
+import { USER_LANGUAGES, type UserLanguage } from "@/lib/user-languages";
 import { cn } from "@/lib/utils";
+
+type VideoVersion = { language: UserLanguage; bunnyVideoId: string };
 
 // The academy's videos live in Bunny Stream, the same private library the
 // FFPUM academy uses: an educator picks a video that is already there, pastes
@@ -68,6 +71,7 @@ function LessonForm({
   const [description, setDescription] = useState<Localized>({ ...EMPTY_LOCALIZED, ...lesson?.description });
   const [durationMinutes, setDurationMinutes] = useState(lesson?.durationMinutes ?? 0);
   const [bunnyVideoId, setBunnyVideoId] = useState(lesson?.video.bunnyVideoId ?? "");
+  const [versions, setVersions] = useState<VideoVersion[]>(lesson?.video.versions.map((item) => ({ ...item })) ?? []);
   const [materials, setMaterials] = useState<Material[]>(lesson?.materials.map((item) => ({ ...item })) ?? []);
   const [published, setPublished] = useState(lesson?.published ?? false);
   const [busy, setBusy] = useState(false);
@@ -107,7 +111,7 @@ function LessonForm({
           title,
           description,
           durationMinutes,
-          video: { provider: "bunny", youtubeId: "", bunnyVideoId },
+          video: { provider: "bunny", youtubeId: "", bunnyVideoId, versions },
           materials,
           published,
         },
@@ -253,6 +257,83 @@ function LessonForm({
         ) : processing ? (
           <p className="text-xs text-muted-foreground">{t.admin.processing}</p>
         ) : null}
+      </div>
+
+      <div className="space-y-2">
+        <Label>{t.admin.videoVersions}</Label>
+        <p className="text-xs text-muted-foreground">{t.admin.videoVersionsHint}</p>
+        {versions.map((version, index) => (
+          <div key={index} className="space-y-2 rounded-2xl border border-border/60 p-3">
+            <div className="flex gap-2">
+              <select
+                value={version.language}
+                aria-label={t.admin.videoVersionLanguage}
+                disabled={locked}
+                onChange={(event) =>
+                  setVersions((current) =>
+                    current.map((item, i) => (i === index ? { ...item, language: event.target.value as UserLanguage } : item)),
+                  )
+                }
+                className="h-9 rounded-md border border-input bg-transparent px-3 text-sm shadow-xs"
+              >
+                {USER_LANGUAGES.map((language) => (
+                  <option key={language} value={language}>
+                    {t.admin.languageNames[language]}
+                  </option>
+                ))}
+              </select>
+              <Input
+                value={version.bunnyVideoId}
+                aria-label={t.admin.videoVersionGuid}
+                placeholder="GUID"
+                autoComplete="off"
+                disabled={locked}
+                onChange={(event) =>
+                  setVersions((current) =>
+                    current.map((item, i) => (i === index ? { ...item, bunnyVideoId: event.target.value } : item)),
+                  )
+                }
+                className="flex-1 font-mono text-xs"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label={t.admin.removeVideoVersion}
+                disabled={locked}
+                onClick={() => setVersions((current) => current.filter((_, i) => i !== index))}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+            {bunnyUpload ? (
+              <LibraryVideoPicker
+                value={version.bunnyVideoId}
+                disabled={locked}
+                onPick={(video) =>
+                  setVersions((current) =>
+                    current.map((item, i) => (i === index ? { ...item, bunnyVideoId: video.guid } : item)),
+                  )
+                }
+              />
+            ) : null}
+          </div>
+        ))}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={locked}
+          onClick={() =>
+            setVersions((current) => [
+              ...current,
+              { language: USER_LANGUAGES.find((language) => !current.some((item) => item.language === language) && language !== "pt") ?? "es", bunnyVideoId: "" },
+            ])
+          }
+        >
+          <Plus className="h-4 w-4" />
+          {t.admin.addVideoVersion}
+        </Button>
       </div>
 
       <div className="space-y-2 sm:max-w-xs">

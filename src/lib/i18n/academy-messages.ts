@@ -155,6 +155,7 @@ export type AppMessages = {
     resumeContinue: string;
     resumeRestart: string;
     seekBlocked: string;
+    videoLanguage: string;
     materials: string;
     nextLesson: string;
     goToActivity: string;
@@ -382,6 +383,13 @@ export type AppMessages = {
     lessonVideo: string;
     providerBunny: string;
     bunnyIdHint: string;
+    videoVersions: string;
+    videoVersionsHint: string;
+    videoVersionLanguage: string;
+    videoVersionGuid: string;
+    addVideoVersion: string;
+    removeVideoVersion: string;
+    languageNames: Record<"pt" | "en" | "es", string>;
     pickLibraryVideo: string;
     libraryVideoSearch: string;
     libraryVideoNone: string;
@@ -592,6 +600,7 @@ const pt: AppMessages = {
     resumeContinue: "Continuar",
     resumeRestart: "Começar de novo",
     seekBlocked: "Você não pode adiantar o conteúdo até assisti-lo uma vez.",
+    videoLanguage: "Idioma do vídeo",
     materials: "Materiais de apoio",
     nextLesson: "Próxima aula",
     goToActivity: "Fazer a atividade do módulo",
@@ -820,6 +829,13 @@ const pt: AppMessages = {
     lessonVideo: "Vídeo",
     providerBunny: "Vídeo (Bunny Stream)",
     bunnyIdHint: "Escolha um vídeo que já está na biblioteca, cole o GUID ou envie o arquivo.",
+    videoVersions: "Versões em outros idiomas",
+    videoVersionsHint: "A mesma aula gravada em outro idioma. O aluno escolhe o idioma no player; o vídeo principal fica no idioma do curso.",
+    videoVersionLanguage: "Idioma da versão",
+    videoVersionGuid: "GUID da versão",
+    addVideoVersion: "Adicionar versão em outro idioma",
+    removeVideoVersion: "Remover versão",
+    languageNames: { pt: "Português", en: "Inglês", es: "Espanhol" },
     pickLibraryVideo: "Escolher da biblioteca",
     libraryVideoSearch: "Buscar vídeo…",
     libraryVideoNone: "Nenhum vídeo encontrado.",
@@ -1036,6 +1052,7 @@ const en: AppMessages = {
     resumeContinue: "Continue",
     resumeRestart: "Start over",
     seekBlocked: "You cannot skip ahead until you have watched the content once.",
+    videoLanguage: "Video language",
     materials: "Support materials",
     nextLesson: "Next lesson",
     goToActivity: "Do the module activity",
@@ -1264,6 +1281,13 @@ const en: AppMessages = {
     lessonVideo: "Video",
     providerBunny: "Video (Bunny Stream)",
     bunnyIdHint: "Pick a video already in the library, paste its GUID or upload the file.",
+    videoVersions: "Versions in other languages",
+    videoVersionsHint: "The same lesson recorded in another language. The student picks the language on the player; the main video is in the course language.",
+    videoVersionLanguage: "Version language",
+    videoVersionGuid: "Version GUID",
+    addVideoVersion: "Add a version in another language",
+    removeVideoVersion: "Remove version",
+    languageNames: { pt: "Portuguese", en: "English", es: "Spanish" },
     pickLibraryVideo: "Pick from the library",
     libraryVideoSearch: "Search videos…",
     libraryVideoNone: "No video found.",
@@ -1480,6 +1504,7 @@ const es: AppMessages = {
     resumeContinue: "Continuar",
     resumeRestart: "Empezar de nuevo",
     seekBlocked: "No puedes adelantar el contenido hasta reproducirlo una vez.",
+    videoLanguage: "Idioma del video",
     materials: "Materiales de apoyo",
     nextLesson: "Siguiente clase",
     goToActivity: "Hacer la actividad del módulo",
@@ -1708,6 +1733,13 @@ const es: AppMessages = {
     lessonVideo: "Video",
     providerBunny: "Video (Bunny Stream)",
     bunnyIdHint: "Elige un video que ya está en la biblioteca, pega el GUID o sube el archivo.",
+    videoVersions: "Versiones en otros idiomas",
+    videoVersionsHint: "La misma clase grabada en otro idioma. El alumno elige el idioma en el reproductor; el video principal queda en el idioma del curso.",
+    videoVersionLanguage: "Idioma de la versión",
+    videoVersionGuid: "GUID de la versión",
+    addVideoVersion: "Agregar versión en otro idioma",
+    removeVideoVersion: "Quitar versión",
+    languageNames: { pt: "Portugués", en: "Inglés", es: "Español" },
     pickLibraryVideo: "Elegir de la biblioteca",
     libraryVideoSearch: "Buscar video…",
     libraryVideoNone: "No se encontró ningún video.",

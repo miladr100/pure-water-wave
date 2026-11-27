@@ -99,6 +99,13 @@ export type CourseLocked = {
   prerequisites: { slug: string; title: string }[];
 };
 
+export type VideoVersionPlayback = {
+  language: UserLanguage;
+  url: string;
+  authQuery: string;
+  expiresAt: number;
+};
+
 export type VideoPlayback =
   | {
       provider: "youtube";
@@ -113,6 +120,10 @@ export type VideoPlayback =
       url: string;
       authQuery: string;
       expiresAt: number;
+      // Language of the video above; versions lists every recording of the
+      // lesson (this one included) when there is more than one language.
+      language: UserLanguage;
+      versions: VideoVersionPlayback[];
       resume: { percent: number } | null;
       completedBefore: boolean;
       maxPercent: number;
@@ -403,7 +414,12 @@ export type AdminLesson = {
   title: Localized;
   description: Localized;
   durationMinutes: number;
-  video: { provider: VideoProvider; youtubeId: string; bunnyVideoId: string };
+  video: {
+    provider: VideoProvider;
+    youtubeId: string;
+    bunnyVideoId: string;
+    versions: { language: UserLanguage; bunnyVideoId: string }[];
+  };
   materials: { label: string; url: string }[];
   published: boolean;
   hasProgress: boolean;

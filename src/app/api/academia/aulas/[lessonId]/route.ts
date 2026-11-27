@@ -18,7 +18,7 @@ import {
   type CourseDoc,
   type LessonDoc,
 } from "@/lib/academy/load";
-import type { LessonPlayerData, VideoPlayback } from "@/lib/academy/types";
+import type { LessonPlayerData, VideoPlayback, VideoVersionPlayback } from "@/lib/academy/types";
 import { pick } from "@/lib/academy/localized";
 import { requireAcademySession } from "@/lib/academy/require-session";
 import { Course } from "@/models/course";
@@ -101,16 +101,32 @@ export async function GET(_request: Request, { params }: { params: Promise<{ les
     let video: VideoPlayback;
 
     if (lesson.video?.provider === "bunny") {
-      const signed = lesson.video.bunnyVideoId ? signVideoUrl(lesson.video.bunnyVideoId) : null;
-      if (!signed) {
+      // Every recording of the lesson: the main one is in the course
+      // language, the versions in others. The student starts in their own
+      // language when there is a recording in it.
+      const recordings = [
+        { language: course.language ?? "pt", bunnyVideoId: lesson.video.bunnyVideoId },
+        ...(lesson.video.versions ?? []),
+      ].filter((item, index, all) => item.bunnyVideoId && all.findIndex((other) => other.language === item.language) === index);
+      const versions: VideoVersionPlayback[] = [];
+      for (const recording of recordings) {
+        const signed = signVideoUrl(recording.bunnyVideoId);
+        if (signed) {
+          versions.push({ language: recording.language, url: signed.url, authQuery: signed.authQuery, expiresAt: signed.expiresAt });
+        }
+      }
+      const chosen = versions.find((item) => item.language === language) ?? versions[0];
+      if (!chosen) {
         return jsonError("Vídeo ainda não disponível", 409, { code: "video_not_ready" });
       }
 
       video = {
         provider: "bunny",
-        url: signed.url,
-        authQuery: signed.authQuery,
-        expiresAt: signed.expiresAt,
+        url: chosen.url,
+        authQuery: chosen.authQuery,
+        expiresAt: chosen.expiresAt,
+        language: chosen.language,
+        versions: versions.length > 1 ? versions : [],
         resume,
         completedBefore,
         maxPercent,

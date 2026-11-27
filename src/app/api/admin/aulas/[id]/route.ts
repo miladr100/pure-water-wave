@@ -5,6 +5,7 @@ import type { CourseDoc, LessonDoc } from "@/lib/academy/load";
 import { parseYoutubeId } from "@/lib/academy/youtube";
 import { normalizeLocalized } from "@/lib/academy/localized";
 import { requireTutorSession } from "@/lib/academy/require-session";
+import { isUserLanguage, type UserLanguage } from "@/lib/user-languages";
 import { Course } from "@/models/course";
 import { Lesson, VIDEO_PROVIDERS, type VideoProvider } from "@/models/lesson";
 import { LessonProgress } from "@/models/lesson-progress";
@@ -18,7 +19,7 @@ type PatchBody = {
   title?: unknown;
   description?: unknown;
   durationMinutes?: unknown;
-  video?: { provider?: unknown; youtubeId?: unknown; bunnyVideoId?: unknown };
+  video?: { provider?: unknown; youtubeId?: unknown; bunnyVideoId?: unknown; versions?: unknown };
   materials?: unknown;
   published?: unknown;
   moduleId?: unknown;
@@ -87,6 +88,21 @@ export async function PATCH(request: Request, { params }: Params) {
       }
       if (typeof body.video.bunnyVideoId === "string") {
         video.bunnyVideoId = body.video.bunnyVideoId.trim();
+      }
+      if (body.video.versions !== undefined) {
+        if (!Array.isArray(body.video.versions)) {
+          return jsonError("Versões de vídeo inválidas", 400);
+        }
+        const versions: { language: UserLanguage; bunnyVideoId: string }[] = [];
+        for (const item of body.video.versions as { language?: unknown; bunnyVideoId?: unknown }[]) {
+          const guid = typeof item?.bunnyVideoId === "string" ? item.bunnyVideoId.trim() : "";
+          if (!guid) continue;
+          if (!isUserLanguage(item.language) || versions.some((other) => other.language === item.language)) {
+            return jsonError("Idioma da versão inválido ou repetido", 400, { code: "invalid_version_language" });
+          }
+          versions.push({ language: item.language, bunnyVideoId: guid });
+        }
+        video.versions = versions;
       }
       update.video = video;
     }
